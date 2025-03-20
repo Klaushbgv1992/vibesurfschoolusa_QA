@@ -49,7 +49,7 @@ export default function ContactPage() {
       <div className="relative h-[40vh] w-full">
         <Image
           src="/images/exterior-views/5.jpg"
-          alt="Contact Vibe Guesthouse"
+          alt="Contact Vibe Beach House"
           fill
           className="object-cover"
           priority
@@ -73,7 +73,7 @@ export default function ContactPage() {
               <div>
                 <h2 className="text-3xl font-bold mb-8 text-gray-800">Get In Touch</h2>
                 <p className="text-gray-700 mb-8">
-                  Have questions about Vibe Guesthouse or want to make a reservation? 
+                  Have questions about Vibe Beach House or want to make a reservation? 
                   Contact us directly or use our booking partner for instant confirmation.
                 </p>
                 
@@ -92,7 +92,7 @@ export default function ContactPage() {
                     <h3 className="text-xl font-semibold mb-2 text-gray-800">Book Direct</h3>
                     <a
                       href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn"
-                      className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm"
+                      className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -140,7 +140,7 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#005d8e] focus:border-[#005d8e]"
                         placeholder="Enter your name"
                       />
                     </div>
@@ -156,7 +156,7 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#005d8e] focus:border-[#005d8e]"
                         placeholder="Enter your email"
                       />
                     </div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
                         onChange={handleChange}
                         required
                         rows="5"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#005d8e] focus:border-[#005d8e]"
                         placeholder="What would you like to know?"
                       ></textarea>
                     </div>
@@ -181,7 +181,7 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-70"
+                        className="w-full bg-[#005d8e] hover:bg-[#00486e] text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-70"
                       >
                         {isSubmitting ? 'Sending...' : 'Send Message'}
                       </button>

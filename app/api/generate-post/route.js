@@ -33,7 +33,7 @@ export async function POST(request) {
 
     // Generate content with OpenAI
     const prompt = `
-      You are writing a blog post for "Vibe Guesthouse," a luxury self-catering rental in Herolds Bay, South Africa.
+      You are writing a blog post for "Vibe Beach House," a luxury self-catering rental in Herolds Bay, South Africa.
       
       Create a 600-word blog post based on the following local news: 
       
@@ -42,7 +42,7 @@ export async function POST(request) {
       Requirements:
       1. Start with an engaging title that includes "Herolds Bay" or "Garden Route"
       2. Summarize the news and why it matters to visitors
-      3. Connect the news to Vibe Guesthouse (located at 6 Rooikransie St, Herolds Bay, 6615)
+      3. Connect the news to Vibe Beach House (located at 6 Rooikransie St, Herolds Bay, 6615)
       4. Mention our amenities (3 bedrooms, pool, etc.) where relevant
       5. Include SEO terms: "Herolds Bay accommodation", "Garden Route guesthouse", "self-catering"
       6. End with a call-to-action to book a stay

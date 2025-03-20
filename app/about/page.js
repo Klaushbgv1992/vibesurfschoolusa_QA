@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 export const metadata = {
-  title: 'About - Vibe Guesthouse',
+  title: 'About - Vibe Beach House',
   description: 'Learn about our luxury guesthouse in Herolds Bay, Garden Route, South Africa.',
 };
 
@@ -12,7 +12,7 @@ export default function AboutPage() {
       <div className="relative h-[50vh] w-full">
         <Image
           src="/images/exterior-views/1.jpg"
-          alt="Vibe Guesthouse Exterior"
+          alt="Vibe Beach House Exterior"
           fill
           className="object-cover"
           priority
@@ -22,7 +22,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center">
-            About Vibe Guesthouse
+            About Vibe Beach House
           </h1>
         </div>
       </div>
@@ -33,20 +33,20 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-gray-800">Our Story</h2>
             <p className="text-gray-700 mb-6 text-lg">
-              Nestled in the picturesque coastal village of Herolds Bay, Vibe Guesthouse offers a luxurious retreat 
+              Nestled in the picturesque coastal village of Herolds Bay, Vibe Beach House offers a luxurious retreat 
               with breathtaking ocean views and modern amenities. Our guesthouse was designed to provide guests with the perfect 
               balance of comfort, style, and natural beauty.
             </p>
             <p className="text-gray-700 mb-10 text-lg">
               Located just a short walk from the pristine beaches of Herolds Bay and a 15-minute drive from George Airport, 
-              Vibe Guesthouse provides the ideal base for exploring the wonders of South Africa's renowned Garden Route.
+              Vibe Beach House provides the ideal base for exploring the wonders of South Africa's renowned Garden Route.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
               <div className="relative h-80 rounded-lg overflow-hidden shadow-lg">
                 <Image 
                   src="/images/exterior-views/2.jpg" 
-                  alt="Vibe Guesthouse Exterior"
+                  alt="Vibe Beach House Exterior"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -60,7 +60,7 @@ export default function AboutPage() {
                   all designed to provide you with a luxurious and comfortable stay.
                 </p>
                 <p className="text-gray-700">
-                  With modern furnishings, high-speed WiFi, and a fully equipped kitchen, Vibe Guesthouse offers all the 
+                  With modern furnishings, high-speed WiFi, and a fully equipped kitchen, Vibe Beach House offers all the 
                   comforts of home with the luxury of a high-end resort.
                 </p>
               </div>

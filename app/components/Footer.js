@@ -1,8 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  const isGalleryPage = pathname === '/gallery';
   
   const socialLinks = [
     { 
@@ -36,12 +41,12 @@ export default function Footer() {
   
   return (
     <footer className="bg-gray-900 text-white pt-16 pb-8">
-      <div className="container mx-auto px-4">
+      <div className={`${isGalleryPage ? 'w-full px-6' : 'container mx-auto px-4'}`}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="inline-block">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent mb-4">
-                Vibe Guesthouse
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-[#005d8e] to-[#7fb5d1] bg-clip-text text-transparent mb-4">
+                Vibe Beach House
               </h2>
             </Link>
             <p className="text-gray-300 mb-6 max-w-md">
@@ -100,7 +105,7 @@ export default function Footer() {
             </address>
             <a
               href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn"
-              className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
+              className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -110,7 +115,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p>&copy; {currentYear} Vibe Guesthouse. All rights reserved.</p>
+          <p>&copy; {currentYear} Vibe Beach House. All rights reserved.</p>
         </div>
       </div>
     </footer>

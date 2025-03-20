@@ -14,21 +14,21 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-12 items-center">
             <div className="w-full md:w-1/2">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Welcome to Vibe Guesthouse</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">Welcome to Vibe Beach House</h2>
               <p className="text-lg text-gray-700 mb-6">
                 Nestled in the picturesque coastal village of Herolds Bay, our luxury guesthouse offers an unforgettable stay with breathtaking ocean views, modern amenities, and a tranquil atmosphere.
               </p>
               <p className="text-lg text-gray-700 mb-8">
-                Whether you're seeking a peaceful getaway, a family vacation, or a romantic retreat, Vibe Guesthouse provides the perfect setting for creating lasting memories on the stunning Garden Route.
+                Whether you're seeking a peaceful getaway, a family vacation, or a romantic retreat, Vibe Beach House provides the perfect setting for creating lasting memories on the stunning Garden Route.
               </p>
-              <Link href="/about" className="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 px-8 rounded-sm transition-colors shadow-sm">
+              <Link href="/about" className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-3 px-8 rounded-sm transition-colors shadow-sm">
                 Discover Our Story
               </Link>
             </div>
             <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px]">
               <Image 
                 src="/images/interior-views/8.jpg" 
-                alt="Vibe Guesthouse Interior" 
+                alt="Vibe Beach House Interior" 
                 fill
                 className="object-cover rounded-md shadow-lg"
               />
@@ -166,7 +166,7 @@ export default function Home() {
           </div>
           
           <div className="text-center mt-12">
-            <Link href="/gallery" className="inline-block bg-amber-400 hover:bg-amber-500 text-gray-900 px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md">
+            <Link href="/gallery" className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md">
               Explore Our Gallery
             </Link>
           </div>
@@ -176,24 +176,24 @@ export default function Home() {
       <TestimonialSection />
       
       {/* Call to Action */}
-      <section className="py-20 bg-amber-500 text-white">
+      <section className="py-20 bg-[#005d8e] text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready for Your Luxury Getaway?</h2>
           <p className="text-xl max-w-3xl mx-auto mb-10">
-            Book your stay at Vibe Guesthouse today and experience the perfect blend of luxury, comfort, and natural beauty in Herolds Bay.
+            Book your stay at Vibe Beach House today and experience the perfect blend of luxury, comfort, and natural beauty in Herolds Bay.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <a 
               href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-amber-400 hover:bg-amber-500 text-gray-900 px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
+              className="bg-[#00486e] hover:bg-[#003a59] text-white px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
             >
               Book On Airbnb
             </a>
             <Link 
               href="/contact" 
-              className="bg-white hover:bg-gray-100 text-amber-500 px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
+              className="bg-white hover:bg-gray-100 text-[#005d8e] px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
             >
               Contact Us
             </Link>

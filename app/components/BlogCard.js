@@ -28,7 +28,7 @@ export default function BlogCard({ post }) {
         </div>
         
         <h3 className="text-xl font-bold mb-2">
-          <Link href={`/blog/${post.slug}`} className="hover:text-amber-500 transition-colors">
+          <Link href={`/blog/${post.slug}`} className="hover:text-[#005d8e] transition-colors">
             {post.title}
           </Link>
         </h3>
@@ -37,7 +37,7 @@ export default function BlogCard({ post }) {
           <p className="text-gray-700 mb-4 line-clamp-3">{post.excerpt}</p>
         )}
         
-        <Link href={`/blog/${post.slug}`} className="text-amber-500 font-medium hover:underline">
+        <Link href={`/blog/${post.slug}`} className="text-[#005d8e] font-medium hover:underline">
           Read More →
         </Link>
       </div>

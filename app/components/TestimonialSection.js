@@ -7,7 +7,7 @@ export default function TestimonialSection() {
       name: 'Sarah Johnson',
       location: 'Cape Town, South Africa',
       rating: 5,
-      text: 'Our stay at Vibe Guesthouse exceeded all expectations. The views are breathtaking and the house is beautifully designed with everything you could need. We particularly enjoyed watching the sunset from the pool deck. Will definitely be returning!',
+      text: 'Our stay at Vibe Beach House exceeded all expectations. The views are breathtaking and the house is beautifully designed with everything you could need. We particularly enjoyed watching the sunset from the pool deck. Will definitely be returning!',
     },
     {
       id: 2,
@@ -32,7 +32,7 @@ export default function TestimonialSection() {
       .map((_, i) => (
         <svg 
           key={i}
-          className={`h-5 w-5 ${i < rating ? 'text-amber-400' : 'text-gray-300'}`}
+          className={`h-5 w-5 ${i < rating ? 'text-[#005d8e]' : 'text-gray-300'}`}
           xmlns="http://www.w3.org/2000/svg" 
           viewBox="0 0 24 24" 
           fill="currentColor"
@@ -48,7 +48,7 @@ export default function TestimonialSection() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">What Our Guests Say</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover why guests love their experience at Vibe Guesthouse
+            Discover why guests love their experience at Vibe Beach House
           </p>
         </div>
 
@@ -60,7 +60,7 @@ export default function TestimonialSection() {
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-xl mr-4">
+                  <div className="w-12 h-12 bg-[#005d8e] text-white rounded-full flex items-center justify-center font-bold text-xl mr-4">
                     {testimonial.name.charAt(0)}
                   </div>
                   <div>
@@ -82,7 +82,7 @@ export default function TestimonialSection() {
             href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn#reviews"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-500 font-medium hover:underline inline-flex items-center"
+            className="text-[#005d8e] font-medium hover:underline inline-flex items-center"
           >
             Read more reviews on Airbnb
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">

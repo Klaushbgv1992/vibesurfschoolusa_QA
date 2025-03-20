@@ -15,8 +15,8 @@ export async function generateMetadata({ params }) {
   const post = await getPostBySlug(params.slug);
   
   return {
-    title: `${post.title} - Vibe Guesthouse Blog`,
-    description: post.excerpt || `Read about ${post.title} on the Vibe Guesthouse blog.`,
+    title: `${post.title} - Vibe Beach House Blog`,
+    description: post.excerpt || `Read about ${post.title} on the Vibe Beach House blog.`,
   };
 }
 
@@ -28,7 +28,7 @@ export default async function BlogPost({ params }) {
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-3xl font-bold mb-6">Post Not Found</h1>
         <p className="mb-6">The blog post you're looking for doesn't exist.</p>
-        <Link href="/blog" className="text-amber-500 hover:underline">
+        <Link href="/blog" className="text-[#005d8e] hover:underline">
           Back to Blog
         </Link>
       </div>
@@ -63,16 +63,16 @@ export default async function BlogPost({ params }) {
           <MDXRemote source={post.content} />
         </div>
         
-        <div className="mt-12 p-6 bg-amber-50 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Stay at Vibe Guesthouse</h2>
+        <div className="mt-12 p-6 bg-[#eef7fc] rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">Stay at Vibe Beach House</h2>
           <p className="mb-4">
-            Planning to visit Herolds Bay? Book your stay at our beautiful Vibe Guesthouse. 
+            Planning to visit Herolds Bay? Book your stay at our beautiful Vibe Beach House. 
             With 3 bedrooms, a swimming pool, and stunning views, it's the perfect base for 
             exploring all that the Garden Route has to offer.
           </p>
           <Link
             href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn"
-            className="inline-block bg-amber-500 text-white px-6 py-2 rounded font-semibold hover:bg-amber-600 transition-colors"
+            className="inline-block bg-[#005d8e] text-white px-6 py-2 rounded font-semibold hover:bg-[#00486e] transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -2,7 +2,7 @@ import { getAllPosts } from '../../lib/posts';
 import BlogCard from '../components/BlogCard';
 
 export const metadata = {
-  title: 'Blog - Vibe Guesthouse',
+  title: 'Blog - Vibe Beach House',
   description: 'Stay updated with local events, attractions, and news from Herolds Bay and the Garden Route.',
 };
 
@@ -11,7 +11,7 @@ export default async function BlogPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-12 text-center">Vibe Guesthouse Blog</h1>
+      <h1 className="text-4xl font-bold mb-12 text-center">Vibe Beach House Blog</h1>
       
       {posts.length === 0 ? (
         <div className="text-center py-12">
