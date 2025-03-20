@@ -155,7 +155,9 @@ export default function ImageGallery() {
       
       {activeCategory && (
         <div className="mb-16 w-full">
-          <h2 className="text-3xl font-bold mb-10 text-center">{activeCategory.name}</h2>
+          <div className="flex justify-center">
+            <h2 className="text-4xl font-extrabold mb-10 text-center text-black pb-2 border-b-4 border-[#005d8e] tracking-tight">{activeCategory.name}</h2>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mx-4">
             {activeCategory.images.map((src, index) => (

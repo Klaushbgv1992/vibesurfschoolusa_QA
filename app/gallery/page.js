@@ -9,8 +9,8 @@ export default function GalleryPage() {
   return (
     <div className="flex flex-col min-h-screen w-full">
       {/* Gallery Content */}
-      <section className="py-12 bg-white w-full">
-        <h1 className="text-4xl font-bold text-center mb-12">Photo Gallery</h1>
+      <section className="pt-24 pb-12 bg-white w-full">
+        <h1 className="text-5xl font-bold text-center mb-12 text-gray-900">Photo Gallery</h1>
         <div className="w-full">
           <ImageGallery />
         </div>
