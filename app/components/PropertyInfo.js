@@ -7,7 +7,7 @@ export default function PropertyInfo() {
     { name: 'High-Speed WiFi', icon: <WifiIcon className="w-6 h-6" />, description: '50Mbps dedicated connection' },
     { name: 'Braai Area', icon: <BeakerIcon className="w-6 h-6" />, description: 'Covered outdoor grill' },
     { name: 'Smart TVs', icon: <TvIcon className="w-6 h-6" />, description: 'Netflix & streaming services' },
-    { name: 'Ocean Views', icon: <HeartIcon className="w-6 h-6" />, description: 'Spectacular views of Herolds Bay' }
+    { name: 'Coastal Attractions', icon: <HeartIcon className="w-6 h-6" />, description: 'Spectacular beaches nearby' }
   ];
 
   return (
@@ -64,7 +64,7 @@ export default function PropertyInfo() {
                 <svg className="h-5 w-5 text-[#005d8e] mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Dedicated workspace with ocean views</span>
+                <span>Ultimate Braai Living</span>
               </li>
               <li className="flex items-start">
                 <svg className="h-5 w-5 text-[#005d8e] mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

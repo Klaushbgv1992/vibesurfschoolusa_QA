@@ -26,12 +26,17 @@ export default function Home() {
               </Link>
             </div>
             <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px]">
-              <Image 
-                src="/images/interior-views/8.jpg" 
-                alt="Vibe Beach House Interior" 
-                fill
-                className="object-cover rounded-md shadow-lg"
-              />
+              <div className="absolute inset-0 rounded-md shadow-lg overflow-hidden">
+                <video 
+                  src="/images/dronefootage.mp4"
+                  className="object-cover w-full h-full rounded-md"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -61,28 +66,28 @@ export default function Home() {
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Breathtaking Views</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Ultimate Braai Living</h3>
                 <p className="text-gray-700 mb-4">
-                  Wake up to panoramic ocean views and stunning sunrises from multiple vantage points around the property.
+                Make the most of Herolds Bay’s pleasant climate with our spacious covered braai area and private swimming pool.
                 </p>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <svg className="text-green-500 mr-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-700">Ocean-facing balconies</span>
+                    <span className="text-gray-700">Covered braai area</span>
                   </li>
                   <li className="flex items-center">
                     <svg className="text-green-500 mr-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-700">Infinity pool overlooking the bay</span>
+                    <span className="text-gray-700">Private swimming pool</span>
                   </li>
                   <li className="flex items-center">
                     <svg className="text-green-500 mr-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-700">Scenic garden and patio</span>
+                    <span className="text-gray-700">Easy Indoor-Outdoor Flow for hosting</span>
                   </li>
                 </ul>
               </div>
@@ -146,7 +151,7 @@ export default function Home() {
                     <svg className="text-green-500 mr-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-700">5-minute walk to Herolds Bay beach</span>
+                    <span className="text-gray-700">5-min drive to the beach & Oubaai golfing</span>
                   </li>
                   <li className="flex items-center">
                     <svg className="text-green-500 mr-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
