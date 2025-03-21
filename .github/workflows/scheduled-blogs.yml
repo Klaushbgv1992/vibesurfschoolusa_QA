@@ -35,12 +35,13 @@ jobs:
           import axios from 'axios';
           import * as cheerio from 'cheerio';
           import { marked } from 'marked';
-          import { gfmHeadingId } from 'marked-gfm-heading-id';
+          // Fix for marked-gfm-heading-id import
+          import markedGfmHeadingId from 'marked-gfm-heading-id';
           import fs from 'fs';
           import path from 'path';
           
           // Initialize marked with GFM heading IDs
-          gfmHeadingId.init();
+          marked.use(markedGfmHeadingId);
           
           // Initialize OpenAI API
           const openai = new OpenAI({
@@ -304,17 +305,15 @@ jobs:
             try {
               const today = new Date();
               const dateStr = today.toISOString().split('T')[0];
-              const fileName = `${dateStr}-${blogPost.slug}.md`;
+              const fileName = `${dateStr}-${blogPost.slug}.txt`;
               
-              // Create YAML front matter for the blog post
-              const content = `---
-          title: "${blogPost.title}"
-          date: "${blogPost.date || dateStr}"
-          slug: "${blogPost.slug}"
-          excerpt: "${blogPost.excerpt}"
-          ---
+              // Create plain text content for the blog post with metadata as headers
+              const content = `TITLE: ${blogPost.title}
+DATE: ${blogPost.date || dateStr}
+SLUG: ${blogPost.slug}
+EXCERPT: ${blogPost.excerpt}
 
-          ${blogPost.content}`;
+${blogPost.content}`;
               
               // Create or update the file in the repository
               await octokit.repos.createOrUpdateFileContents({
