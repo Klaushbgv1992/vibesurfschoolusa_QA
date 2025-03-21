@@ -12,29 +12,40 @@ const openai = new OpenAI({
 const API_SECRET = process.env.BLOG_GENERATOR_SECRET;
 
 export async function POST(request) {
+  console.log("🔍 process-blog-queue endpoint called");
   try {
     // Verify the secret token
     const { secret } = await request.json();
     
     if (secret !== API_SECRET) {
+      console.log("❌ Authentication failed: Invalid secret");
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Debug GitHub token
+    const tokenFirstChars = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.substring(0, 5) + '...' : 'undefined';
+    const tokenLength = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.length : 0;
+    console.log(`🔑 GitHub token debug: starts with ${tokenFirstChars}, length: ${tokenLength}`);
 
     // Initialize GitHub client
     const octokit = new Octokit({
       auth: process.env.GITHUB_TOKEN
     });
+    console.log("✅ Octokit initialized");
 
     // Get the queue file
     let queueFile;
     try {
+      console.log("🔍 Attempting to fetch blog-queue.json");
       const response = await octokit.repos.getContent({
         owner: 'Klaushbgv1992',
         repo: 'vibebeachhouse',
         path: 'blog-queue.json',
       });
       queueFile = response.data;
+      console.log("✅ Found blog-queue.json");
     } catch (error) {
+      console.log(`❌ Error fetching queue file: ${error.message}`);
       return NextResponse.json({ 
         error: 'No queue file found',
         details: error.message 
@@ -44,11 +55,14 @@ export async function POST(request) {
     // Parse the queue
     const content = Buffer.from(queueFile.content, 'base64').toString('utf8');
     const queue = JSON.parse(content);
+    console.log(`📋 Queue contents: ${JSON.stringify(queue)}`);
 
     // Find the first pending job
     const pendingJobIndex = queue.jobs.findIndex(job => job.status === 'pending');
+    console.log(`🔍 Pending job index: ${pendingJobIndex}`);
     
     if (pendingJobIndex === -1) {
+      console.log("ℹ️ No pending jobs in queue");
       return NextResponse.json({ message: 'No pending jobs in queue' });
     }
 
@@ -56,6 +70,7 @@ export async function POST(request) {
     const job = queue.jobs[pendingJobIndex];
     job.status = 'processing';
     job.processingStarted = new Date().toISOString();
+    console.log(`🔄 Starting to process job ${job.id}`);
 
     // Update the queue file
     await octokit.repos.createOrUpdateFileContents({
@@ -72,6 +87,7 @@ export async function POST(request) {
     try {
       // Collect news
       const newsItems = await scrapeNews();
+      console.log(`📰 Collected ${newsItems.length} news items`);
       
       if (newsItems.length === 0) {
         throw new Error('No relevant news found');
@@ -79,9 +95,11 @@ export async function POST(request) {
       
       // Generate blog content
       const blogPost = await generateBlogPost(newsItems);
+      console.log(`✍️ Generated blog post: ${blogPost.title}`);
       
       // Push to GitHub as a blog post
       await createBlogPost(blogPost, octokit);
+      console.log(`📄 Blog post pushed to GitHub: ${blogPost.title}`);
       
       // Update job status to completed
       const updatedQueueResponse = await octokit.repos.getContent({
@@ -112,6 +130,7 @@ export async function POST(request) {
           sha: updatedQueueFile.sha,
           branch: 'master'
         });
+        console.log(`🔄 Job ${job.id} completed`);
       }
       
       return NextResponse.json({ 
@@ -121,6 +140,7 @@ export async function POST(request) {
         slug: blogPost.slug
       });
     } catch (error) {
+      console.log(`❌ Error processing job ${job.id}: ${error.message}`);
       // Update job as failed
       try {
         const failedQueueResponse = await octokit.repos.getContent({
@@ -147,15 +167,16 @@ export async function POST(request) {
             sha: failedQueueFile.sha,
             branch: 'master'
           });
+          console.log(`🔄 Job ${job.id} marked as failed`);
         }
       } catch (queueError) {
-        console.error('Error updating failed job status:', queueError);
+        console.log(`❌ Error updating failed job status: ${queueError.message}`);
       }
       
       throw error;
     }
   } catch (error) {
-    console.error('Error processing blog queue:', error);
+    console.log(`❌ Error processing blog queue: ${error.message}`);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -187,7 +208,7 @@ async function scrapeNews() {
         }
       }
     } catch (error) {
-      console.error(`Error scraping ${source}:`, error.message);
+      console.log(`❌ Error scraping ${source}: ${error.message}`);
     }
   }
   
@@ -250,7 +271,7 @@ Format the response as a JSON object with these fields:
   try {
     return JSON.parse(response);
   } catch (error) {
-    console.error('Error parsing OpenAI response:', error);
+    console.log('Error parsing OpenAI response:', error);
     // Create a properly formatted response if parsing fails
     return {
       title: 'Latest Updates from Herolds Bay and the Garden Route',
@@ -292,7 +313,7 @@ async function createBlogPost(blogPost, octokit) {
     console.log(`Blog post "${blogPost.title}" pushed to GitHub successfully`);
     return true;
   } catch (error) {
-    console.error('Error pushing blog post to GitHub:', error);
+    console.log('Error pushing blog post to GitHub:', error);
     throw error;
   }
 }

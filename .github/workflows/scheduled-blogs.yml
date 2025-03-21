@@ -7,12 +7,22 @@ on:
   workflow_dispatch: # Allows manual triggering
 
 jobs:
-  trigger-blog-generation:
+  blog-generation:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Trigger Vercel API route
+      - name: Add job to blog queue
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"secret":"${{ secrets.BLOG_GENERATOR_SECRET }}"}' \
           https://vibebeachhouse.vercel.app/api/generate-blog
+      
+      # Add a pause to allow queue update to propagate  
+      - name: Wait for queue update
+        run: sleep 30
+      
+      - name: Process next job in queue
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"secret":"${{ secrets.BLOG_GENERATOR_SECRET }}"}' \
+          https://vibebeachhouse.vercel.app/api/process-blog-queue
