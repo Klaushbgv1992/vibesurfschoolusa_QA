@@ -27,12 +27,22 @@ export default function ContactPage() {
     setIsSubmitting(true);
     setError('');
     
-    // Simulate form submission
     try {
-      // Replace with actual form submission logic
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
       
-      console.log('Form submitted:', formData);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message');
+      }
+      
+      console.log('Form submitted successfully:', data);
       setSubmitSuccess(true);
       setFormData({ name: '', email: '', message: '' });
     } catch (err) {
@@ -45,20 +55,20 @@ export default function ContactPage() {
   
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <div className="relative h-[40vh] w-full">
+      {/* Hero Section - Made taller and extended to top */}
+      <div className="relative h-[65vh] w-full mt-0">
         <Image
           src="/images/exterior-views/5.jpg"
           alt="Contact Vibe Beach House"
           fill
-          className="object-cover"
+          className="object-cover object-center"
           priority
           sizes="100vw"
           quality={90}
         />
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center mt-14">
             Contact Us
           </h1>
         </div>
@@ -104,7 +114,7 @@ export default function ContactPage() {
                 {/* Map */}
                 <div className="relative h-80 w-full rounded-lg overflow-hidden shadow-lg">
                   <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.5753702419456!2d22.428391!3d-33.868722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dd61db80a51b08d%3A0x82b1eda2b9c0db19!2sHerolds%20Bay%2C%20South%20Africa!5e0!3m2!1sen!2sus!4v1585133004583!5m2!1sen!2sus" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.402589266543!2d22.432932711711075!3d-33.87341578055955!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dd61db2ea1ecd7f%3A0xc803bbf7c4d6c111!2s6%20Rooikransie%20St%2C%20Herolds%20Bay%2C%20George%2C%206530%2C%20South%20Africa!5e0!3m2!1sen!2sus!4v1716442033518!5m2!1sen!2sus" 
                     className="absolute inset-0 w-full h-full border-0" 
                     allowFullScreen="" 
                     loading="lazy" 

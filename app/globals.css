@@ -184,3 +184,30 @@ h1, h2, h3, h4, h5, h6 {
 .parallax-bg {
   @apply bg-fixed bg-center bg-no-repeat bg-cover;
 }
+
+/* Blog Content Styling */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+  color: black !important;
+  font-weight: bold;
+}
+
+.blog-content p,
+.blog-content li,
+.blog-content ul,
+.blog-content ol {
+  color: #333 !important;
+}
+
+.blog-content a {
+  color: #005d8e !important;
+  text-decoration: underline;
+}
+
+.blog-content a:hover {
+  text-decoration: none;
+}
