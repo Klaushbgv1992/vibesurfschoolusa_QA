@@ -1,0 +1,18 @@
+name: Scheduled Blog Posts
+
+on:
+  schedule:
+    # Runs at 10:00 AM on Monday and Thursday
+    - cron: '0 10 * * 1,4'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  trigger-blog-generation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Vercel API route
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"secret":"${{ secrets.BLOG_GENERATOR_SECRET }}"}' \
+          https://vibebeachhouse.vercel.app/api/generate-blog
