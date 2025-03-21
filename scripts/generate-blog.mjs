@@ -263,6 +263,11 @@ async function generateBlogPost(newsItems) {
     throw new Error('OPENAI_API_KEY is missing or empty. Please set a valid API key in GitHub Secrets or .env.local file.');
   }
 
+  // Get the current date in YYYY-MM-DD format
+  const today = new Date();
+  const currentDate = today.toISOString().split('T')[0];
+  const currentYear = today.getFullYear(); // Get current year (2025)
+
   // Ensure headlines are complete (no ellipsis)
   const processedNewsItems = newsItems.map(item => {
     // Remove any trailing ellipsis if present
@@ -289,6 +294,7 @@ The post should:
 - Include a call-to-action encouraging readers to book their stay
 - IMPORTANT: When referring to news items, use COMPLETE sentences, don't truncate or abbreviate them with "..."
 
+Make sure all dates in the blog post use the current year (${currentYear}).
 Format the blog post in Markdown, including headings, paragraphs, and any other formatting you deem appropriate.
 The blog post should be 500-800 words.
 
@@ -296,7 +302,7 @@ The output should be in JSON format with the following structure:
 {
   "title": "The blog post title",
   "slug": "url-friendly-version-of-title",
-  "date": "YYYY-MM-DD",
+  "date": "${currentDate}",
   "content": "The full blog post content in Markdown format",
   "excerpt": "A brief 2-3 sentence summary of the post"
 }`;
@@ -308,7 +314,7 @@ The output should be in JSON format with the following structure:
       messages: [
         {
           role: "system",
-          content: "You are a skilled content writer specializing in travel and tourism content. When mentioning news headlines, always use the FULL headlines without truncating or adding ellipsis."
+          content: `You are a skilled content writer specializing in travel and tourism content. When mentioning news headlines, always use the FULL headlines without truncating or adding ellipsis. Always use the current date (${currentDate}) and current year (${currentYear}) for any date references.`
         },
         {
           role: "user",
@@ -326,6 +332,9 @@ The output should be in JSON format with the following structure:
     try {
       const parsedResponse = JSON.parse(responseText);
       
+      // Ensure the date is current
+      parsedResponse.date = currentDate;
+      
       // Additional check to remove any ellipsis in the content
       if (parsedResponse.content) {
         // Replace bullet points with ellipsis with full bullet points
@@ -341,7 +350,7 @@ The output should be in JSON format with the following structure:
       return {
         title: 'Latest Updates from Herolds Bay and the Garden Route',
         slug: 'latest-updates-herolds-bay-garden-route',
-        date: new Date().toISOString().split('T')[0],
+        date: currentDate, // Use current date
         content: responseText,
         excerpt: "Discover the latest news and events from Herolds Bay and the Garden Route. Perfect for planning your next vacation at Vibe Beach House."
       };

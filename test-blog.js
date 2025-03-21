@@ -54,10 +54,13 @@ async function createTestBlogPost() {
     
     // Generate blog content (simulated for local testing)
     console.log("Generating blog content...");
+    const today = new Date();
+    const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    currentDate.setFullYear(2025);
     const blogPost = {
       title: "Latest Updates from the Garden Route: What's Happening Around Herolds Bay",
       slug: "latest-updates-garden-route-herolds-bay",
-      date: new Date().toISOString().split('T')[0],
+      date: currentDate.toISOString().split('T')[0],
       content: `# Latest Updates from the Garden Route: What's Happening Around Herolds Bay
  
 The Garden Route, with its breathtaking natural beauty and vibrant communities, continues to be a hub of activity and excitement. Here's what's been happening around Herolds Bay and the surrounding areas.
@@ -90,9 +93,7 @@ Book your stay today and experience the magic of Herolds Bay and the Garden Rout
     }
     
     // Save to local file
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
-    const fileName = `${dateStr}-${blogPost.slug}.md`;
+    const fileName = `${blogPost.date}-${blogPost.slug}.md`;
     const filePath = path.join(postsDir, fileName);
     
     // Create markdown with YAML frontmatter
