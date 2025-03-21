@@ -20,7 +20,7 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        run: npm install @octokit/rest openai axios cheerio marked marked-gfm-heading-id
+        run: npm install @octokit/rest openai axios cheerio
       
       - name: Process blog generation
         env:
@@ -305,13 +305,15 @@ jobs:
             try {
               const today = new Date();
               const dateStr = today.toISOString().split('T')[0];
-              const fileName = `${dateStr}-${blogPost.slug}.txt`;
+              const fileName = `${dateStr}-${blogPost.slug}.md`;
               
-              // Create plain text content for the blog post with metadata as headers
-              const content = `TITLE: ${blogPost.title}
-DATE: ${blogPost.date || dateStr}
-SLUG: ${blogPost.slug}
-EXCERPT: ${blogPost.excerpt}
+              // Create Markdown with YAML frontmatter for the blog post
+              const content = `---
+title: "${blogPost.title}"
+date: "${blogPost.date || dateStr}"
+slug: "${blogPost.slug}"
+excerpt: "${blogPost.excerpt}"
+---
 
 ${blogPost.content}`;
               
