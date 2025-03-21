@@ -19,6 +19,11 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    // Debug GitHub token
+    const tokenFirstChars = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.substring(0, 5) + '...' : 'undefined';
+    const tokenLength = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.length : 0;
+    console.log(`GitHub token debug: starts with ${tokenFirstChars}, length: ${tokenLength}`);
+    
     // Initialize GitHub client
     const octokit = new Octokit({
       auth: process.env.GITHUB_TOKEN
