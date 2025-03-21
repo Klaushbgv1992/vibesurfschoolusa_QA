@@ -258,10 +258,28 @@ async function scrapeNews() {
 
 // Generate blog post
 async function generateBlogPost(newsItems) {
+  // Check API key before making request
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.trim() === '') {
+    throw new Error('OPENAI_API_KEY is missing or empty. Please set a valid API key in GitHub Secrets or .env.local file.');
+  }
+
+  // Ensure headlines are complete (no ellipsis)
+  const processedNewsItems = newsItems.map(item => {
+    // Remove any trailing ellipsis if present
+    let headline = item.headline;
+    if (headline.endsWith('...')) {
+      headline = headline.substring(0, headline.length - 3).trim();
+    }
+    return {
+      ...item,
+      headline
+    };
+  });
+
   const prompt = `Create a compelling blog post for Vibe Beach House, a holiday accommodation business located in Herolds Bay, George, South Africa. The blog post should be informative and attractive to potential visitors who might be interested in staying at Vibe Beach House.
 
 Use the following recent news items as context for your post:
-${newsItems.map(item => `- ${item.headline} (${item.source})`).join('\n')}
+${processedNewsItems.map(item => `- ${item.headline} (${item.source})`).join('\n')}
 
 The post should:
 - Have an engaging title
@@ -269,6 +287,7 @@ The post should:
 - Highlight attractions and activities in Herolds Bay and the Garden Route
 - Mention Vibe Beach House as an ideal accommodation option
 - Include a call-to-action encouraging readers to book their stay
+- IMPORTANT: When referring to news items, use COMPLETE sentences, don't truncate or abbreviate them with "..."
 
 Format the blog post in Markdown, including headings, paragraphs, and any other formatting you deem appropriate.
 The blog post should be 500-800 words.
@@ -282,37 +301,65 @@ The output should be in JSON format with the following structure:
   "excerpt": "A brief 2-3 sentence summary of the post"
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: "You are a skilled content writer specializing in travel and tourism content."
-      },
-      {
-        role: "user",
-        content: prompt
-      }
-    ],
-    temperature: 0.7,
-    max_tokens: 1500
-  });
-  
-  // Extract and parse JSON from the response
-  const responseText = response.choices[0].message.content;
-  
   try {
-    return JSON.parse(responseText);
+    console.log("Calling OpenAI API to generate blog content...");
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are a skilled content writer specializing in travel and tourism content. When mentioning news headlines, always use the FULL headlines without truncating or adding ellipsis."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 1500
+    });
+    
+    console.log("OpenAI API response received successfully");
+    // Extract and parse JSON from the response
+    const responseText = response.choices[0].message.content;
+    
+    try {
+      const parsedResponse = JSON.parse(responseText);
+      
+      // Additional check to remove any ellipsis in the content
+      if (parsedResponse.content) {
+        // Replace bullet points with ellipsis with full bullet points
+        parsedResponse.content = parsedResponse.content.replace(/- .+\.\.\./g, match => {
+          return match.replace('...', '');
+        });
+      }
+      
+      return parsedResponse;
+    } catch (parseError) {
+      console.error('Error parsing OpenAI response:', parseError);
+      // Create a properly formatted response if parsing fails
+      return {
+        title: 'Latest Updates from Herolds Bay and the Garden Route',
+        slug: 'latest-updates-herolds-bay-garden-route',
+        date: new Date().toISOString().split('T')[0],
+        content: responseText,
+        excerpt: "Discover the latest news and events from Herolds Bay and the Garden Route. Perfect for planning your next vacation at Vibe Beach House."
+      };
+    }
   } catch (error) {
-    console.error('Error parsing OpenAI response:', error);
-    // Create a properly formatted response if parsing fails
-    return {
-      title: 'Latest Updates from Herolds Bay and the Garden Route',
-      slug: 'latest-updates-herolds-bay-garden-route',
-      date: new Date().toISOString().split('T')[0],
-      content: responseText,
-      excerpt: "Discover the latest news and events from Herolds Bay and the Garden Route. Perfect for planning your next vacation at Vibe Beach House."
-    };
+    console.error('Error calling OpenAI API:', error);
+    
+    // Check for common API key issues
+    if (error.message.includes('401') || error.message.includes('Incorrect API key')) {
+      throw new Error('OpenAI API authentication failed: Invalid API key. Please check your OPENAI_API_KEY in GitHub Secrets or .env.local file.');
+    } else if (error.message.includes('429') || error.message.includes('Rate limit')) {
+      throw new Error('OpenAI API rate limit exceeded. Please try again later or upgrade your API plan.');
+    } else if (error.message.includes('insufficient_quota') || error.message.includes('exceeded your current quota')) {
+      throw new Error('OpenAI API quota exceeded. Please check your billing information or upgrade your API plan.');
+    }
+    
+    // For other errors, just rethrow
+    throw error;
   }
 }
 
