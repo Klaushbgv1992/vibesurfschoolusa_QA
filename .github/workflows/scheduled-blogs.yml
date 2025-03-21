@@ -28,7 +28,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           # Create a simple script to handle blog generation in GitHub Actions
-          cat > process-blog.mjs << 'EOL'
+          cat > process-blog.mjs << 'EOF'
           // Use .mjs extension for ES modules
           import { Octokit } from '@octokit/rest';
           import OpenAI from 'openai';
@@ -113,9 +113,9 @@ jobs:
               let queueFile;
               try {
                 const response = await octokit.repos.getContent({
-                  owner: 'Klaushbgv1992',
-                  repo: 'vibebeachhouse',
-                  path: 'blog-queue.json',
+                  owner: "Klaushbgv1992",
+                  repo: "vibebeachhouse",
+                  path: "blog-queue.json",
                 });
                 queueFile = response.data;
               } catch (error) {
@@ -138,13 +138,13 @@ jobs:
               
               // Update queue file
               await octokit.repos.createOrUpdateFileContents({
-                owner: 'Klaushbgv1992',
-                repo: 'vibebeachhouse',
-                path: 'blog-queue.json',
-                message: 'Add new blog generation job to queue',
+                owner: "Klaushbgv1992",
+                repo: "vibebeachhouse",
+                path: "blog-queue.json",
+                message: "Add new blog generation job to queue",
                 content: Buffer.from(JSON.stringify(queue, null, 2)).toString('base64'),
                 sha: queueFile.sha,
-                branch: 'master'
+                branch: "master"
               });
               
               return { id: jobId };
@@ -159,9 +159,9 @@ jobs:
             try {
               // Get queue file
               const response = await octokit.repos.getContent({
-                owner: 'Klaushbgv1992',
-                repo: 'vibebeachhouse',
-                path: 'blog-queue.json',
+                owner: "Klaushbgv1992",
+                repo: "vibebeachhouse",
+                path: "blog-queue.json",
               });
               
               // Parse queue
@@ -176,13 +176,13 @@ jobs:
                 
                 // Update queue file
                 await octokit.repos.createOrUpdateFileContents({
-                  owner: 'Klaushbgv1992',
-                  repo: 'vibebeachhouse',
-                  path: 'blog-queue.json',
+                  owner: "Klaushbgv1992",
+                  repo: "vibebeachhouse",
+                  path: "blog-queue.json",
                   message: `Update job ${jobId} status to ${status}`,
                   content: Buffer.from(JSON.stringify(queue, null, 2)).toString('base64'),
                   sha: response.data.sha,
-                  branch: 'master'
+                  branch: "master"
                 });
               }
             } catch (error) {
@@ -319,12 +319,12 @@ ${blogPost.content}`;
               
               // Create or update the file in the repository
               await octokit.repos.createOrUpdateFileContents({
-                owner: 'Klaushbgv1992',
-                repo: 'vibebeachhouse',
+                owner: "Klaushbgv1992",
+                repo: "vibebeachhouse",
                 path: `posts/${fileName}`,
                 message: `Add blog post: ${blogPost.title}`,
                 content: Buffer.from(content).toString('base64'),
-                branch: 'master'
+                branch: "master"
               });
               
               console.log(`Blog post "${blogPost.title}" pushed to GitHub successfully`);
@@ -337,7 +337,7 @@ ${blogPost.content}`;
           
           // Run the main function
           main();
-          EOL
+          EOF
           
           # Execute the script with Node.js in ES modules mode
           node process-blog.mjs
