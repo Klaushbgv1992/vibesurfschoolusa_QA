@@ -321,9 +321,9 @@ ${blogPost.content}`;
               await octokit.repos.createOrUpdateFileContents({
                 owner: "Klaushbgv1992",
                 repo: "vibebeachhouse",
-                path: `posts/${fileName}`,
-                message: `Add blog post: ${blogPost.title}`,
-                content: Buffer.from(content).toString('base64'),
+                path: `posts/` + fileName,
+                message: "Add blog post: " + blogPost.title,
+                content: Buffer.from(content).toString(`base64`),
                 branch: "master"
               });
               
