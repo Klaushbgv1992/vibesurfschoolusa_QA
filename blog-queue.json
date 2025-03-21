@@ -2,8 +2,9 @@
   "jobs": [
     {
       "id": "job-1742569793204",
-      "status": "pending",
-      "created": "2025-03-21T15:09:53.204Z"
+      "status": "processing",
+      "created": "2025-03-21T15:09:53.204Z",
+      "processingStarted": "2025-03-21T16:39:58.366Z"
     },
     {
       "id": "job-1742573171589",
