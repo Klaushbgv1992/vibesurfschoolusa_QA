@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
 // Initialize OpenAI API
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // Secret token to prevent unauthorized access
 const API_SECRET = process.env.BLOG_GENERATOR_SECRET;
@@ -116,12 +115,12 @@ Format the response as a JSON object with these fields:
 - content: The full blog post in markdown format
 `;
 
-  const completion = await openai.createChatCompletion({
+  const completion = await openai.chat.completions.create({
     model: "gpt-4",
     messages: [{ role: "user", content: prompt }]
   });
   
-  return JSON.parse(completion.data.choices[0].message.content);
+  return JSON.parse(completion.choices[0].message.content);
 }
 
 // Push to GitHub repository

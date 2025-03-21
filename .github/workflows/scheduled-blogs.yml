@@ -15,4 +15,4 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"secret":"${{ secrets.BLOG_GENERATOR_SECRET }}"}' \
-          https://vibebeachhouse.vercel.app/api/generate-post
+          https://vibebeachhouse.vercel.app/api/generate-blog

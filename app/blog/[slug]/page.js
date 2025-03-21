@@ -94,7 +94,7 @@ export default async function BlogPost({ params }) {
           <h2 className="text-2xl font-bold mb-4 text-black">Stay at Vibe Beach House</h2>
           <p className="mb-4 text-gray-700">
             Planning to visit Herolds Bay? Book your stay at our beautiful Vibe Beach House. 
-            With 3 bedrooms, a swimming pool, and stunning views, it's the perfect base for 
+            With 3 bedrooms, a swimming pool, and stunning views, it&apos;s the perfect base for 
             exploring all that the Garden Route has to offer.
           </p>
           <Link

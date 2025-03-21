@@ -19,7 +19,7 @@ export default function Home() {
                 Nestled in the picturesque coastal village of Herolds Bay, our luxury guesthouse offers an unforgettable stay with breathtaking ocean views, modern amenities, and a tranquil atmosphere.
               </p>
               <p className="text-lg text-gray-700 mb-8">
-                Whether you're seeking a peaceful getaway, a family vacation, or a romantic retreat, Vibe Beach House provides the perfect setting for creating lasting memories on the stunning Garden Route.
+                Whether you&apos;re seeking a peaceful getaway, a family vacation, or a romantic retreat, Vibe Beach House provides the perfect setting for creating lasting memories on the stunning Garden Route.
               </p>
               <Link href="/about" className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-3 px-8 rounded-sm transition-colors shadow-sm">
                 Discover Our Story

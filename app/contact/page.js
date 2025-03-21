@@ -129,7 +129,7 @@ export default function ContactPage() {
                 
                 {submitSuccess ? (
                   <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
-                    Thank you for your message! We'll get back to you as soon as possible.
+                    Thank you for your message! We&apos;ll get back to you as soon as possible.
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
