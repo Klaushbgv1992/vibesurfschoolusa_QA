@@ -63,8 +63,9 @@
     },
     {
       "id": "job-1742588834665",
-      "status": "pending",
-      "created": "2025-03-21T20:27:14.665Z"
+      "status": "completed",
+      "created": "2025-03-21T20:27:14.665Z",
+      "completed": "2025-03-21T20:27:39.218Z"
     }
   ]
 }
