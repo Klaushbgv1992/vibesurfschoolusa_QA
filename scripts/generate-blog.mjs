@@ -5,6 +5,47 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Load environment variables from .env.local when running locally
+try {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const rootDir = path.resolve(__dirname, '..');
+  const envPath = path.join(rootDir, '.env.local');
+  
+  if (fs.existsSync(envPath)) {
+    console.log('Loading environment variables from .env.local');
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envVars = envContent.split('\n').filter(line => line.trim() !== '' && !line.startsWith('#'));
+    
+    for (const line of envVars) {
+      const [key, ...valueParts] = line.split('=');
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim();
+        process.env[key.trim()] = value;
+      }
+    }
+  }
+} catch (error) {
+  console.warn('Failed to load environment variables from .env.local:', error.message);
+}
+
+// Check if required environment variables are available
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error(
+    'OPENAI_API_KEY environment variable is missing. ' +
+    'Make sure it is set in your .env.local file or as an environment variable.'
+  );
+}
+
+if (!process.env.GITHUB_TOKEN) {
+  console.warn(
+    'GITHUB_TOKEN environment variable is missing. ' +
+    'Some GitHub API operations may fail. ' +
+    'Make sure it is set in your .env.local file or as an environment variable.'
+  );
+}
 
 // Initialize OpenAI API
 const openai = new OpenAI({
@@ -295,6 +336,25 @@ ${blogPost.content}`;
       content: Buffer.from(content).toString('base64'),
       branch: "master"
     });
+    
+    // Also save file locally so it shows up in development server
+    try {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const postsDir = path.join(__dirname, '..', 'posts');
+      
+      // Create posts directory if it doesn't exist
+      if (!fs.existsSync(postsDir)) {
+        fs.mkdirSync(postsDir, { recursive: true });
+      }
+      
+      const localFilePath = path.join(postsDir, fileName);
+      fs.writeFileSync(localFilePath, content);
+      console.log(`Blog post also saved locally at: ${localFilePath}`);
+    } catch (localError) {
+      console.warn('Could not save blog post locally:', localError.message);
+      // Continue execution even if local save fails
+    }
     
     console.log(`Blog post "${blogPost.title}" pushed to GitHub successfully`);
     return true;
