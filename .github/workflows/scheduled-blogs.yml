@@ -20,7 +20,7 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        run: npm install @octokit/rest openai axios cheerio marked-gfm-heading-id
+        run: npm install @octokit/rest openai axios cheerio marked marked-gfm-heading-id
       
       - name: Process blog generation
         env:
@@ -28,15 +28,19 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           # Create a simple script to handle blog generation in GitHub Actions
-          cat > process-blog.js << 'EOL'
-          const { Octokit } = require('@octokit/rest');
-          const OpenAI = require('openai');
-          const axios = require('axios');
-          const cheerio = require('cheerio');
-          const { marked } = require('marked');
-          require('marked-gfm-heading-id').gfmHeadingId.init();
-          const fs = require('fs');
-          const path = require('path');
+          cat > process-blog.mjs << 'EOL'
+          // Use .mjs extension for ES modules
+          import { Octokit } from '@octokit/rest';
+          import OpenAI from 'openai';
+          import axios from 'axios';
+          import * as cheerio from 'cheerio';
+          import { marked } from 'marked';
+          import { gfmHeadingId } from 'marked-gfm-heading-id';
+          import fs from 'fs';
+          import path from 'path';
+          
+          // Initialize marked with GFM heading IDs
+          gfmHeadingId.init();
           
           // Initialize OpenAI API
           const openai = new OpenAI({
@@ -334,8 +338,8 @@ jobs:
           main();
           EOL
           
-          # Execute the script
-          node process-blog.js
+          # Execute the script with Node.js in ES modules mode
+          node process-blog.mjs
       
       - name: Completion message
         run: echo "Blog generation process completed"
