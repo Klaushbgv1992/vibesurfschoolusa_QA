@@ -130,7 +130,7 @@ async function addJobToQueue() {
       queueFile = response.data;
     } catch (error) {
       // Create new queue file if it doesn't exist
-      const newQueue = { jobs: [] };
+      console.log("Queue file doesn't exist or can't be accessed, using temporary job ID");
       return { id: `job-${Date.now()}` };
     }
     
@@ -147,20 +147,26 @@ async function addJobToQueue() {
     });
     
     // Update queue file
-    await octokit.repos.createOrUpdateFileContents({
-      owner: "Klaushbgv1992",
-      repo: "vibebeachhouse",
-      path: "blog-queue.json",
-      message: "Add new blog generation job to queue",
-      content: Buffer.from(JSON.stringify(queue, null, 2)).toString('base64'),
-      sha: queueFile.sha,
-      branch: "master"
-    });
+    try {
+      await octokit.repos.createOrUpdateFileContents({
+        owner: "Klaushbgv1992",
+        repo: "vibebeachhouse",
+        path: "blog-queue.json",
+        message: "Add new blog generation job to queue",
+        content: Buffer.from(JSON.stringify(queue, null, 2)).toString('base64'),
+        sha: queueFile.sha,
+        branch: "master"
+      });
+    } catch (updateError) {
+      console.warn("Could not update queue file, but will continue with blog generation", updateError.message);
+      // Continue with job ID even if update fails
+    }
     
     return { id: jobId };
   } catch (error) {
     console.error('Error adding job to queue:', error.message);
-    throw error;
+    // Return a job ID even if there's an error to allow the rest of the process to continue
+    return { id: `job-${Date.now()}-fallback` };
   }
 }
 

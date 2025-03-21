@@ -6,6 +6,9 @@ on:
     - cron: '0 10 * * 1,4'
   workflow_dispatch: # Allows manual triggering
 
+permissions:
+  contents: write  # Give write permissions to repository contents
+  
 jobs:
   blog-generation:
     runs-on: ubuntu-latest
