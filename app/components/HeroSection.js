@@ -11,7 +11,7 @@ export default function HeroSection() {
   // Define your gallery images here
   const slideImages = [
     '/images/exterior-views/dji_fly_20240706_141140_39_1720273902484_photo.jpg',
-    '/images/exterior-views/1.jpg',
+    '/images/herolds-bay-surroundings/10830583_10153071248707188_821919165144872133_o.jpg',
     '/images/exterior-views/2.jpg',
     '/images/exterior-views/5.jpg',
     '/images/exterior-views/6.jpg',
