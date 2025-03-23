@@ -130,6 +130,32 @@ export default function Footer() {
               Book Your Stay
             </a>
           </div>
+
+          <div>
+            <h3 className="text-xl font-semibold mb-6 text-gray-100">Partner Surf Schools</h3>
+            <ul className="space-y-3">
+              <li>
+                <a 
+                  href="https://www.vibesurfschool.com" 
+                  className="text-gray-400 hover:text-white transition-colors inline-block py-1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Vibe Surf School - Fort Lauderdale, USA
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.vibesurfschool.co.za" 
+                  className="text-gray-400 hover:text-white transition-colors inline-block py-1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Vibe Surf School - South Africa
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">

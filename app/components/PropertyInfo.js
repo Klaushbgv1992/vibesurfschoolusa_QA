@@ -70,7 +70,7 @@ export default function PropertyInfo() {
                 <svg className="h-5 w-5 text-[#005d8e] mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Private garage parking for two vehicles</span>
+                <span>Parking for three vehicles</span>
               </li>
               <li className="flex items-start">
                 <svg className="h-5 w-5 text-[#005d8e] mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
