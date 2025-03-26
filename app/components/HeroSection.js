@@ -64,8 +64,8 @@ export default function HeroSection() {
         <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">
           <div className="text-center animate-fadeIn">
             {/* Beach House Logo */}
-            <div className="mb-11 flex justify-center">
-              <div className="w-15 h-15 border-3 border-white flex items-center justify-center rounded-full bg-[#005d8e] shadow-lg overflow-hidden">
+            <div className="mb-10 md:mb-11 flex justify-center">
+              <div className="w-14 h-14 md:w-15 md:h-15 border-3 border-white flex items-center justify-center rounded-full bg-[#005d8e] shadow-lg overflow-hidden">
                 <Image 
                   src="/images/beach-house-logo.svg" 
                   alt="Vibe Beach House Logo"
@@ -79,15 +79,15 @@ export default function HeroSection() {
                 />
               </div>
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-6">
               VIBE BEACH HOUSE
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 tracking-widest uppercase mb-10">
+            <p className="text-lg sm:text-xl md:text-2xl text-white/90 tracking-widest uppercase mb-8 md:mb-10">
               Your Luxury Getaway in Herolds Bay
             </p>
             <a
               href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn"
-              className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
+              className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -99,27 +99,27 @@ export default function HeroSection() {
         {/* Navigation Arrows */}
         <button 
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-white z-20 bg-black/20 hover:bg-black/40 p-2 rounded-full transition-colors"
+          className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-white z-20 bg-black/20 hover:bg-black/40 p-1 sm:p-2 rounded-full transition-colors"
           aria-label="Previous slide"
         >
-          <ChevronLeftIcon className="h-8 w-8" />
+          <ChevronLeftIcon className="h-6 w-6 sm:h-8 sm:w-8" />
         </button>
         
         <button 
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-white z-20 bg-black/20 hover:bg-black/40 p-2 rounded-full transition-colors"
+          className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white z-20 bg-black/20 hover:bg-black/40 p-1 sm:p-2 rounded-full transition-colors"
           aria-label="Next slide"
         >
-          <ChevronRightIcon className="h-8 w-8" />
+          <ChevronRightIcon className="h-6 w-6 sm:h-8 sm:w-8" />
         </button>
         
         {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+        <div className="absolute bottom-16 sm:bottom-12 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
           {slideImages.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-colors ${
+              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
                 index === currentSlide ? 'bg-[#005d8e]' : 'bg-white/60 hover:bg-white'
               }`}
               aria-label={`Go to slide ${index + 1}`}
