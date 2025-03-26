@@ -65,7 +65,7 @@ export default function HeroSection() {
           <div className="text-center animate-fadeIn">
             {/* Beach House Logo */}
             <div className="mb-10 md:mb-11 flex justify-center">
-              <div className="w-14 h-14 md:w-15 md:h-15 border-3 border-white flex items-center justify-center rounded-full bg-[#005d8e] shadow-lg overflow-hidden">
+              <div className="w-40 h-40 md:w-48 md:h-48 border-3 border-white flex items-center justify-center rounded-full bg-[#005d8e] shadow-lg overflow-hidden">
                 <Image 
                   src="/images/beach-house-logo.svg" 
                   alt="Vibe Beach House Logo"
