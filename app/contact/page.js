@@ -58,8 +58,8 @@ export default function ContactPage() {
       {/* Hero Section - Made taller and extended to top */}
       <div className="relative h-[65vh] w-full mt-0">
         <Image
-          src="/images/exterior-views/5.jpg"
-          alt="Contact Vibe Beach House"
+          src="/images/surfing/IMG_9109.JPG"
+          alt="Contact Vibe Surf School"
           fill
           className="object-cover object-center"
           priority
@@ -83,30 +83,30 @@ export default function ContactPage() {
               <div>
                 <h2 className="text-3xl font-bold mb-8 text-gray-800">Get In Touch</h2>
                 <p className="text-gray-700 mb-8">
-                  Have questions about Vibe Beach House or want to make a reservation? 
-                  Contact us directly or use our booking partner for instant confirmation.
+                  Have questions about Vibe Surf School or want to book a lesson? 
+                  Contact us directly or use our booking system for instant confirmation.
                 </p>
                 
                 <div className="space-y-6 mb-8">
                   <div>
                     <h3 className="text-xl font-semibold mb-2 text-gray-800">Location</h3>
                     <address className="not-italic text-gray-600">
-                      <p>6 Rooikransie St</p>
-                      <p>Herolds Bay</p>
-                      <p>George, 6615</p>
-                      <p>South Africa</p>
+                      <p>Vibe Surf School Florida</p>
+                      <p>Pompano Beach & Dania Beach</p>
+                      <p>Fort Lauderdale, FL</p>
+                      <p>United States</p>
                     </address>
                   </div>
                   
                   <div>
                     <h3 className="text-xl font-semibold mb-2 text-gray-800">Book Direct</h3>
                     <a
-                      href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn"
+                      href="https://vibesurfschool.setmore.com/fortlauderdale"
                       className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Book on Airbnb
+                      Book a Lesson
                     </a>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default function ContactPage() {
                 {/* Map */}
                 <div className="relative h-80 w-full rounded-lg overflow-hidden shadow-lg">
                   <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.402589266543!2d22.432932711711075!3d-33.87341578055955!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dd61db2ea1ecd7f%3A0xc803bbf7c4d6c111!2s6%20Rooikransie%20St%2C%20Herolds%20Bay%2C%20George%2C%206530%2C%20South%20Africa!5e0!3m2!1sen!2sus!4v1716442033518!5m2!1sen!2sus" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28630.255865683266!2d-80.12138374062807!3d26.23584411908776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d903f4d9e23f7b%3A0x20184c02e9e94009!2sPompano%20Beach%2C%20FL!5e0!3m2!1sen!2sus!4v1716762850566!5m2!1sen!2sus" 
                     className="absolute inset-0 w-full h-full border-0" 
                     allowFullScreen="" 
                     loading="lazy" 
@@ -125,11 +125,11 @@ export default function ContactPage() {
               
               {/* Contact Form */}
               <div className="bg-gray-50 p-8 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Send Us a Message</h2>
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">Contact Our Surf School</h2>
                 
                 {submitSuccess ? (
                   <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
-                    Thank you for your message! We&apos;ll get back to you as soon as possible.
+                    Thank you for your message! Our surf instructors will get back to you as soon as possible.
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">

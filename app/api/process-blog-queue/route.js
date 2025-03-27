@@ -39,7 +39,7 @@ export async function POST(request) {
       console.log("🔍 Attempting to fetch blog-queue.json");
       const response = await octokit.repos.getContent({
         owner: 'Klaushbgv1992',
-        repo: 'vibebeachhouse',
+        repo: 'vibesurfschool',
         path: 'blog-queue.json',
       });
       queueFile = response.data;
@@ -75,7 +75,7 @@ export async function POST(request) {
     // Update the queue file
     await octokit.repos.createOrUpdateFileContents({
       owner: 'Klaushbgv1992',
-      repo: 'vibebeachhouse',
+      repo: 'vibesurfschool',
       path: 'blog-queue.json',
       message: `Update job ${job.id} status to processing`,
       content: Buffer.from(JSON.stringify(queue, null, 2)).toString('base64'),
@@ -104,7 +104,7 @@ export async function POST(request) {
       // Update job status to completed
       const updatedQueueResponse = await octokit.repos.getContent({
         owner: 'Klaushbgv1992',
-        repo: 'vibebeachhouse',
+        repo: 'vibesurfschool',
         path: 'blog-queue.json',
       });
       const updatedQueueFile = updatedQueueResponse.data;
@@ -123,7 +123,7 @@ export async function POST(request) {
         
         await octokit.repos.createOrUpdateFileContents({
           owner: 'Klaushbgv1992',
-          repo: 'vibebeachhouse',
+          repo: 'vibesurfschool',
           path: 'blog-queue.json',
           message: `Complete job ${job.id}`,
           content: Buffer.from(JSON.stringify(updatedQueue, null, 2)).toString('base64'),
@@ -145,7 +145,7 @@ export async function POST(request) {
       try {
         const failedQueueResponse = await octokit.repos.getContent({
           owner: 'Klaushbgv1992',
-          repo: 'vibebeachhouse',
+          repo: 'vibesurfschool',
           path: 'blog-queue.json',
         });
         const failedQueueFile = failedQueueResponse.data;
@@ -160,7 +160,7 @@ export async function POST(request) {
           
           await octokit.repos.createOrUpdateFileContents({
             owner: 'Klaushbgv1992',
-            repo: 'vibebeachhouse',
+            repo: 'vibesurfschool',
             path: 'blog-queue.json',
             message: `Mark job ${job.id} as failed`,
             content: Buffer.from(JSON.stringify(failedQueue, null, 2)).toString('base64'),
@@ -184,8 +184,8 @@ export async function POST(request) {
 // Function to scrape news from various sources
 async function scrapeNews() {
   const NEWS_SOURCES = [
-    'https://www.georgeherald.com/',
-    'https://www.gardenroute.gov.za/news/'
+    'https://www.sun-sentinel.com/',
+    'https://www.miamiherald.com/'
   ];
   
   const newsItems = [];
@@ -215,11 +215,11 @@ async function scrapeNews() {
   // Add fallback news if no real news found
   if (newsItems.length === 0) {
     newsItems.push({
-      title: 'Exploring the Hidden Gems of Herolds Bay',
+      title: 'Exploring the Surf Spots of Fort Lauderdale',
       source: 'Fallback Content'
     });
     newsItems.push({
-      title: 'Latest Tourism Updates for the Garden Route',
+      title: 'Latest Tourism Updates for the Florida Coast',
       source: 'Fallback Content'
     });
   }
@@ -229,7 +229,7 @@ async function scrapeNews() {
 
 // Check if news is relevant to target location
 function isRelevant(text) {
-  const keywords = ['George', 'Herolds Bay', 'Garden Route', 'Western Cape'];
+  const keywords = ['Fort Lauderdale', 'Florida', 'South Florida', 'Surfing'];
   return keywords.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
 }
 
@@ -238,18 +238,18 @@ async function generateBlogPost(newsItems) {
   const newsContext = newsItems.slice(0, 5).map(item => `- ${item.title}`).join('\n');
   
   const prompt = `
-Create a compelling blog post for Vibe Beach House, a luxury guesthouse in Herolds Bay, South Africa. 
+Create a compelling blog post for Vibe Surf School, a premier surf instruction school in Fort Lauderdale, Florida. 
 The blog should incorporate recent local news and events:
 
 ${newsContext}
 
 The blog post should:
-1. Have an engaging title related to Herolds Bay or George, South Africa
+1. Have an engaging title related to Fort Lauderdale or Florida
 2. Be around 800-1000 words
 3. Include multiple subheadings for better readability
-4. Mention Vibe Beach House and its amenities (3 bedrooms, swimming pool, ocean views)
-5. Include a call-to-action encouraging readers to book a stay
-6. Include these SEO keywords: Herolds Bay accommodation, luxury guesthouse, Garden Route vacation
+4. Mention Vibe Surf School and its services (surf lessons, scuba diving, snorkeling, paddleboarding)
+5. Include a call-to-action encouraging readers to book a lesson
+6. Include these SEO keywords: Fort Lauderdale surf lessons, surf school, Florida vacation
 7. Have a friendly, inviting tone that highlights local attractions
 8. Connect the local news to visitor experiences
 
@@ -274,22 +274,22 @@ Format the response as a JSON object with these fields:
     console.log('Error parsing OpenAI response:', error);
     // Create a properly formatted response if parsing fails
     return {
-      title: 'Latest Updates from Herolds Bay and the Garden Route',
-      slug: 'latest-updates-herolds-bay-garden-route',
+      title: 'Latest Updates from Fort Lauderdale and the Surf Scene',
+      slug: 'latest-updates-fort-lauderdale-surf-scene',
       date: new Date().toISOString(),
-      excerpt: 'Stay up to date with the latest news and events from Herolds Bay and the Garden Route.',
-      coverImage: 'herolds bay beach',
-      content: `# Latest Updates from Herolds Bay and the Garden Route
+      excerpt: 'Stay up to date with the latest news and events from Fort Lauderdale and the surf scene.',
+      coverImage: 'fort lauderdale beach',
+      content: `# Latest Updates from Fort Lauderdale and the Surf Scene
 
 ## Local News Highlights
 
 ${newsItems.map(item => `- ${item.title}`).join('\n')}
 
-## Visit Vibe Beach House
+## Experience Vibe Surf School
 
-Vibe Beach House offers the perfect accommodation for your Garden Route vacation. With 3 spacious bedrooms, a swimming pool, and stunning ocean views, our luxury guesthouse is the ideal base for exploring all that Herolds Bay has to offer.
+Vibe Surf School offers the perfect ocean adventure for your Florida vacation. With experienced instructors, premium equipment, and beautiful beach locations, our surf school is the ideal place for learning to surf and enjoying other water sports in Fort Lauderdale.
 
-[Book your stay today!](https://www.airbnb.com/rooms/1185679450503007200)
+[Book your lesson today!](https://www.vibesurfschool.com/book-a-lesson)
 `
     };
   }
@@ -303,7 +303,7 @@ async function createBlogPost(blogPost, octokit) {
   try {
     await octokit.repos.createOrUpdateFileContents({
       owner: 'Klaushbgv1992',
-      repo: 'vibebeachhouse',
+      repo: 'vibesurfschool',
       path: `posts/${blogPost.slug}.md`,
       message: `Add new blog post: ${blogPost.title}`,
       content: Buffer.from(formattedContent).toString('base64'),

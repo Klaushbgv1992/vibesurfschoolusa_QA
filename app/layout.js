@@ -6,14 +6,14 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata = {
-  title: 'Vibe Beach House - Herolds Bay, South Africa',
-  description: 'Experience luxury self-catering accommodation at Vibe Beach House in Herolds Bay, South Africa. Perfect location for a relaxing getaway with stunning ocean views.',
+  title: 'Vibe Surf School - Fort Lauderdale, Florida',
+  description: 'Learn to surf with experienced instructors at Vibe Surf School in Fort Lauderdale, Florida. Professional surf lessons for all skill levels in a fun, safe environment.',
   icons: {
     icon: [
-      { url: '/images/beach-house-logo.svg', type: 'image/svg+xml' },
+      { url: '/images/surf-school-logo.svg', type: 'image/svg+xml' },
     ],
-    shortcut: '/images/beach-house-logo.svg',
-    apple: '/images/beach-house-logo.svg',
+    shortcut: '/images/surf-school-logo.svg',
+    apple: '/images/surf-school-logo.svg',
   },
 };
 

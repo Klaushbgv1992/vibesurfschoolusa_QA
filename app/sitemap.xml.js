@@ -2,7 +2,7 @@ import { getAllPosts } from '../lib/posts';
 
 export async function GET() {
   // Base URL of your website
-  const baseUrl = 'https://vibebeachhouse.com';
+  const baseUrl = 'https://vibesurfschool.com';
 
   // Static routes
   const staticRoutes = [

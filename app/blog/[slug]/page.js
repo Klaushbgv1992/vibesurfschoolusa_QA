@@ -20,14 +20,14 @@ export async function generateMetadata({ params }) {
   
   if (!post) {
     return {
-      title: 'Post Not Found - Vibe Beach House Blog',
+      title: 'Post Not Found - Vibe Surf School Blog',
       description: 'The blog post you are looking for does not exist.',
     };
   }
   
   return {
-    title: `${post.title} - Vibe Beach House Blog`,
-    description: post.excerpt || `Read about ${post.title} on the Vibe Beach House blog.`,
+    title: `${post.title} - Vibe Surf School Blog`,
+    description: post.excerpt || `Read about ${post.title} on the Vibe Surf School blog.`,
   };
 }
 
@@ -91,19 +91,18 @@ export default async function BlogPost({ params }) {
         
         {/* Booking CTA */}
         <div className="mt-12 p-6 bg-[#eef7fc] rounded-lg">
-          <h2 className="text-2xl font-bold mb-4 text-black">Stay at Vibe Beach House</h2>
-          <p className="mb-4 text-gray-700">
-            Planning to visit Herolds Bay? Book your stay at our beautiful Vibe Beach House. 
-            With 3 bedrooms, a swimming pool, and stunning views, it&apos;s the perfect base for 
-            exploring all that the Garden Route has to offer.
+          <h2 className="text-2xl font-bold mb-4 text-black">Learn to Surf in Fort Lauderdale</h2>
+          <p className="text-gray-800 mb-6">
+            Planning to visit Florida? Book a surf lesson with Vibe Surf School in Fort Lauderdale. 
+            Our professional instructors will help you catch your first wave!
           </p>
           <Link
-            href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn"
-            className="inline-block bg-[#005d8e] text-white px-6 py-2 rounded font-semibold hover:bg-[#00486e] transition-colors"
+            href="https://vibesurfschool.setmore.com/fortlauderdale"
+            className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Book Your Stay
+            Book Your Lesson
           </Link>
         </div>
       </div>

@@ -2,8 +2,8 @@ import { getAllPosts } from '../../lib/posts';
 import BlogCard from '../components/BlogCard';
 
 export const metadata = {
-  title: 'Blog - Vibe Beach House',
-  description: 'Stay updated with local events, attractions, and news from Herolds Bay and the Garden Route.',
+  title: 'Blog - Vibe Surf School',
+  description: 'Stay updated with surf conditions, events, and tips for surfing in Fort Lauderdale, Florida.',
 };
 
 export default async function BlogPage() {
@@ -14,9 +14,9 @@ export default async function BlogPage() {
       {/* Hero Banner Section - with extra top margin to clear the header */}
       <div className="w-full bg-[#f8f9fa] mt-16 pt-16 pb-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl font-bold text-gray-800 text-center">Vibe Beach House Blog</h1>
+          <h1 className="text-5xl font-bold text-gray-800 text-center">Vibe Surf School Blog</h1>
           <p className="text-xl text-gray-600 text-center mt-4 max-w-3xl mx-auto">
-            Stay updated with local events, attractions, and news from Herolds Bay and the Garden Route
+            Stay updated with surf reports, local events, and surfing tips for Fort Lauderdale and South Florida
           </p>
         </div>
       </div>

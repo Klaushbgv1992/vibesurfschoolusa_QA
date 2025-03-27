@@ -5,23 +5,23 @@ export default function TestimonialSection() {
     {
       id: 1,
       name: 'Sarah Johnson',
-      location: 'Cape Town, South Africa',
+      location: 'Fort Lauderdale, FL',
       rating: 5,
-      text: 'Our stay at Vibe Beach House exceeded all expectations. The views are breathtaking and the house is beautifully designed with everything you could need. We particularly enjoyed watching the sunset from the pool deck. Will definitely be returning!',
+      text: 'My first surf lesson with Vibe Surf School was incredible! The instructors were patient and encouraging, and I was standing up on the board by the end of the session. Can\'t wait to come back for more lessons!',
     },
     {
       id: 2,
       name: 'James & Emma Wilson',
-      location: 'London, UK',
+      location: 'Miami, FL',
       rating: 5,
-      text: 'This guesthouse is truly a hidden gem in Herolds Bay. The attention to detail throughout the property is impressive, and the location is perfect for exploring the Garden Route. The host was incredibly helpful with local recommendations.',
+      text: 'We booked group lessons for our family vacation and it was the highlight of our trip. The instructors at Vibe made sure everyone was safe while having a blast. Our kids are already asking when we can go back!',
     },
     {
       id: 3,
-      name: 'Michael van der Merwe',
-      location: 'Johannesburg, South Africa',
+      name: 'Michael Rodriguez',
+      location: 'Orlando, FL',
       rating: 5,
-      text: 'As a frequent traveler, I can honestly say this is one of the most beautiful properties I\'ve stayed in. The kitchen is well-equipped, the beds are comfortable, and the views are spectacular. The perfect luxury retreat!',
+      text: 'As someone who\'s taken surf lessons around the world, I can honestly say Vibe Surf School offers some of the best instruction. Professional, safe, and most importantly, fun. The Pompano Beach location is perfect for beginners!',
     },
   ];
 
@@ -46,9 +46,9 @@ export default function TestimonialSection() {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">What Our Guests Say</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">What Our Students Say</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover why guests love their experience at Vibe Beach House
+            Discover why students love their surf lessons with Vibe Surf School
           </p>
         </div>
 
@@ -79,12 +79,12 @@ export default function TestimonialSection() {
         
         <div className="text-center mt-12">
           <a
-            href="https://www.airbnb.com/rooms/1185679450503007200?source_impression_id=p3_1742350524_P3ntnWSMNQoPAbvn#reviews"
+            href="https://www.google.com/search?q=vibe+surf+school+fort+lauderdale+reviews"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#005d8e] font-medium hover:underline inline-flex items-center"
           >
-            Read more reviews on Airbnb
+            Read more reviews on Google
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>

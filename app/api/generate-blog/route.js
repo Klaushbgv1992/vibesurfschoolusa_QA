@@ -34,7 +34,7 @@ export async function POST(request) {
       // Try to get the current queue file
       const { data: queueFile } = await octokit.repos.getContent({
         owner: 'Klaushbgv1992',
-        repo: 'vibebeachhouse',
+        repo: 'vibesurfschool',
         path: 'blog-queue.json',
       });
       
@@ -52,7 +52,7 @@ export async function POST(request) {
       // Update the queue file in repository
       await octokit.repos.createOrUpdateFileContents({
         owner: 'Klaushbgv1992',
-        repo: 'vibebeachhouse',
+        repo: 'vibesurfschool',
         path: 'blog-queue.json',
         message: 'Add new blog generation job to queue',
         content: Buffer.from(JSON.stringify(queue, null, 2)).toString('base64'),
@@ -80,7 +80,7 @@ export async function POST(request) {
         // Create queue file in repository
         await octokit.repos.createOrUpdateFileContents({
           owner: 'Klaushbgv1992',
-          repo: 'vibebeachhouse',
+          repo: 'vibesurfschool',
           path: 'blog-queue.json',
           message: 'Initialize blog queue',
           content: Buffer.from(JSON.stringify(initialQueue, null, 2)).toString('base64'),

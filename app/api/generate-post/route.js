@@ -33,24 +33,24 @@ export async function POST(request) {
 
     // Generate content with OpenAI
     const prompt = `
-      You are writing a blog post for "Vibe Beach House," a luxury self-catering rental in Herolds Bay, South Africa.
+      You are writing a blog post for "Vibe Surf School," a premier surf school in Fort Lauderdale, Florida.
       
       Create a 600-word blog post based on the following local news: 
       
       ${newsSummary}
       
       Requirements:
-      1. Start with an engaging title that includes "Herolds Bay" or "Garden Route"
+      1. Start with an engaging title that includes "Fort Lauderdale" or "South Florida"
       2. Summarize the news and why it matters to visitors
-      3. Connect the news to Vibe Beach House (located at 6 Rooikransie St, Herolds Bay, 6615)
-      4. Mention our amenities (3 bedrooms, pool, etc.) where relevant
-      5. Include SEO terms: "Herolds Bay accommodation", "Garden Route guesthouse", "self-catering"
-      6. End with a call-to-action to book a stay
+      3. Connect the news to Vibe Surf School (locations at Pompano Beach and Dania Beach, Fort Lauderdale)
+      4. Mention our amenities (surf lessons, etc.) where relevant
+      5. Include SEO terms: "Fort Lauderdale surf school", "South Florida surf lessons", "surfing"
+      6. End with a call-to-action to book a lesson
       
       Format your response as a JSON object with these fields:
       - title: The blog post title
       - excerpt: A 1-2 sentence summary for the blog listing (max 150 chars)
-      - coverImage: Suggest a descriptive image keyword we could use (e.g., "herolds bay beach sunset")
+      - coverImage: Suggest a descriptive image keyword we could use (e.g., "fort lauderdale beach surfers")
       - content: The full blog post content with markdown formatting
     `;
 
@@ -59,7 +59,7 @@ export async function POST(request) {
       messages: [
         { 
           role: "system", 
-          content: "You are a helpful travel writer creating content for a guesthouse blog."
+          content: "You are a helpful travel writer creating content for a surf school blog."
         },
         { 
           role: "user", 
@@ -83,7 +83,7 @@ export async function POST(request) {
     }
 
     // Generate a cover image URL (in production, you might use a real image API)
-    const coverImage = `https://source.unsplash.com/random/1200x630/?${encodeURIComponent(blogData.coverImage || 'herolds bay south africa')}`;
+    const coverImage = `https://source.unsplash.com/random/1200x630/?${encodeURIComponent(blogData.coverImage || 'fort lauderdale beach surfers')}`;
     
     // Save the post
     const post = await createPost({
