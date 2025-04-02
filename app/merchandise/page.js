@@ -120,7 +120,6 @@ export default function MerchandisePage() {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
-                    <span className="text-lg font-semibold text-blue-600">{item.price}</span>
                   </div>
                   <p className="text-gray-700 mb-4">{item.description}</p>
                   <a 
