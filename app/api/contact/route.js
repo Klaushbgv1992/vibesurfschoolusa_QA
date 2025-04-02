@@ -18,7 +18,7 @@ export async function POST(request) {
 
     // Debug environment variables
     console.log('Email credentials available:', {
-      emailUser: 'vibesurfshcoolftl@gmail.com',
+      emailUser: 'vibesurfschoolftl@gmail.com',
       emailPasswordExists: !!process.env.EMAIL_PASSWORD,
       emailPasswordLength: process.env.EMAIL_PASSWORD ? process.env.EMAIL_PASSWORD.length : 0
     });
@@ -29,7 +29,7 @@ export async function POST(request) {
       port: 465,
       secure: true, // use SSL
       auth: {
-        user: 'vibesurfshcoolftl@gmail.com',
+        user: 'vibesurfschoolftl@gmail.com',
         pass: process.env.EMAIL_PASSWORD.replace(/\s+/g, ''),
       },
       debug: true, // Enable debug output
@@ -50,9 +50,9 @@ export async function POST(request) {
 
     // Email content
     const mailOptions = {
-      from: `"Vibe Surf School Website" <vibesurfshcoolftl@gmail.com>`, // Use your own email as sender
+      from: `"Vibe Surf School Website" <vibesurfschoolftl@gmail.com>`, // Use your own email as sender
       replyTo: email, // Set reply-to as the visitor's email
-      to: 'vibesurfshcoolftl@gmail.com',
+      to: 'vibesurfschoolftl@gmail.com',
       subject: `New Surf Lesson Inquiry from ${name}`,
       text: `
         Name: ${name}
