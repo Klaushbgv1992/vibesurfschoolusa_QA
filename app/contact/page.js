@@ -113,15 +113,14 @@ export default function ContactPage() {
                   </div>
                 </div>
                 
-                {/* Map */}
+                {/* Image instead of Map */}
                 <div className="relative h-80 w-full rounded-lg overflow-hidden shadow-lg">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28630.255865683266!2d-80.12138374062807!3d26.23584411908776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d903f4d9e23f7b%3A0x20184c02e9e94009!2sPompano%20Beach%2C%20FL!5e0!3m2!1sen!2sus!4v1716762850566!5m2!1sen!2sus" 
-                    className="absolute inset-0 w-full h-full border-0" 
-                    allowFullScreen="" 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade">
-                  </iframe>
+                  <Image 
+                    src="/images/surfing/20231.jpg" 
+                    alt="Vibe Surf School Location" 
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </div>
               
