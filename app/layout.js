@@ -10,10 +10,10 @@ export const metadata = {
   description: 'Learn to surf with experienced instructors at Vibe Surf School in Fort Lauderdale, Florida. Professional surf lessons for all skill levels in a fun, safe environment.',
   icons: {
     icon: [
-      { url: '/images/surf-school-logo.svg', type: 'image/svg+xml' },
+      { url: '/images/vibe-surfschool-logo.svg', type: 'image/svg+xml' },
     ],
-    shortcut: '/images/surf-school-logo.svg',
-    apple: '/images/surf-school-logo.svg',
+    shortcut: '/images/vibe-surfschool-logo.svg',
+    apple: '/images/vibe-surfschool-logo.svg',
   },
 };
 
