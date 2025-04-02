@@ -54,25 +54,27 @@ export default function ContactPage() {
   };
   
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section - Made taller and extended to top */}
-      <div className="relative h-[65vh] w-full mt-0">
-        <Image
-          src="/images/surfing/IMG_9109.JPG"
-          alt="Contact Vibe Surf School"
-          fill
-          className="object-cover object-center"
-          priority
-          sizes="100vw"
-          quality={90}
-        />
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center mt-14">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative bg-gray-900 py-28 px-4">
+        <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-blue-600 to-blue-900">
+          <Image
+            src="/images/surfing/Testimonials.png"
+            alt="Contact Vibe Surf School"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        <div className="relative z-10 container mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Contact Us
           </h1>
+          <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
+            Let's share good vibes
+          </p>
         </div>
-      </div>
+      </section>
       
       {/* Contact Content */}
       <section className="py-16 bg-white">

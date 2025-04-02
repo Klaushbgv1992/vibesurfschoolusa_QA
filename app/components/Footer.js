@@ -170,6 +170,16 @@ export default function Footer() {
                   Vibe Surf School South Africa
                 </a>
               </li>
+              <li>
+                <a 
+                  href="https://www.vibebeachhouse.com/" 
+                  className="text-gray-400 hover:text-white transition-colors inline-block py-1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Vibe Beach House
+                </a>
+              </li>
             </ul>
           </div>
         </div>

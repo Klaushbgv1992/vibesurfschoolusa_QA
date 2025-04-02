@@ -11,9 +11,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   
-  const isGalleryPage = pathname === '/gallery';
-  const isBlogPage = pathname === '/blog' || pathname.startsWith('/blog/');
-  const isLightBgPage = isGalleryPage || isBlogPage;
+  const isLightBgPage = false;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,9 +27,6 @@ export default function Header() {
   }, []);
 
   const getTextColor = () => {
-    if (isLightBgPage) {
-      return isScrolled ? 'text-gray-800' : 'text-gray-800';
-    }
     return isScrolled ? 'text-gray-800' : 'text-white';
   };
 
@@ -96,10 +91,10 @@ export default function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled || isLightBgPage ? 'bg-white/90 backdrop-blur-sm shadow-sm' : 'bg-transparent'
+          isScrolled ? 'bg-white/90 backdrop-blur-sm shadow-sm' : 'bg-transparent'
         }`}
       >
-        <div className={`${isLightBgPage ? 'w-full' : 'container mx-auto'} flex justify-end items-center py-4 px-4`}>
+        <div className={`container mx-auto flex justify-end items-center py-4 px-4`}>
           {/* All Content in One Group - Aligned Right */}
           <div className="flex items-center space-x-6">
             {/* Navigation Links */}

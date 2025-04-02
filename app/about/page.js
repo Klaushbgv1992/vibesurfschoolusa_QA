@@ -8,23 +8,27 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div>
-      <div className="relative h-[50vh] w-full">
-        <Image
-          src="/images/surfing/IMG_1308.JPG"
-          alt="Vibe Surf School Instruction"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative bg-gray-900 py-28 px-4">
+        <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-blue-600 to-blue-900">
+          <Image
+            src="/images/surfing/Testimonials.png"
+            alt="About Vibe Surf School"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        <div className="relative z-10 container mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             About Vibe Surf School
           </h1>
+          <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
+            We are all about sharing the good vibes and the stoke of surfing.
+          </p>
         </div>
-      </div>
+      </section>
       
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
@@ -45,10 +49,10 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
               <div className="relative h-96">
                 <Image 
-                  src="/images/surfing/johan.jpg" 
+                  src="/images/team/johan.jpg" 
                   alt="Johan Schutte - Vibe Surf School Co-Owner"
                   fill
-                  className="object-cover rounded-lg"
+                  className="object-cover object-top rounded-lg"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -68,11 +72,11 @@ export default function AboutPage() {
 
               <div className="relative h-96 md:order-2">
                 <Image 
-                  src="/images/surfing/klaus.jpg" 
+                  src="/images/team/klaus.jpg" 
                   alt="Klaus Schroder - Vibe Surf School Co-Owner"
                   fill
                   className="object-cover rounded-lg"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{ objectPosition: "center top" }}                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
               <div className="md:order-1">
@@ -95,7 +99,7 @@ export default function AboutPage() {
             <div className="bg-gray-50 p-8 rounded-lg shadow-sm mb-10">
               <h3 className="text-2xl font-bold mb-4 text-gray-800">Surf With Us</h3>
               <p className="text-gray-700 mb-6">
-                "Vibe Surf School is a place where you become part of the thrilling spirit of the ocean. We are one of the leading surf schools in South Florida, and we are committed to ensuring that your journey in surfing is memorable."
+                Vibe Surf School is a place where you become part of the thrilling spirit of the ocean. We are one of the leading surf schools in South Florida, and we are committed to ensuring that your journey in surfing is memorable.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -124,7 +128,7 @@ export default function AboutPage() {
             <div className="bg-gray-50 p-8 rounded-lg shadow-sm">
               <h3 className="text-2xl font-bold mb-4 text-gray-800">Adventure With Us</h3>
               <p className="text-gray-700 mb-6">
-                "Beyond surfing, Vibe Surf School offers exhilarating adventures in the ocean. Take advantage of our guided stand-up paddleboarding tours or dive into our snorkeling or scuba diving adventures to discover colorful reefs. We have the ideal excursion for you, whether you want to paddle across picturesque lakes or explore underwater wonders!"
+                Beyond surfing, Vibe Surf School offers exhilarating adventures in the ocean. Take advantage of our guided stand-up paddleboarding tours or dive into our snorkeling or scuba diving adventures to discover colorful reefs. We have the ideal excursion for you, whether you want to paddle across picturesque lakes or explore underwater wonders!
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -149,6 +153,18 @@ export default function AboutPage() {
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Book Now Section */}
+            <div className="text-center mt-10">
+              <a 
+                href="https://vibesurfschool.setmore.com/fortlauderdale" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
+              >
+                Book Now
+              </a>
             </div>
           </div>
         </div>

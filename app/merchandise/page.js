@@ -76,7 +76,7 @@ export default function MerchandisePage() {
       <section className="relative bg-gray-900 py-28 px-4">
         <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-teal-600 to-blue-900">
           <Image 
-            src="/images/surfing/9.jpg" 
+            src="/images/surfing/Testimonials.png" 
             alt="Merchandise Hero Background"
             fill
             className="object-cover"
@@ -108,13 +108,13 @@ export default function MerchandisePage() {
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative h-64 w-full block"
+                  className="relative h-64 w-full block p-4 flex items-center justify-center"
                 >
                   <Image
                     src={item.image}
                     alt={item.name}
                     fill
-                    className="object-cover"
+                    className="object-contain p-2"
                   />
                 </a>
                 <div className="p-6">

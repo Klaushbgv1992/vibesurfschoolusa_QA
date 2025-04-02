@@ -27,7 +27,7 @@ export default function ForecastPage() {
       <section className="relative bg-gray-900 py-28 px-4">
         <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-blue-600 to-blue-900">
           <Image 
-            src="/images/surfing/DSC_0232_Original.jpg" 
+            src="/images/surfing/Testimonials.png" 
             alt="Surf Forecast Hero Background"
             fill
             className="object-cover"
@@ -77,9 +77,9 @@ export default function ForecastPage() {
       {/* Tips Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-10 items-center">
-            <div className="w-full md:w-1/2">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">How to Read a Surf Forecast</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">How to Read a Surf Forecast</h2>
+          <div className="flex flex-col md:flex-row gap-10">
+            <div className="w-full md:w-3/5">
               <div className="space-y-4">
                 <div className="bg-white rounded-md shadow-sm p-4">
                   <h3 className="font-semibold text-lg text-gray-900 mb-2">Wave Height</h3>
@@ -99,15 +99,31 @@ export default function ForecastPage() {
                 </div>
               </div>
             </div>
-            <div className="w-full md:w-1/2 relative h-[400px]">
-              <Image
-                src="/images/surfing/DSC_0217_Original.jpg"
-                alt="Surf Conditions"
-                fill
-                className="object-cover rounded-lg shadow-lg"
-              />
+            <div className="w-full md:w-2/5">
+              <div className="bg-white rounded-lg shadow-lg p-3 h-full">
+                <img
+                  src="/images/surfforecast/surfforecast.png"
+                  alt="Surf Conditions"
+                  className="w-full h-auto rounded-md"
+                />
+              </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Book Now Section */}
+      <section className="py-10 bg-white text-center">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Ready to Catch Some Waves?</h3>
+          <a 
+            href="https://vibesurfschool.setmore.com/fortlauderdale" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
+          >
+            Book Now
+          </a>
         </div>
       </section>
 
