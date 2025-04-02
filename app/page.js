@@ -3,8 +3,55 @@ import TestimonialSection from './components/TestimonialSection';
 import Image from 'next/image';
 import Link from 'next/link';
 import YouTubeVideo from './components/YouTubeVideo';
+import FAQ from './components/FAQ';
+
+export const metadata = {
+  title: 'Vibe Surf School - Surf Lessons in Fort Lauderdale, Florida',
+  description: 'Learn to surf with professional instructors at Vibe Surf School in Fort Lauderdale. We offer individual and group lessons, paddleboarding, snorkeling, and scuba adventures for all skill levels.',
+  keywords: 'surf lessons, Fort Lauderdale surf school, learn to surf Florida, beginner surfing, group surf lessons, paddleboarding, snorkeling, scuba diving, Florida surf adventures',
+  openGraph: {
+    title: 'Vibe Surf School - Fort Lauderdale, Florida',
+    description: 'Professional surf lessons for all skill levels in Fort Lauderdale. Book your adventure today!',
+    url: 'https://vibesurfschool.com',
+    siteName: 'Vibe Surf School',
+    images: [
+      {
+        url: 'https://vibesurfschool.com/images/surfing/Testimonials.png',
+        width: 1200,
+        height: 630,
+        alt: 'Vibe Surf School Fort Lauderdale',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+};
 
 export default function Home() {
+  // FAQ data for the homepage
+  const faqQuestions = [
+    {
+      question: "Do I need any previous experience to take surf lessons?",
+      answer: "No previous experience is required! Our surf lessons are designed for all skill levels, from complete beginners to intermediate surfers looking to improve their technique."
+    },
+    {
+      question: "What age groups do you teach?",
+      answer: "We teach surfers of all ages, from children as young as 5 years old to adults. We offer specialized lessons for kids and families, ensuring everyone has a safe and fun experience."
+    },
+    {
+      question: "What should I bring to my surf lesson?",
+      answer: "Just bring yourself, a swimsuit, a towel, and sunscreen. We provide all the necessary equipment including surfboards. Don't forget to bring water to stay hydrated!"
+    },
+    {
+      question: "How long are the surf lessons?",
+      answer: "Our standard surf lessons are 60 minutes in duration, which includes beach instruction, water safety, and plenty of time in the water practicing. Private lessons and group sessions are available."
+    },
+    {
+      question: "Is it safe to learn surfing in Fort Lauderdale?",
+      answer: "Yes! Fort Lauderdale offers ideal conditions for learning to surf with gentle waves and sandy beaches. Our instructors are certified in water safety and first aid, and we always check conditions before lessons."
+    }
+  ];
+
   return (
     <main>
       <HeroSection />
@@ -290,6 +337,21 @@ export default function Home() {
         </div>
       </section>
       
+      {/* FAQ Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Frequently Asked Questions</h2>
+          <FAQ questions={faqQuestions} />
+        </div>
+      </section>
+      
+      {/* Testimonials Section */}
+      <section className="py-16 px-4 bg-white">
+        <div className="container mx-auto">
+          <TestimonialSection />
+        </div>
+      </section>
+      
       {/* Gallery Link */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
@@ -298,9 +360,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      
-      {/* What Our Clients Say - Testimonials */}
-      <TestimonialSection />
       
       {/* Call to Action */}
       <section className="py-20 bg-[#005d8e] text-white">

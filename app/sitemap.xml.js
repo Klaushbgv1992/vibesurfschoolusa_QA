@@ -10,6 +10,11 @@ export async function GET() {
     '/about',
     '/contact',
     '/gallery',
+    '/merchandise',
+    '/locations',
+    '/forecast',
+    '/surfcams',
+    '/vibe-surf-blog',
   ];
 
   // Get blog posts
@@ -33,7 +38,7 @@ export async function GET() {
   `).join('')}
   ${blogPosts.map(post => `
   <url>
-    <loc>${baseUrl}/blog/${post.slug}</loc>
+    <loc>${baseUrl}/vibe-surf-blog/${post.slug}</loc>
     <lastmod>${new Date(post.date).toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
