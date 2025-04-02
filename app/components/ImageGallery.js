@@ -69,6 +69,10 @@ export default function ImageGallery() {
     '/images/paddleboarding/paddleboarding_florida3.png',
     '/images/paddleboarding/paddleboarding_florida6.webp',
     '/images/paddleboarding/paddleboarding_florida7.png',
+    '/images/paddleboarding/paddleboarding_florida8.jpg',
+    '/images/paddleboarding/paddleboarding_florida9.png',
+    '/images/paddleboarding/paddleboarding_florida10.png',
+    '/images/paddleboarding/paddleboarding_florida11.jpg',
   ];
   
   const categories = [
