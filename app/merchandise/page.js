@@ -143,8 +143,8 @@ export default function MerchandisePage() {
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="w-full md:w-1/2 relative h-[400px]">
               <Image
-                src="/images/surfing/12.jpg"
-                alt="Custom Orders"
+                src="/images/merch/Group Custom Orders.png"
+                alt="Group & Custom Orders"
                 fill
                 className="object-cover rounded-lg shadow-lg"
               />
