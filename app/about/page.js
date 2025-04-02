@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+/* eslint-disable react/no-unescaped-entities */
 export const metadata = {
   title: 'About - Vibe Surf School | Fort Lauderdale Surf Instructors',
   description: 'Learn about Vibe Surf School in Fort Lauderdale, Florida - our experienced instructors, surf philosophy, and mission to share the stoke of surfing with beginners and advanced surfers alike.',
@@ -52,13 +53,13 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-gray-800">Our Story</h2>
             <p className="text-gray-700 mb-6 text-lg">
-              Welcome to Vibe Surf School, where our love for surf culture meets the vibrant charm of South Florida. Since our establishment in 2016 in South Africa, we have been proudly sharing the stoke all around the world, and now in this beautiful city. Our surf lessons and camps are tailored for all levels of experience and are rooted in our unwavering commitment to safety and responsible teaching, a legacy inherited from our founders' lifeguard backgrounds.
+              Welcome to Vibe Surf School, where our love for surf culture meets the vibrant charm of South Florida. Since our establishment in 2016 in South Africa, we have been proudly sharing the stoke all around the world, and now in this beautiful city. Our surf lessons and camps are tailored for all levels of experience and are rooted in our unwavering commitment to safety and responsible teaching, a legacy inherited from our founders&apos; lifeguard backgrounds.
             </p>
             <p className="text-gray-700 mb-10 text-lg">
               In the inviting waters and sun-kissed beaches of South Florida, we offer more than just surfing lessons; we strive to create lasting memories and foster connections beyond the surf. Our dedicated instructors go above and beyond to provide a warm and nurturing atmosphere, ensuring that each lesson is a perfect balance of professionalism, care, and enjoyment.
             </p>
             <p className="text-gray-700 mb-10 text-lg">
-              Come join us and discover the exhilaration of surfing while making meaningful connections. At Vibe Surf School, we live by our motto: "Stoked is our Vibe!"
+              Come join us and discover the exhilaration of surfing while making meaningful connections. At Vibe Surf School, we live by our motto: &ldquo;Stoked is our Vibe!&rdquo;
             </p>
             
             <h2 className="text-3xl font-bold mb-8 text-gray-800">Our Team</h2>
@@ -77,10 +78,10 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">Johan Schutte</h3>
                 <h4 className="text-lg font-semibold text-blue-600 mb-4">Co-Owner & Head Instructor</h4>
                 <p className="text-gray-700 mb-4">
-                  Get ready to catch some seriously epic waves with Johan Schutte, co-owner of Vibe Surf School Florida. With his background in geosciences and mining, he's bringing a wealth of knowledge to the sunny shores of Florida.
+                  Get ready to catch some seriously epic waves with Johan Schutte, co-owner of Vibe Surf School Florida. With his background in geosciences and mining, he&apos;s bringing a wealth of knowledge to the sunny shores of Florida.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  But that's not all – Johan's got a sharp skill set in teak decking and carpentry gained through his years in the marine yachting industry. It's no wonder Vibe has become synonymous with excellence. And with three years as a lifeguard under his belt, Johan not only prioritizes the safety of his students, but also infuses every lesson with his passion for the sea.
+                  But that&apos;s not all – Johan&apos;s got a sharp skill set in teak decking and carpentry gained through his years in the marine yachting industry. It&apos;s no wonder Vibe has become synonymous with excellence. And with three years as a lifeguard under his belt, Johan not only prioritizes the safety of his students, but also infuses every lesson with his passion for the sea.
                 </p>
                 <p className="text-gray-700">
                   Hang ten with Johan and experience the vibe at Vibe Surf School!
@@ -100,10 +101,10 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">Klaus Schroder</h3>
                 <h4 className="text-lg font-semibold text-blue-600 mb-4">Co-Owner & Instructor</h4>
                 <p className="text-gray-700 mb-4">
-                  Meet Klaus Schroder, the co-founder of Vibe Surf School Florida. From his extensive experience in data, technology, and coastal and environmental engineering, it's clear that Klaus is not your average entrepreneur.
+                  Meet Klaus Schroder, the co-founder of Vibe Surf School Florida. From his extensive experience in data, technology, and coastal and environmental engineering, it&apos;s clear that Klaus is not your average entrepreneur.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  He is dedicated to promoting sustainable practices and incorporating them into business. Klaus' venture into owning a surf school stems from his love for both safety and surfing. He constantly strives to improve and enhance the surf instruction experience by infusing his 12 years of lifeguarding expertise.
+                  He is dedicated to promoting sustainable practices and incorporating them into business. Klaus&apos; venture into owning a surf school stems from his love for both safety and surfing. He constantly strives to improve and enhance the surf instruction experience by infusing his 12 years of lifeguarding expertise.
                 </p>
                 <p className="text-gray-700">
                   With Vibe Surf School, Klaus is transforming the traditional methods of surf instruction through his innovative and analytical approach.

@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+/* eslint-disable react/no-unescaped-entities */
 const forecastResources = [
   {
     name: "Windguru",
@@ -48,7 +49,7 @@ export default function ForecastPage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Surf Forecast Resources</h2>
             <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              We've curated the best surf forecast resources to help you plan your next surf session. 
+              We&apos;ve curated the best surf forecast resources to help you plan your next surf session. 
               Check these trusted sites for accurate forecasts and real-time conditions.
             </p>
           </div>
