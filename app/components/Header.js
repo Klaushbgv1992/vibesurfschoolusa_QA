@@ -89,13 +89,28 @@ export default function Header() {
 
   return (
     <>
+      {/* Removed standalone fixed Book Now button - now integrated with header */}
+
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled ? 'bg-white/90 backdrop-blur-sm shadow-sm' : 'bg-transparent'
         }`}
       >
-        <div className={`container mx-auto flex justify-end items-center py-4 px-4`}>
-          {/* All Content in One Group - Aligned Right */}
+        <div className={`container mx-auto flex items-center py-4 px-4`}>
+          {/* Empty space for left side alignment */}
+          <div className="flex-1 md:hidden"></div>
+          
+          {/* Absolutely centered Hamburger Menu for Mobile */}
+          <div className="md:hidden absolute left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`transition-colors ${getTextColor()}`}
+            >
+              {isMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+            </button>
+          </div>
+
+          {/* Navigation and Book Now */}
           <div className="flex items-center space-x-6">
             {/* Navigation Links */}
             <nav className="hidden md:flex space-x-6">
@@ -128,14 +143,16 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Book Now Button - Top Right */}
             <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`transition-colors ${getTextColor()}`}
+              <a 
+                href="https://vibesurfschool.setmore.com/fortlauderdale" 
+                className="bg-[#005d8e] hover:bg-[#00486e] text-white px-3 py-1.5 rounded-sm text-sm font-semibold transition-colors shadow-sm"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {isMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-              </button>
+                Book Now
+              </a>
             </div>
 
             {/* Social Icons & Book Button */}
@@ -163,31 +180,31 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden bg-white shadow-md">
             <nav className="flex flex-col py-4">
-              <Link href="/" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Home
               </Link>
-              <Link href="/about" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/about" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
-              <Link href="/locations" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/locations" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Locations
               </Link>
-              <Link href="/gallery" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/gallery" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Gallery
               </Link>
-              <Link href="/merchandise" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/merchandise" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Merchandise
               </Link>
-              <Link href="/surfcams" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/surfcams" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Surf Cams
               </Link>
-              <Link href="/forecast" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/forecast" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Forecast
               </Link>
-              <Link href="/blog" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/blog" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Blog
               </Link>
-              <Link href="/contact" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right">
+              <Link href="/contact" className="text-gray-800 hover:bg-gray-100 py-2 px-4 text-right" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </Link>
               <div className="border-t border-gray-200 mt-2 pt-2 px-4 flex justify-end">
@@ -196,6 +213,7 @@ export default function Header() {
                   className="bg-[#005d8e] hover:bg-[#00486e] text-white px-4 py-2 rounded-sm text-sm font-semibold transition-colors shadow-sm inline-block mt-2"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Book Now
                 </a>

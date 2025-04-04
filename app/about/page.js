@@ -65,7 +65,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold mb-8 text-gray-800">Our Team</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
-              <div className="relative h-96">
+              <div className="relative h-[42rem]">
                 <Image 
                   src="/images/team/johan.jpg" 
                   alt="Johan Schutte - Vibe Surf School Co-Owner"
@@ -78,17 +78,17 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">Johan Schutte</h3>
                 <h4 className="text-lg font-semibold text-blue-600 mb-4">Co-Owner & Head Instructor</h4>
                 <p className="text-gray-700 mb-4">
-                  Get ready to catch some seriously epic waves with Johan Schutte, co-owner of Vibe Surf School Florida. With his background in geosciences and mining, he&apos;s bringing a wealth of knowledge to the sunny shores of Florida.
+                  Meet Johan Schutte, co-owner and head instructor at Vibe Surf School Fort Lauderdale. With extensive experience surfing world-class breaks from Indonesia to Central America during his global yachting career, Johan brings unmatched wave knowledge to his surf lessons in Florida. His international surfing background ensures students learn techniques adaptable to all ocean conditions.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  But that&apos;s not all – Johan&apos;s got a sharp skill set in teak decking and carpentry gained through his years in the marine yachting industry. It&apos;s no wonder Vibe has become synonymous with excellence. And with three years as a lifeguard under his belt, Johan not only prioritizes the safety of his students, but also infuses every lesson with his passion for the sea.
+                  Johan's expertise extends beyond surfing instruction to deep understanding of board dynamics. His marine craftsmanship skills with custom surfboards and yacht construction give him unique insights into equipment selection and performance. This knowledge helps Fort Lauderdale surf students progress faster by matching them with the perfect boards for their skill level and learning style.
                 </p>
                 <p className="text-gray-700">
-                  Hang ten with Johan and experience the vibe at Vibe Surf School!
+                  Safety remains central to Johan's teaching philosophy at Vibe Surf School. Drawing from his professional lifeguarding experience, he combines comprehensive ocean safety protocols with his intuitive understanding of wave dynamics. Whether you're booking beginner surf lessons or advanced coaching, Johan's approach ensures a secure, confidence-building experience in South Florida's waters.
                 </p>
               </div>
 
-              <div className="relative h-96 md:order-2">
+              <div className="relative h-[42rem] md:order-2">
                 <Image 
                   src="/images/team/klaus.jpg" 
                   alt="Klaus Schroder - Vibe Surf School Co-Owner"
@@ -101,13 +101,13 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">Klaus Schroder</h3>
                 <h4 className="text-lg font-semibold text-blue-600 mb-4">Co-Owner & Instructor</h4>
                 <p className="text-gray-700 mb-4">
-                  Meet Klaus Schroder, the co-founder of Vibe Surf School Florida. From his extensive experience in data, technology, and coastal and environmental engineering, it&apos;s clear that Klaus is not your average entrepreneur.
+                  Klaus Schroder founded Vibe Surf School in South Africa in 2016 before bringing his surf instruction expertise to Fort Lauderdale. His coastal engineering background combined with a lifelong passion for surfing uniquely positions him to teach surf lessons that blend technical knowledge with fun. Together with Johan, his mission is creating Florida's most comprehensive surf school experience for beginners and advanced surfers alike.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  He is dedicated to promoting sustainable practices and incorporating them into business. Klaus&apos; venture into owning a surf school stems from his love for both safety and surfing. He constantly strives to improve and enhance the surf instruction experience by infusing his 12 years of lifeguarding expertise.
+                  As a tech consultant by profession, Klaus applies analytical thinking to revolutionize surf instruction in Fort Lauderdale. His data-driven approach allows Vibe Surf School to offer personalized lessons tailored to each student's learning style and progression goals. This innovative methodology, uncommon in traditional surf schools, significantly accelerates skill development while maintaining a supportive, enjoyable learning environment.
                 </p>
                 <p className="text-gray-700">
-                  With Vibe Surf School, Klaus is transforming the traditional methods of surf instruction through his innovative and analytical approach.
+                  Safety is fundamental at Vibe Surf School thanks to Klaus's impressive 12 years of lifeguarding experience. His extensive ocean safety knowledge ensures all surf lessons in Fort Lauderdale are conducted with proper risk assessment and emergency preparedness. Whether you're taking your first surf lesson or refining advanced techniques, Klaus's instruction combines technical precision with a genuine love for sharing the transformative experience of riding waves in South Florida.
                 </p>
               </div>
             </div>
