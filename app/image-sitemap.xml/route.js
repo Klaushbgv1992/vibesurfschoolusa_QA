@@ -1,6 +1,6 @@
 export async function GET() {
   // Base URL of your website
-  const baseUrl = 'https://vibesurfschool.com';
+  const baseUrl = 'https://www.vibesurfschool.com';
 
   // Define image categories
   const imageCategories = [
@@ -57,19 +57,27 @@ export async function GET() {
   <url>
     <loc>${baseUrl}/locations</loc>
     <image:image>
-      <image:loc>${baseUrl}/images/location/pompano-beach.jpg</image:loc>
+      <image:loc>${baseUrl}/images/locations/pompano.jpg</image:loc>
       <image:title>Surf Lessons at Pompano Beach - Fort Lauderdale</image:title>
       <image:caption>Vibe Surf School's premier location at Pompano Beach, Fort Lauderdale</image:caption>
     </image:image>
     <image:image>
-      <image:loc>${baseUrl}/images/location/dania-beach.jpg</image:loc>
+      <image:loc>${baseUrl}/images/locations/dania.jpg</image:loc>
       <image:title>Surf Lessons at Dania Beach - Fort Lauderdale</image:title>
       <image:caption>Vibe Surf School's location at Dania Beach, Fort Lauderdale</image:caption>
     </image:image>
+  </url>
+  <url>
+    <loc>${baseUrl}/about</loc>
     <image:image>
-      <image:loc>${baseUrl}/images/location/george-south-africa.jpg</image:loc>
-      <image:title>Surf Lessons in George, South Africa</image:title>
-      <image:caption>Vibe Surf School's partner location in George, South Africa</image:caption>
+      <image:loc>${baseUrl}/images/team/johan.jpg</image:loc>
+      <image:title>Johan Schutte - Vibe Surf School Instructor</image:title>
+      <image:caption>Johan Schutte, expert surf instructor with extensive yachting experience and global surfing knowledge</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>${baseUrl}/images/team/klaus.jpg</image:loc>
+      <image:title>Klaus Schroder - Vibe Surf School Founder</image:title>
+      <image:caption>Klaus Schroder, founder of Vibe Surf School with expertise in safety and analytical approach to surf instruction</image:caption>
     </image:image>
   </url>
 </urlset>`;
@@ -78,6 +86,7 @@ export async function GET() {
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
     },
   });
 }
