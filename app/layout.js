@@ -8,11 +8,16 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
+// Separate viewport export per Next.js best practices
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata = {
   title: 'Vibe Surf School - Learn to Surf in Florida',
   description: 'Surf lessons for all ages at Florida\'s top surf school. Book your surf experience now!',
   metadataBase: new URL('https://www.vibesurfschool.com'),
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   icons: {
     icon: [
@@ -54,6 +59,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* Force canonical URL for better SEO */}
         <SchemaOrg />
         <HiddenStructuredData />
         <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />

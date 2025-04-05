@@ -9,8 +9,6 @@ export default function robots() {
           '/_next/',
           '/private/',
           '/admin/',
-          '/*.json$',
-          '/*.xml$',
         ],
       },
       {
@@ -24,9 +22,9 @@ export default function robots() {
       },
     ],
     sitemap: [
-      'https://vibesurfschool.com/sitemap.xml',
-      'https://vibesurfschool.com/image-sitemap.xml',
+      'https://www.vibesurfschool.com/sitemap.xml',
+      'https://www.vibesurfschool.com/image-sitemap.xml',
     ],
-    host: 'https://vibesurfschool.com',
+    host: 'https://www.vibesurfschool.com',
   }
 }
