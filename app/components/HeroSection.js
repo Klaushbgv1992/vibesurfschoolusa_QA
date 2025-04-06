@@ -15,7 +15,7 @@ export default function HeroSection() {
     '/images/surfing/202428.jpg',
     '/images/surfing/DSC_0232_Original.jpg',
     '/images/surfing/IMG_6552.JPG',
-    '/images/surfing/202421.JPG',
+    '/images/surfing/202421.jpg',
     '/images/surfing/202426.JPG'
   ];
 
