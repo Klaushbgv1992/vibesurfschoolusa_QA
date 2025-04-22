@@ -55,7 +55,7 @@ export default async function BlogPostPage({ params }) {
       {/* Blog Content */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <article className="prose prose-lg max-w-3xl mx-auto">
+          <article className="prose prose-lg max-w-3xl mx-auto blog-content">
             {post.excerpt && (
               <div className="bg-blue-50 p-6 rounded-lg mb-8 text-gray-700 italic">
                 {post.excerpt}
