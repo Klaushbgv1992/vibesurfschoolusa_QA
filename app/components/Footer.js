@@ -148,7 +148,7 @@ export default function Footer() {
               <p className="mb-4">Fort Lauderdale, FL</p>
             </address>
             <a
-              href="https://vibesurfschool.setmore.com/fortlauderdale"
+              href="/booking"
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
               target="_blank"
               rel="noopener noreferrer"

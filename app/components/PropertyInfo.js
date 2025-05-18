@@ -64,7 +64,7 @@ export default function PropertyInfo() {
             <p className="text-4xl font-bold text-[#005d8e] mb-1">$75</p>
             <p className="text-gray-600 mb-4">per person</p>
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
+              href="/booking" 
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-6 py-3 rounded-sm font-semibold transition-colors shadow-md"
               target="_blank"
               rel="noopener noreferrer"
@@ -117,7 +117,7 @@ export default function PropertyInfo() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://vibesurfschool.setmore.com/fortlauderdale"
+                href="/booking"
                 className="bg-white text-[#005d8e] px-4 py-2 rounded-sm font-medium transition-colors hover:bg-gray-50"
                 target="_blank"
                 rel="noopener noreferrer"

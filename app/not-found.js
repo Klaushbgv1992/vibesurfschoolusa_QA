@@ -34,9 +34,7 @@ export default function NotFound() {
             </Link>
             <span className="mx-2 text-gray-400">|</span>
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
             >
               Book a Lesson

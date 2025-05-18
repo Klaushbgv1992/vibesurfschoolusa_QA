@@ -50,9 +50,7 @@ export default async function BlogPage() {
           <div className="text-center mt-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Ready to Experience the Waves Yourself?</h3>
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
             >
               Book Now

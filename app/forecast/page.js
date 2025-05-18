@@ -118,9 +118,7 @@ export default function ForecastPage() {
         <div className="container mx-auto px-4">
           <h3 className="text-2xl font-bold text-gray-900 mb-6">Ready to Catch Some Waves?</h3>
           <a 
-            href="https://vibesurfschool.setmore.com/fortlauderdale" 
-            target="_blank" 
-            rel="noopener noreferrer"
+            href="/booking"
             className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
           >
             Book Now
@@ -137,7 +135,7 @@ export default function ForecastPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
+              href="/booking" 
               className="bg-white hover:bg-gray-100 text-[#005d8e] px-8 py-3 rounded-md font-semibold transition-colors"
               target="_blank"
               rel="noopener noreferrer"

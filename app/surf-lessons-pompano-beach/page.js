@@ -44,9 +44,7 @@ export default function PompanoBeachPage() {
           </p>
           <div className="mt-10">
             <a 
-              href="https://vibesurfschool.setmore.com/pompanobeach" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
             >
               Book Your Pompano Beach Lesson
@@ -146,9 +144,7 @@ export default function PompanoBeachPage() {
               <p className="text-gray-700 mb-6">Join us for a surf lesson at one of Fort Lauderdale's most beautiful beaches. Our expert instructors will have you standing and riding waves in no time!</p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <a 
-                  href="https://vibesurfschool.setmore.com/pompanobeach" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  href="/booking"
                   className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-3 px-6 rounded-md transition-colors shadow-md"
                 >
                   Book at Pompano Beach

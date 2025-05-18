@@ -117,9 +117,7 @@ export default function SurfCamsPage() {
           <div className="text-center mt-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Ready to Surf After Checking the Conditions?</h3>
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
             >
               Book Now
@@ -137,7 +135,7 @@ export default function SurfCamsPage() {
           </p>
           <div className="flex justify-center space-x-4">
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
+              href="/booking" 
               className="bg-white hover:bg-gray-100 text-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors"
               target="_blank"
               rel="noopener noreferrer"

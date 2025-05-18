@@ -44,9 +44,7 @@ export default function FortLauderdalePage() {
           </p>
           <div className="mt-10">
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
             >
               Book Your Lesson Now
@@ -145,9 +143,7 @@ export default function FortLauderdalePage() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a 
-                href="https://vibesurfschool.setmore.com/fortlauderdale" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="/booking"
                 className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-4 px-8 rounded-md transition-colors shadow-md text-lg"
               >
                 Book a Lesson Now

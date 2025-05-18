@@ -97,7 +97,7 @@ export default async function BlogPost({ params }) {
             Our professional instructors will help you catch your first wave!
           </p>
           <Link
-            href="https://vibesurfschool.setmore.com/fortlauderdale"
+            href="/booking"
             className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm"
             target="_blank"
             rel="noopener noreferrer"

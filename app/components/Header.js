@@ -146,10 +146,9 @@ export default function Header() {
             {/* Mobile Book Now Button - Top Right */}
             <div className="md:hidden">
               <a 
-                href="https://vibesurfschool.setmore.com/fortlauderdale" 
+                href="/booking" 
                 className="bg-[#005d8e] hover:bg-[#00486e] text-white px-3 py-1.5 rounded-sm text-sm font-semibold transition-colors shadow-sm"
-                target="_blank"
-                rel="noopener noreferrer"
+
               >
                 Book Now
               </a>
@@ -165,10 +164,9 @@ export default function Header() {
                 ))}
               </div>
               <a 
-                href="https://vibesurfschool.setmore.com/fortlauderdale" 
+                href="/booking" 
                 className="bg-[#005d8e] hover:bg-[#00486e] text-white px-4 py-2 rounded-sm text-sm font-semibold transition-colors shadow-sm"
-                target="_blank"
-                rel="noopener noreferrer"
+
               >
                 Book Now
               </a>
@@ -209,7 +207,7 @@ export default function Header() {
               </Link>
               <div className="border-t border-gray-200 mt-2 pt-2 px-4 flex justify-end">
                 <a 
-                  href="https://vibesurfschool.setmore.com/fortlauderdale" 
+                  href="/booking" 
                   className="bg-[#005d8e] hover:bg-[#00486e] text-white px-4 py-2 rounded-sm text-sm font-semibold transition-colors shadow-sm inline-block mt-2"
                   target="_blank"
                   rel="noopener noreferrer"

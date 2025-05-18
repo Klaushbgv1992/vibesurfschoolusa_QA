@@ -97,9 +97,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Card 1 */}
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="no-underline"
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-2 h-full">
@@ -131,9 +129,7 @@ export default function Home() {
             
             {/* Card 2 */}
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="no-underline"
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-2 h-full">
@@ -211,9 +207,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Adventure 1 */}
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="no-underline"
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-2 h-full">
@@ -245,9 +239,7 @@ export default function Home() {
             
             {/* Adventure 2 */}
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="no-underline"
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-2 h-full">
@@ -279,9 +271,7 @@ export default function Home() {
             
             {/* Adventure 3 */}
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="no-underline"
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-2 h-full">
@@ -370,9 +360,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <a 
-              href="https://vibesurfschool.setmore.com/fortlauderdale" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/booking"
               className="bg-[#00486e] hover:bg-[#003a59] text-white px-8 py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
             >
               Book A Lesson

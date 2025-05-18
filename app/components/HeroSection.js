@@ -87,7 +87,7 @@ export default function HeroSection() {
               Learn To Surf in Fort Lauderdale
             </p>
             <a
-              href="https://vibesurfschool.setmore.com/fortlauderdale"
+              href="/booking"
               className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-sm text-lg font-semibold transition-colors shadow-md"
               target="_blank"
               rel="noopener noreferrer"

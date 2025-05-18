@@ -103,7 +103,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-xl font-semibold mb-2 text-gray-800">Book Direct</h3>
                     <a
-                      href="https://vibesurfschool.setmore.com/fortlauderdale"
+                      href="/booking"
                       className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm"
                       target="_blank"
                       rel="noopener noreferrer"
