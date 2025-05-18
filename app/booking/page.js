@@ -9,6 +9,7 @@ import DateTimeSelection from '../components/booking/DateTimeSelection';
 import CustomerInfoForm from '../components/booking/CustomerInfoForm';
 import BookingConfirmation from '../components/booking/BookingConfirmation';
 import BookingPaywall from '../components/booking/BookingPaywall';
+import GroupDetailsForm from '../components/booking/GroupDetailsForm';
 
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -29,6 +30,8 @@ export default function BookingPage() {
   const [bookingId, setBookingId] = useState(null);
   const [error, setError] = useState(null);
   const [pendingBooking, setPendingBooking] = useState(null);
+  const [isGroupBooking, setIsGroupBooking] = useState(false);
+  const [groupDetails, setGroupDetails] = useState(null);
 
   const handleBeachSelect = (beach) => {
     setFormData(prev => ({ ...prev, beach }));
@@ -37,6 +40,12 @@ export default function BookingPage() {
 
   const handleActivitySelect = (activity, participants = 1) => {
     setFormData(prev => ({ ...prev, activity, participants }));
+    // Detect if this is a group booking (5+)
+    if (activity.minParticipants >= 5) {
+      setIsGroupBooking(true);
+    } else {
+      setIsGroupBooking(false);
+    }
     setCurrentStep(3);
   };
 
@@ -45,11 +54,73 @@ export default function BookingPage() {
     setCurrentStep(4);
   };
 
-  const handleCustomerInfoSubmit = (customerInfo) => {
-    // Save customer info and move to paywall step
-    setFormData(prev => ({ ...prev, ...customerInfo }));
-    setPendingBooking({ ...formData, ...customerInfo });
-    setCurrentStep(5);
+  const handleCustomerInfoSubmit = async (customerInfo) => {
+    setIsSubmitting(true);
+    setError(null);
+    const bookingPayload = { ...formData, ...customerInfo };
+    try {
+      // If group booking, send directly to backend
+      if (isGroupBooking) {
+        const res = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...bookingPayload,
+            isGroupInquiry: true,
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setBookingComplete(true);
+          setBookingId(data.bookingId);
+          setCurrentStep(6);
+        } else {
+          setError(data.message || 'Failed to submit group booking.');
+        }
+      } else {
+        // For regular bookings, go to paywall step
+        setFormData(prev => ({ ...prev, ...customerInfo }));
+        setPendingBooking({ ...formData, ...customerInfo });
+        setCurrentStep(5);
+      }
+    } catch (err) {
+      setError('Failed to submit booking.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handler for group details form submission
+  const handleGroupDetailsSubmit = async (details) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      // Send booking and group details to backend
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...pendingBooking,
+          participants: details.participants,
+          groupAges: details.ages,
+          notes: details.notes,
+          isGroupInquiry: true, // flag for backend
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setBookingComplete(true);
+        setBookingId(data.bookingId);
+        setGroupDetails(details);
+        setCurrentStep(6); // Show confirmation
+      } else {
+        setError(data.message || 'Failed to submit group booking.');
+      }
+    } catch (err) {
+      setError('Failed to submit group booking.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -231,11 +302,21 @@ export default function BookingPage() {
               </>
             )}
 
-            {currentStep === 5 && pendingBooking && (
+            {/* Step 5: Payment for regular bookings only */}
+            {currentStep === 5 && pendingBooking && !isGroupBooking && (
               <BookingPaywall
                 bookingData={pendingBooking}
                 onBookAgain={resetForm}
                 onError={setError}
+              />
+            )}
+
+            {/* Step 6: Confirmation for all bookings */}
+            {currentStep === 6 && bookingComplete && (
+              <BookingConfirmation
+                booking={pendingBooking || formData}
+                bookingId={bookingId}
+                onBookAgain={resetForm}
               />
             )}
           </div>

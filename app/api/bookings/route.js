@@ -47,7 +47,7 @@ export async function POST(request) {
   try {
     const data = await request.json();
     console.log('POST /api/bookings payload:', data);
-    const { clientName, clientEmail, clientPhone, beach, activity, date, startTime, endTime, participants, notes, paymentDetails } = data;
+    const { clientName, clientEmail, clientPhone, beach, activity, date, startTime, endTime, participants, notes, paymentDetails, isGroupInquiry, groupAges } = data;
 
     // Rate limiting by IP
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
@@ -75,6 +75,54 @@ export async function POST(request) {
     if (!clientName || !clientEmail || !clientPhone || !beach || !activity || !date || !startTime || !endTime) {
       console.warn('Booking failed: Missing required fields', { ip, data });
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
+    }
+
+    // If this is a group inquiry, skip payment validation
+    if (isGroupInquiry) {
+      // Connect to MongoDB (ensure bookingsCollection is defined)
+      const client = await clientPromise;
+      const db = client.db('vibesurfschool');
+      const bookingsCollection = db.collection('bookings');
+      // Store group inquiry with status 'Group Inquiry'
+      console.log('[DEBUG] Saving group inquiry with status:', 'Group Inquiry', {
+        clientName, clientEmail, clientPhone, beach, activity, date, startTime, endTime, participants, groupAges, notes
+      });
+      const result = await createBooking(bookingsCollection, {
+        clientName,
+        clientEmail,
+        clientPhone,
+        beach: typeof beach === 'string' ? beach : beach.name,
+        activity: typeof activity === 'string' ? activity : activity.name,
+        date,
+        startTime,
+        endTime,
+        participants: participants || 5,
+        groupAges,
+        notes: notes || '',
+        status: 'Group Inquiry'
+      });
+      // Send confirmation email to client
+      try {
+        const { sendConfirmationEmail } = await import('../../../lib/sendConfirmationEmail.js');
+        await sendConfirmationEmail({
+          to: clientEmail,
+          clientName,
+          beach,
+          activity,
+          date,
+          startTime,
+          endTime
+        });
+        console.log('Group booking confirmation email sent to', clientEmail);
+      } catch (emailErr) {
+        console.error('Failed to send group booking confirmation email:', emailErr);
+        // Do not fail the booking if email fails
+      }
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Group booking inquiry submitted! We will contact you soon.',
+        bookingId: result.insertedId
+      });
     }
 
     // Require verified PayPal payment
@@ -132,8 +180,23 @@ export async function POST(request) {
       status: 'Confirmed'
     });
 
-    // Send confirmation email (to be implemented)
-    // await sendConfirmationEmail(clientEmail, { clientName, beach, activity, date, startTime, endTime });
+    // Send confirmation email to client
+    try {
+      const { sendConfirmationEmail } = await import('../../../lib/sendConfirmationEmail.js');
+      await sendConfirmationEmail({
+        to: clientEmail,
+        clientName,
+        beach,
+        activity,
+        date,
+        startTime,
+        endTime
+      });
+      console.log('Booking confirmation email sent to', clientEmail);
+    } catch (emailErr) {
+      console.error('Failed to send booking confirmation email:', emailErr);
+      // Do not fail the booking if email fails
+    }
 
     return NextResponse.json({ 
       success: true, 
@@ -182,15 +245,19 @@ export async function GET(request) {
       date: {
         $gte: startOfDay,
         $lte: endOfDay
-      }
+      },
+      status: { $in: ['Confirmed', 'Group Inquiry'] }
     }).toArray();
+
+    console.log('[DEBUG] GET /api/bookings returning bookings:', bookings);
 
     // Return only essential information for availability checking
     const availabilityData = bookings.map(booking => ({
       beach: booking.beach,
       activity: booking.activity,
       startTime: booking.startTime,
-      endTime: booking.endTime
+      endTime: booking.endTime,
+      status: booking.status // Add status for debugging
     }));
 
     return NextResponse.json({ success: true, bookings: availabilityData });

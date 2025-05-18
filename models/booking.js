@@ -29,7 +29,7 @@ export async function checkAvailability(collection, beach, activity, date, start
     beach,
     activity,
     date: new Date(date),
-    status: 'Confirmed',
+    status: { $in: ['Confirmed', 'Group Inquiry'] },
     $or: [
       // Check if new booking starts during an existing booking
       { 

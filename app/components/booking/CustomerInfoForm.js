@@ -3,11 +3,14 @@
 import { useState } from 'react';
 
 export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
+  const isGroupActivity = formData.activity?.minParticipants >= 5;
   const [customerData, setCustomerData] = useState({
     clientName: formData.clientName || '',
     clientEmail: formData.clientEmail || '',
     clientPhone: formData.clientPhone || '',
-    notes: formData.notes || ''
+    notes: formData.notes || '',
+    participants: isGroupActivity ? formData.participants || 5 : formData.participants || 1,
+    groupAges: isGroupActivity ? formData.groupAges || '' : ''
   });
   const [errors, setErrors] = useState({});
 
@@ -36,6 +39,16 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
     
     if (!customerData.clientPhone.trim()) {
       newErrors.clientPhone = 'Phone number is required';
+    }
+
+    // Group activity validation
+    if (isGroupActivity) {
+      if (!customerData.participants || customerData.participants < 5) {
+        newErrors.participants = 'Minimum 5 participants required';
+      }
+      if (!customerData.groupAges.trim()) {
+        newErrors.groupAges = 'Please enter the ages or age ranges of all participants';
+      }
     }
     
     setErrors(newErrors);
@@ -147,6 +160,48 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
               <p className="mt-1 text-red-500 text-sm">{errors.clientPhone}</p>
             )}
           </div>
+
+          {isGroupActivity && (
+            <>
+              <div>
+                <label htmlFor="participants" className="block text-gray-700 font-medium mb-2">
+                  Number of Participants *
+                </label>
+                <input
+                  type="number"
+                  id="participants"
+                  name="participants"
+                  min={5}
+                  value={customerData.participants}
+                  onChange={handleChange}
+                  className={`w-full border ${errors.participants ? 'border-red-500' : 'border-gray-300'} p-3 rounded-md shadow-sm focus:ring-[#005d8e] focus:border-[#005d8e] focus:outline-none`}
+                  required
+                />
+                {errors.participants && (
+                  <p className="mt-1 text-red-500 text-sm">{errors.participants}</p>
+                )}
+              </div>
+              <div className="md:col-span-2">
+                <label htmlFor="groupAges" className="block text-gray-700 font-medium mb-2">
+                  Ages or Age Ranges of Participants *
+                </label>
+                <input
+                  type="text"
+                  id="groupAges"
+                  name="groupAges"
+                  placeholder="e.g. 12, 13, 15, 17, 18 or 10-12, 13-15, 16+"
+                  value={customerData.groupAges}
+                  onChange={handleChange}
+                  className={`w-full border ${errors.groupAges ? 'border-red-500' : 'border-gray-300'} p-3 rounded-md shadow-sm focus:ring-[#005d8e] focus:border-[#005d8e] focus:outline-none`}
+                  required
+                />
+                {errors.groupAges && (
+                  <p className="mt-1 text-red-500 text-sm">{errors.groupAges}</p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">List ages or age ranges (e.g. 10-12, 13-15, 16+)</p>
+              </div>
+            </>
+          )}
 
           <div className="md:col-span-2">
             <label htmlFor="notes" className="block text-gray-700 font-medium mb-2">

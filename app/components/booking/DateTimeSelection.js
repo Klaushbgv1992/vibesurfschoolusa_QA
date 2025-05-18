@@ -181,6 +181,11 @@ export default function DateTimeSelection({
 
   const formatDate = (dateString) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    // Parse YYYY-MM-DD as local date
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-');
+      return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString('en-US', options);
+    }
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
