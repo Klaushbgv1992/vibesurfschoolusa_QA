@@ -17,6 +17,10 @@ export const BookingSchema = {
     type: String,
     default: '',
   },
+  revenue: {
+    type: Number,
+    default: 0,
+  },
   created: {
     type: Date,
     default: Date.now,
@@ -56,6 +60,7 @@ export async function checkAvailability(collection, beach, activity, date, start
 export async function createBooking(collection, bookingData) {
   const result = await collection.insertOne({
     ...bookingData,
+    revenue: bookingData.revenue !== undefined ? bookingData.revenue : 0,
     date: new Date(bookingData.date),
     created: new Date()
   });
