@@ -65,7 +65,7 @@ const NEWS_SOURCES = [
 ];
 
 const RELEVANT_KEYWORDS = [
-  'fort lauderdale', 'pompano beach', 'dania beach', 'hollywood beach',
+  'fort lauderdale', 'pompano beach', 'dania beach', 'sunny isles beach',
   'south florida', 'broward county', 'beach', 'surf', 'ocean',
   'waves', 'surfing', 'water sports', 'beach activities', 'tourism',
   'vacation', 'travel', 'water conditions', 'beach conditions',

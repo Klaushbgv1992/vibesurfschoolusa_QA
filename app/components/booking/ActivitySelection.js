@@ -4,17 +4,25 @@ import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Modal from '../ui/Modal';
 
-export default function ActivitySelection({ activities, onSelect, selectedActivity, selectedParticipants }) {
+export default function ActivitySelection({ activities, onSelect, selectedActivity, selectedParticipants, selectedBeach }) {
   const [hoveredActivity, setHoveredActivity] = useState(null);
   const [participants, setParticipants] = useState(selectedParticipants || 1);
   const [selectedDetails, setSelectedDetails] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Filter out scuba activities for Sunny Isles Beach
+  const filteredActivities = useMemo(() => {
+    if (selectedBeach && selectedBeach.name === 'Sunny Isles Beach') {
+      return activities.filter(activity => activity.category !== 'SCUBA');
+    }
+    return activities;
+  }, [activities, selectedBeach]);
+
   // Group activities by category
   const categorizedActivities = useMemo(() => {
     const grouped = {};
     
-    activities.forEach(activity => {
+    filteredActivities.forEach(activity => {
       const category = activity.category || 'OTHER';
       if (!grouped[category]) {
         grouped[category] = [];
@@ -23,7 +31,7 @@ export default function ActivitySelection({ activities, onSelect, selectedActivi
     });
     
     return grouped;
-  }, [activities]);
+  }, [filteredActivities]);
 
   const renderActivity = (activity) => {
     const formattedPrice = activity.price === 0 ? 'Inquire' : `$${activity.price}`;

@@ -6,12 +6,12 @@ import YouTubeVideo from './components/YouTubeVideo';
 import FAQ from './components/FAQ';
 
 export const metadata = {
-  title: 'Vibe Surf School - Surf Lessons in Fort Lauderdale, Florida',
-  description: 'Learn to surf with professional instructors at Vibe Surf School in Fort Lauderdale. We offer individual and group lessons, paddleboarding, snorkeling, and scuba adventures for all skill levels.',
-  keywords: 'surf lessons, Fort Lauderdale surf school, learn to surf Florida, beginner surfing, group surf lessons, paddleboarding, snorkeling, scuba diving, Florida surf adventures',
+  title: 'Vibe Surf School - Surf Lessons in Dania Beach, Pompano Beach & Sunny Isles Beach, Florida',
+  description: 'Learn to surf with professional instructors at Vibe Surf School in Dania Beach, Pompano Beach & Sunny Isles Beach. We offer individual and group lessons, paddleboarding, snorkeling, and scuba adventures for all skill levels.',
+  keywords: 'surf lessons, Dania Beach, Pompano Beach, Sunny Isles Beach, learn to surf Florida, beginner surfing, group surf lessons, paddleboarding, snorkeling, scuba diving, Florida surf adventures',
   openGraph: {
-    title: 'Vibe Surf School - Fort Lauderdale, Florida',
-    description: 'Professional surf lessons for all skill levels in Fort Lauderdale. Book your adventure today!',
+    title: 'Vibe Surf School - Dania Beach, Pompano Beach & Sunny Isles Beach, Florida',
+    description: 'Professional surf lessons for all skill levels in Dania Beach, Pompano Beach & Sunny Isles Beach. Book your adventure today!',
     url: 'https://vibesurfschool.com',
     siteName: 'Vibe Surf School',
     images: [
@@ -19,7 +19,7 @@ export const metadata = {
         url: 'https://vibesurfschool.com/images/surfing/Testimonials.png',
         width: 1200,
         height: 630,
-        alt: 'Vibe Surf School Fort Lauderdale',
+        alt: 'Vibe Surf School',
       },
     ],
     locale: 'en_US',
@@ -47,8 +47,8 @@ export default function Home() {
       answer: "Our standard surf lessons are 60 minutes in duration, which includes beach instruction, water safety, and plenty of time in the water practicing. Private lessons and group sessions are available."
     },
     {
-      question: "Is it safe to learn surfing in Fort Lauderdale?",
-      answer: "Yes! Fort Lauderdale offers ideal conditions for learning to surf with gentle waves and sandy beaches. Our instructors are certified in water safety and first aid, and we always check conditions before lessons."
+      question: "Is it safe to learn surfing at our beaches?",
+      answer: "Yes! Dania Beach, Pompano Beach, and Sunny Isles Beach offer ideal conditions for learning to surf with gentle waves and sandy beaches. Our instructors are certified in water safety and first aid, and we always check conditions before lessons."
     }
   ];
 
@@ -63,10 +63,13 @@ export default function Home() {
             <div className="w-full md:w-1/2">
               <h2 className="text-4xl font-bold text-gray-900 mb-6">Welcome to Vibe Surf School</h2>
               <p className="text-lg text-gray-700 mb-6">
-                Learn To Surf Fort Lauderdale Florida. Vibe Surf School - Stoked is our Vibe!
+                Learn To Surf in Dania Beach, Pompano Beach & Sunny Isles Beach, Florida. Vibe Surf School - Stoked is our Vibe!
+              </p>
+              <p className="text-lg text-gray-700 mb-6">
+                Located in the vibrant Greater Fort Lauderdale area and just minutes from Miami, we serve the beautiful coastline of Southern Florida. Our pristine beaches offer the perfect conditions for beginners and experienced surfers alike.
               </p>
               <p className="text-lg text-gray-700 mb-8">
-                Vibe Surf School is a place where you become part of the thrilling spirit of the ocean. We are one of the leading surf schools in South Florida, and we are committed to ensuring that your journey in surfing is memorable.
+                Vibe Surf School is a place where you become part of the thrilling spirit of the ocean. We are one of the leading surf schools in South Florida, and we are committed to ensuring that your journey in surfing is memorable whether you're a local or visiting our stunning coastal region.
               </p>
               <Link href="/about" className="inline-block bg-[#005d8e] hover:bg-[#00486e] text-white font-medium py-3 px-8 rounded-sm transition-colors shadow-sm">
                 Discover Our Story
@@ -222,7 +225,7 @@ export default function Home() {
                 <div className="p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">Scuba Diving Adventures</h3>
                   <p className="text-gray-700 mb-4">
-                    Guided reef shore dive in Pompano Beach or Fort Lauderdale offers a unique opportunity to explore some of Florida's most spectacular underwater environments.
+                    Guided reef shore dive in Pompano Beach or Fort Lauderdale offers a unique opportunity to explore some of Florida's most spectacular underwater environments. <span className="font-semibold">Only available in Pompano Beach and Fort Lauderdale.</span>
                   </p>
                   <div className="bg-blue-50 p-4 rounded-md mb-4">
                     <p className="text-sm text-gray-700 mb-2">
@@ -254,7 +257,7 @@ export default function Home() {
                 <div className="p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">Snorkeling Adventures</h3>
                   <p className="text-gray-700 mb-4">
-                    Dive into adventure with our Guided Reef snorkeling tour in Pompano Beach! Embark on an extraordinary underwater journey around the vibrant reef system.
+                    Dive into adventure with our Guided Reef snorkeling tours! Embark on an extraordinary underwater journey around vibrant reef systems. <span className="font-semibold">Available at all our locations - Dania Beach, Pompano Beach & Sunny Isles Beach.</span>
                   </p>
                   <div className="bg-blue-50 p-4 rounded-md mb-4">
                     <p className="text-sm text-gray-700 mb-2">
@@ -286,7 +289,7 @@ export default function Home() {
                 <div className="p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">Stand Up Paddleboarding</h3>
                   <p className="text-gray-700 mb-4">
-                    Looking for an exciting experience? Join our Stand Up Paddleboard (SUP) Tours along the stunning coastline of Pompano Beach, Fort Lauderdale, and Dania Beach's Mangroves.
+                    Looking for an exciting experience? Join our Stand Up Paddleboard (SUP) Tours along our stunning coastlines. <span className="font-semibold">Available at all our locations - Dania Beach, Pompano Beach & Sunny Isles Beach.</span>
                   </p>
                   <div className="bg-blue-50 p-4 rounded-md mb-4">
                     <p className="text-sm text-gray-700">
@@ -356,7 +359,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Catch Some Waves?</h2>
           <p className="text-xl max-w-3xl mx-auto mb-10">
-            Book your surf lesson with Vibe Surf School today and experience the thrill of surfing in Fort Lauderdale, Florida.
+            Book your surf lesson with Vibe Surf School today and experience the thrill of surfing in Dania Beach, Pompano Beach & Sunny Isles Beach, Florida.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <a 

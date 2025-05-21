@@ -2,6 +2,34 @@
 
 import { useState } from 'react';
 
+// Format date properly with fixed timezone handling
+const formatDate = (dateValue) => {
+  if (!dateValue) return '';
+  
+  // Handle different date formats (Date object or string)
+  let dateObj;
+  if (dateValue instanceof Date) {
+    dateObj = new Date(dateValue.getTime());
+  } else {
+    // Parse date string and create a new date at noon to avoid timezone issues
+    const parts = dateValue.split('T')[0].split('-');
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      dateObj = new Date(Number(year), Number(month) - 1, Number(day), 12, 0, 0);
+    } else {
+      // Fallback - try to parse the string directly
+      dateObj = new Date(dateValue);
+    }
+  }
+  
+  return dateObj.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+
 export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
   const isGroupActivity = formData.activity?.minParticipants >= 5;
   const [customerData, setCustomerData] = useState({
@@ -83,9 +111,7 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
           </div>
           <div>
             <p className="text-sm text-gray-500">Date</p>
-            <p className="font-medium">{new Date(formData.date).toLocaleDateString('en-US', { 
-              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-            })}</p>
+            <p className="font-medium">{formatDate(formData.date)}</p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Time</p>

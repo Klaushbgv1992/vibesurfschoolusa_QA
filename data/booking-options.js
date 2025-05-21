@@ -8,10 +8,10 @@ export const beaches = [
   },
   {
     id: 'hollywood-beach',
-    name: 'Hollywood Beach',
-    description: 'Hollywood Beach features a beautiful boardwalk and consistent waves perfect for surfing lessons.',
-    address: 'Hollywood Beach, FL',
-    image: '/images/location/Hollywood Beach.jpg'
+    name: 'Sunny Isles Beach',
+    description: 'Sunny Isles Beach features a beautiful boardwalk and consistent waves perfect for surfing lessons.',
+    address: 'Sunny Isles Beach, FL',
+    image: '/images/location/Sunny Isles Beach.jpg'
   },
   {
     id: 'pompano-beach',

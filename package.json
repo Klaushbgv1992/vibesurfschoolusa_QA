@@ -29,6 +29,7 @@
     "openai": "^4.89.0",
     "postcss": "^8.4.27",
     "react": "^19.0.0",
+    "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",

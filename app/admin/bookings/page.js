@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { activities } from '../../../data/booking-options';
+import BookingSettingsPanel from './BookingSettingsPanel';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -17,6 +18,18 @@ const fetchBookings = async (start, end) => {
 };
 
 export default function AdminBookingsPage() {
+  // For demonstration, use static list of sites. You can fetch dynamically if you wish.
+  const sites = [
+    'Pompano Beach',
+    'Sunny Isles Beach',
+    'Dania Beach',
+  ];
+  // Replace single selection with multi-select object where each beach is a key with boolean value
+  const [selectedBeaches, setSelectedBeaches] = useState({
+    'Pompano Beach': true,
+    'Sunny Isles Beach': false,
+    'Dania Beach': false,
+  });
   const [events, setEvents] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [calendarViewDates, setCalendarViewDates] = useState({ start: '', end: '' });
@@ -44,13 +57,23 @@ export default function AdminBookingsPage() {
     return act.price * (parseInt(booking.participants) || 1);
   };
 
-  // Fetch bookings when calendar view changes
+  // Fetch bookings when calendar view changes or beach selection changes
   useEffect(() => {
     if (calendarViewDates.start) {
       fetchBookings(calendarViewDates.start, calendarViewDates.end).then(bookings => {
-        const evts = bookings.map(b => ({
+        // Filter bookings by selected beaches
+        const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
+        const filteredBookings = bookings.filter(b => {
+          const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
+          // If no beaches are selected, show no bookings
+          if (selectedBeachesList.length === 0) return false;
+          // Otherwise only show bookings for selected beaches
+          return selectedBeachesList.includes(beachName);
+        });
+        
+        const evts = filteredBookings.map(b => ({
           id: b._id,
-          title: `${b.activity?.name || b.activity} (${b.clientName})`,
+          title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
           start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
           end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
           extendedProps: b,
@@ -58,11 +81,11 @@ export default function AdminBookingsPage() {
         }));
         setEvents(evts);
         // Calculate revenue total using latest activity prices (except for 5+ group)
-        const total = bookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
+        const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
         setRevenueTotal(total);
       });
     }
-  }, [calendarViewDates]);
+  }, [calendarViewDates, selectedBeaches]);
 
   // Handle date range change in calendar
   const handleDatesSet = (arg) => {
@@ -86,6 +109,7 @@ export default function AdminBookingsPage() {
   return (
     <div style={{ padding: 24 }}>
       <h1 className="text-2xl font-bold mb-4">Admin Bookings Calendar</h1>
+
       <div className="mb-4 p-3 bg-gray-100 rounded shadow-md flex items-center justify-between">
         <span className="font-semibold">Total Revenue (Current View):</span>
         <span className="text-xl font-bold text-green-700">${revenueTotal.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}</span>
@@ -104,6 +128,44 @@ export default function AdminBookingsPage() {
         eventClick={handleEventClick}
         dateClick={handleDateClick}
       />
+      {/* Beach selection checkboxes */}
+      <div className="mb-4">
+        <label className="mr-2 font-semibold">Filter by location:</label>
+        <div className="flex flex-wrap gap-3 mt-2">
+          {sites.map(site => (
+            <label key={site} className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="mr-1 h-4 w-4"
+                checked={selectedBeaches[site]}
+                onChange={() => {
+                  setSelectedBeaches(prev => ({
+                    ...prev,
+                    [site]: !prev[site]
+                  }));
+                }}
+              />
+              <span>{site}</span>
+            </label>
+          ))}
+          <button 
+            className="px-3 py-1 bg-gray-100 border border-gray-300 rounded-md text-gray-800 font-medium hover:bg-gray-200 ml-3 transition-colors"
+            onClick={() => {
+              const allSelected = Object.values(selectedBeaches).every(Boolean);
+              const newValue = !allSelected;
+              const newState = {};
+              sites.forEach(site => {
+                newState[site] = newValue;
+              });
+              setSelectedBeaches(newState);
+            }}
+          >
+            {Object.values(selectedBeaches).every(Boolean) ? 'Unselect All' : 'Select All'}
+          </button>
+        </div>
+      </div>
+      {/* Booking Settings Panel at bottom */}
+      <BookingSettingsPanel sites={sites.filter(site => selectedBeaches[site])} selectedBeaches={selectedBeaches} />
       {/* Booking Details Modal */}
       {selectedBooking && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -113,6 +175,7 @@ export default function AdminBookingsPage() {
             <div className="mb-2"><b>Email:</b> {selectedBooking.clientEmail}</div>
             <div className="mb-2"><b>Phone:</b> {selectedBooking.clientPhone}</div>
             <div className="mb-2"><b>Activity:</b> {selectedBooking.activity?.name || selectedBooking.activity}</div>
+            <div className="mb-2"><b>Beach:</b> {typeof selectedBooking.beach === 'object' ? selectedBooking.beach?.name : selectedBooking.beach || 'Not specified'}</div>
             <div className="mb-2"><b>Date:</b> {selectedBooking.date?.toString().split('T')[0]}</div>
             <div className="mb-2"><b>Time:</b> {selectedBooking.startTime} - {selectedBooking.endTime}</div>
             <div className="mb-2"><b>Status:</b> {selectedBooking.status}</div>
@@ -146,9 +209,19 @@ export default function AdminBookingsPage() {
           setEditRevenue(null);
           // Refresh events and revenue total
           fetchBookings(calendarViewDates.start, calendarViewDates.end).then(bookings => {
-            const evts = bookings.map(b => ({
+            // Filter bookings by selected beaches
+            const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
+            const filteredBookings = bookings.filter(b => {
+              const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
+              // If no beaches are selected, show no bookings
+              if (selectedBeachesList.length === 0) return false;
+              // Otherwise only show bookings for selected beaches
+              return selectedBeachesList.includes(beachName);
+            });
+            
+            const evts = filteredBookings.map(b => ({
               id: b._id,
-              title: `${b.activity?.name || b.activity} (${b.clientName})`,
+              title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
               start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
               end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
               extendedProps: b,
@@ -156,7 +229,7 @@ export default function AdminBookingsPage() {
             }));
             setEvents(evts);
             // Calculate revenue total using latest activity prices (except for 5+ group)
-            const total = bookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
+            const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
             setRevenueTotal(total);
           });
         }}

@@ -33,9 +33,9 @@ This central spot is a popular gathering place for local surfers. The pier creat
 **When to go:** Works best with an easterly swell
 **Local tip:** Early mornings usually offer the cleanest conditions before the sea breeze kicks in
 
-## Hollywood Beach
+## Sunny Isles Beach
 
-Just south of Fort Lauderdale, Hollywood Beach offers another solid option for surfers. The wide beach provides plenty of space, and the wave breaks are typically gentler, making it another good spot for beginners and longboarders.
+Just south of Fort Lauderdale, Sunny Isles Beach offers another solid option for surfers. The wide beach provides plenty of space, and the wave breaks are typically gentler, making it another good spot for beginners and longboarders.
 
 **Best for:** Beginners and longboarders
 **When to go:** Winter swells, especially with north winds

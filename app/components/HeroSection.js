@@ -84,7 +84,7 @@ export default function HeroSection() {
               VIBE SURF SCHOOL
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-white/90 tracking-widest uppercase mb-8 md:mb-10">
-              Learn To Surf in Fort Lauderdale
+              Learn to Surf in Dania Beach, Pompano Beach & Sunny Isles Beach
             </p>
             <a
               href="/booking"

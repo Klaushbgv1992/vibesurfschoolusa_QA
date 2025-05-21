@@ -12,14 +12,8 @@ export default function DateTimeSelection({
   selectedDate,
   selectedTime
 }) {
-  // Use JS Date for react-datepicker - ensure proper date handling
+  // Use JS Date for react-datepicker
   const [date, setDate] = useState(selectedDate ? new Date(selectedDate) : null);
-  
-  // Fix timezone issues by normalizing the date display
-  const getFormattedDateString = (dateObj) => {
-    if (!dateObj) return null;
-    return dateObj.toISOString().split('T')[0]; // YYYY-MM-DD format
-  };
   const [startTime, setStartTime] = useState(selectedTime || '');
   const [availableTimeSlots, setAvailableTimeSlots] = useState(availableTimes);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,35 +21,10 @@ export default function DateTimeSelection({
   const [unavailableTimes, setUnavailableTimes] = useState([]);
   const [fullyBookedDates, setFullyBookedDates] = useState([]); // array of YYYY-MM-DD strings
   // Helper to convert array of YYYY-MM-DD to JS Date objects
-  const getDisabledDates = () => {
-    // Convert blocked dates to Date objects
-    const blockedDateObjs = fullyBookedDates.map(d => {
-      const [y, m, day] = d.split('-');
-      return new Date(Number(y), Number(m)-1, Number(day));
-    });
-    
-    // Add dates that fall within lead time
-    if (leadTimeHours > 0) {
-      const leadTimeEnd = new Date();
-      leadTimeEnd.setHours(leadTimeEnd.getHours() + leadTimeHours);
-      
-      // Calculate how many days we need to block due to lead time
-      const leadTimeDays = Math.ceil(leadTimeHours / 24);
-      const leadTimeDatesArray = [];
-      
-      // Add each day within the lead time period
-      for (let i = 0; i < leadTimeDays; i++) {
-        const currDate = new Date();
-        currDate.setDate(currDate.getDate() + i);
-        currDate.setHours(0, 0, 0, 0);
-        leadTimeDatesArray.push(currDate);
-      }
-      
-      return [...blockedDateObjs, ...leadTimeDatesArray];
-    }
-    
-    return blockedDateObjs;
-  };
+  const getDisabledDates = () => fullyBookedDates.map(d => {
+    const [y, m, day] = d.split('-');
+    return new Date(Number(y), Number(m)-1, Number(day));
+  });
   const [allBookings, setAllBookings] = useState({});
 
   // Calculate minimum date (today)
@@ -82,9 +51,6 @@ export default function DateTimeSelection({
           setBookingSettings(data.settings[0]);
           setBlockedDates(data.settings[0].blockedDates || []);
           setLeadTimeHours(data.settings[0].leadTimeHours || 0);
-          // Force re-render of the date picker when lead time changes
-          setDate(null);
-          setDate(new Date());
         } else {
           setBookingSettings(null);
           setBlockedDates([]);
@@ -280,8 +246,8 @@ export default function DateTimeSelection({
 
   const handleContinue = () => {
     if (date && startTime) {
-      // Format date as YYYY-MM-DD - using our consistent date formatter
-      const formattedDate = getFormattedDateString(date);
+      // Format date as YYYY-MM-DD
+      const formattedDate = date.toISOString().split('T')[0];
       // If activity has duration, calculate endTime
       let endTime = null;
       if (selectedActivity && selectedActivity.duration) {
@@ -319,22 +285,34 @@ export default function DateTimeSelection({
     return endDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   };
 
-  // Format the selected date directly to avoid any string conversion issues
-  const formatDateDisplay = (dateObj) => {
-    if (!dateObj) return '';
-    
+  // Format a YYYY-MM-DD date string as a friendly label
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const [year, month, day] = dateString.split('-');
+    const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
     return dateObj.toLocaleDateString(undefined, options);
   };
 
   // MAIN RETURN BLOCK (always render booking calendar UI)
-  // Check if the selected date is blocked - ensure consistent date string format
-  const dateStr = date ? getFormattedDateString(date) : null;
+  // Check if the selected date is blocked
+  const dateStr = date ? date.toISOString().split('T')[0] : null;
   const isBlockedDate = dateStr && fullyBookedDates.includes(dateStr);
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Date and Time Selection */}
+      {/* Back button */}
+      <div className="mb-3">
+        <button 
+          onClick={() => window.history.back()} 
+          className="inline-flex items-center text-[#005d8e] hover:text-[#00486e] transition-colors font-medium text-sm"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          Back to activity selection
+        </button>
+      </div>
 
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-100">
         {/* Calendar and Time Selection in side-by-side layout */}
@@ -345,14 +323,7 @@ export default function DateTimeSelection({
             <div className="mb-3">
               <DatePicker
                 selected={date}
-                onChange={d => { 
-                  // Ensure date is properly set without timezone issues
-                  const selectedDate = new Date(d);
-                  // Reset hours to avoid any time-related issues
-                  selectedDate.setHours(0,0,0,0);
-                  setDate(selectedDate); 
-                  setStartTime(''); 
-                }}
+                onChange={d => { setDate(d); setStartTime(''); }}
                 minDate={minDate}
                 maxDate={maxDate}
                 excludeDates={getDisabledDates()}
@@ -370,7 +341,7 @@ export default function DateTimeSelection({
             </div>
             {date && (
               <div className="mt-2 p-2 bg-blue-50 rounded-md border-l-4 border-blue-400">
-                <p className="text-blue-700 font-medium text-sm">{formatDateDisplay(date)}</p>
+                <p className="text-blue-700 font-medium text-sm">{formatDate(dateStr)}</p>
               </div>
             )}
           </div>

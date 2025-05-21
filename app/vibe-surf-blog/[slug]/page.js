@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 export default async function BlogPostPage({ params }) {
-  const post = await getPostBySlug(params.slug);
+  // Ensure params is properly awaited before accessing slug
+  const resolvedParams = await Promise.resolve(params);
+  const post = await getPostBySlug(resolvedParams.slug);
   
   if (!post) {
     notFound();

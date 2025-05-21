@@ -12,7 +12,12 @@ export default function BookingConfirmation({ booking, bookingId, onBookAgain })
   
   const formatDate = (dateString) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    // Fix timezone issue by ensuring the date string is treated as UTC
+    // Parse the date parts from the YYYY-MM-DD string to avoid timezone shifts
+    const [year, month, day] = dateString.split('-').map(num => parseInt(num, 10));
+    // Create date with local timezone (months are 0-indexed in JS Date)
+    const dateObj = new Date(year, month - 1, day);
+    return dateObj.toLocaleDateString('en-US', options);
   };
 
   return (

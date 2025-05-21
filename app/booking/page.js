@@ -154,7 +154,7 @@ export default function BookingPage() {
       <section className="relative bg-gray-900 py-20 px-4">
         <div className="absolute inset-0 z-0 opacity-40">
           <Image 
-            src="/images/surfing/hero-5.jpg" 
+            src="/images/surfing/202428.jpg" 
             alt="Book your surf lesson"
             fill
             className="object-cover"
@@ -258,6 +258,7 @@ export default function BookingPage() {
                   onSelect={handleActivitySelect} 
                   selectedActivity={formData.activity}
                   selectedParticipants={formData.participants}
+                  selectedBeach={formData.beach}
                 />
               </>
             )}
