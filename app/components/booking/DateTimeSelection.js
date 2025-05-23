@@ -93,18 +93,19 @@ export default function DateTimeSelection({
       });
   }, [selectedBeach]);
 
-  // Always merge blockedDates into fullyBookedDates
+  // Fetch bookings only when necessary components change
   useEffect(() => {
     // On component mount or when key booking params change, refresh availability
     setAvailableTimeSlots(availableTimes);
     setUnavailableTimes([]);
-    fetchAllBookings();
-  }, [selectedBeach, selectedActivity, date]);
-
-  // Update bookings if date changes
-  useEffect(() => {
-    if (date) fetchAllBookings();
-  }, [date]);
+    
+    // Only fetch if we have the required data
+    if (selectedBeach && date) {
+      fetchAllBookings();
+    }
+  }, [selectedBeach?.name, selectedActivity?.id, date ? getFormattedDateString(date) : null]);
+  
+  // Don't need a separate effect for date changes as it's included above
 
   // Always merge blockedDates into fullyBookedDates
   useEffect(() => {

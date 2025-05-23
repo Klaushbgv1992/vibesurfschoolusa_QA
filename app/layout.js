@@ -1,10 +1,9 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Header from './components/Header';
-import Footer from './components/Footer';
 import SchemaOrg from './components/SchemaOrg';
 import HiddenStructuredData from './components/HiddenStructuredData';
 import GoogleAnalytics from './components/GoogleAnalytics';
+import HeaderFooterWrapper from './components/HeaderFooterWrapper';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
@@ -55,14 +54,12 @@ export const metadata = {
 // Google Analytics Measurement ID
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-PX1TWSZJ9C';
 
-import PayPalProviderClient from "./components/PayPalProviderClient";
+import ConditionalPayPalProvider from './components/ConditionalPayPalProvider';
 
 export default function RootLayout({ children }) {
   // Use server-side env var for clientId
   const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-  if (!paypalClientId) {
-    console.error('Missing PayPal Client ID! Please check your .env.local and restart the dev server.');
-  }
+  
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -72,17 +69,12 @@ export default function RootLayout({ children }) {
         <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />
       </head>
       <body className={`${inter.className} antialiased bg-white text-gray-900`}>
-        {paypalClientId ? (
-          <PayPalProviderClient clientId={paypalClientId}>
-            <Header />
-            <main className="min-h-screen w-full">{children}</main>
-            <Footer />
-          </PayPalProviderClient>
-        ) : (
-          <div style={{ color: 'red', padding: 32, textAlign: 'center' }}>
-            PayPal integration error: Missing Client ID. Please check your .env.local and restart the server.
-          </div>
-        )}
+        <ConditionalPayPalProvider clientId={paypalClientId}>
+          {/* HeaderFooterWrapper will conditionally show Header and Footer only for non-admin pages */}
+          <HeaderFooterWrapper>
+            {children}
+          </HeaderFooterWrapper>
+        </ConditionalPayPalProvider>
       </body>
     </html>
   );

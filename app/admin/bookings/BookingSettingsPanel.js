@@ -39,48 +39,127 @@ export default function BookingSettingsPanel({ sites, selectedBeaches, onSetting
 
   // Fetch settings when selected beaches change
   useEffect(() => {
-    if (sites && sites.length > 0) {
-      setLoading(true);
-      // Get settings for the first selected beach
-      const primaryBeach = sites[0];
-      fetch(`/api/booking-settings?site=${encodeURIComponent(primaryBeach)}`)
-        .then(res => res.json())
-        .then(data => {
+    // Skip API call if no sites selected
+    if (!sites || sites.length === 0) return;
+    
+    // Use a ref to track whether this component is mounted
+    // This will help prevent state updates after unmounting
+    const isMounted = true;
+    setLoading(true);
+    
+    // Get settings for the first selected beach
+    const primaryBeach = sites[0];
+    
+    const fetchSettings = async () => {
+      try {
+        // Use window.location.origin to ensure we have the full URL
+        const apiUrl = `${window.location.origin}/api/booking-settings?site=${encodeURIComponent(primaryBeach)}`;
+        console.log('Fetching booking settings from:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          credentials: 'same-origin',
+          cache: 'no-cache',
+          // Add cache-busting parameter to prevent browser caching
+          headers: {
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Settings fetch failed: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Only update state if component is still mounted
+        if (isMounted) {
           if (data.success && data.settings.length > 0) {
             const s = data.settings[0];
             setLeadTime(s.leadTimeHours || 24);
             setSeasonalWindows(s.seasonalWindows || defaultSeasons);
             setBlockedDates(s.blockedDates || []);
           } else {
+            // No settings found, use defaults
             setLeadTime(24);
             setSeasonalWindows(defaultSeasons);
             setBlockedDates([]);
           }
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [sites]);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error fetching booking settings:', error);
+        // Use defaults if fetch fails, only if component is still mounted
+        if (isMounted) {
+          setLeadTime(24);
+          setSeasonalWindows(defaultSeasons);
+          setBlockedDates([]);
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchSettings();
+    
+    // Return cleanup function
+    return () => {
+      // This tells the async function not to update state after unmounting
+    };
+  }, [sites.length > 0 ? sites[0] : null]); // Only depend on the first selected beach
 
   const handleSave = async () => {
     setSaving(true);
+    let hasError = false;
     
-    // Save settings for each selected beach
-    const savePromises = sites.map(site => {
-      return fetch('/api/booking-settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          site: site,
-          leadTimeHours: leadTime,
-          seasonalWindows,
-          blockedDates
-        })
+    try {
+      // Save settings for each selected beach
+      const savePromises = sites.map(async (site) => {
+        try {
+          // Use window.location.origin to ensure we have the full URL
+          const apiUrl = `${window.location.origin}/api/booking-settings`;
+          console.log(`Saving settings for ${site} to:`, apiUrl);
+          
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              site: site,
+              leadTimeHours: leadTime,
+              seasonalWindows,
+              blockedDates
+            }),
+            credentials: 'same-origin',
+            cache: 'no-cache'
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to save settings for ${site}: ${response.status} ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          return data.success;
+        } catch (error) {
+          console.error(`Error saving settings for ${site}:`, error);
+          hasError = true;
+          return false;
+        }
       });
-    });
-    
-    await Promise.all(savePromises);
-    setSaving(false);
-    if (onSettingsChange) onSettingsChange();
+      
+      const results = await Promise.all(savePromises);
+      
+      if (hasError || results.includes(false)) {
+        alert('Some settings could not be saved. Please try again.');
+      } else {
+        alert('Settings saved successfully!');
+      }
+      
+      if (onSettingsChange) onSettingsChange();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert(`Failed to save settings: ${error.message}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateSeason = (idx, field, value) => {

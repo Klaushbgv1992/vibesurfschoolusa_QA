@@ -3,12 +3,12 @@ import Link from 'next/link';
 
 /* eslint-disable react/no-unescaped-entities */
 export const metadata = {
-  title: 'About - Vibe Surf School | Fort Lauderdale Surf Instructors',
-  description: 'Learn about Vibe Surf School in Fort Lauderdale, Florida - our experienced instructors, surf philosophy, and mission to share the stoke of surfing with beginners and advanced surfers alike.',
-  keywords: 'surf school Fort Lauderdale, surf instructors Florida, learn to surf Florida, surf lessons near me, Vibe Surf School team, Florida surf experience',
+  title: 'About - Vibe Surf School | Miami Area Surf Instructors',
+  description: 'Learn about Vibe Surf School in Dania Beach, Pompano Beach & Sunny Isles Beach, Florida - our experienced instructors, surf philosophy, and mission to share the stoke of surfing with beginners and advanced surfers alike.',
+  keywords: 'surf school Miami, surf instructors Florida, learn to surf Florida, surf lessons Dania Beach, surf lessons Pompano Beach, surf lessons Sunny Isles Beach, Vibe Surf School team, Florida surf experience',
   openGraph: {
-    title: 'About Vibe Surf School - Fort Lauderdale Surf Instructors',
-    description: 'Meet our team of passionate surf instructors dedicated to creating an unforgettable surfing experience in Fort Lauderdale.',
+    title: 'About Vibe Surf School - Miami Area Surf Instructors',
+    description: 'Meet our team of passionate surf instructors dedicated to creating an unforgettable surfing experience in Dania Beach, Pompano Beach & Sunny Isles Beach, Florida.',
     url: 'https://vibesurfschool.com/about',
     siteName: 'Vibe Surf School',
     images: [
@@ -78,13 +78,13 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">Johan Schutte</h3>
                 <h4 className="text-lg font-semibold text-blue-600 mb-4">Co-Owner & Head Instructor</h4>
                 <p className="text-gray-700 mb-4">
-                  Meet Johan Schutte, co-owner and head instructor at Vibe Surf School Fort Lauderdale. With extensive experience surfing world-class breaks from Indonesia to Central America during his global yachting career, Johan brings unmatched wave knowledge to his surf lessons in Florida. His international surfing background ensures students learn techniques adaptable to all ocean conditions.
+                  Meet Johan Schutte, co-owner and head instructor at Vibe Surf School. With extensive experience surfing world-class breaks from Indonesia to Central America during his global yachting career, Johan brings unmatched wave knowledge to his surf lessons in the southern Florida/Miami area. His international surfing background ensures students learn techniques adaptable to all ocean conditions.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  Johan's expertise extends beyond surfing instruction to deep understanding of board dynamics. His marine craftsmanship skills with custom surfboards and yacht construction give him unique insights into equipment selection and performance. This knowledge helps Fort Lauderdale surf students progress faster by matching them with the perfect boards for their skill level and learning style.
+                  Johan's expertise extends beyond surfing instruction to deep understanding of board dynamics. His marine craftsmanship skills with custom surfboards and yacht construction give him unique insights into equipment selection and performance. This knowledge helps our Dania Beach, Pompano Beach, and Sunny Isles Beach surf students progress faster by matching them with the perfect boards for their skill level and learning style.
                 </p>
                 <p className="text-gray-700">
-                  Safety remains central to Johan's teaching philosophy at Vibe Surf School. Drawing from his professional lifeguarding experience, he combines comprehensive ocean safety protocols with his intuitive understanding of wave dynamics. Whether you're booking beginner surf lessons or advanced coaching, Johan's approach ensures a secure, confidence-building experience in South Florida's waters.
+                  Safety remains central to Johan's teaching philosophy at Vibe Surf School. Drawing from his professional lifeguarding experience, he combines comprehensive ocean safety protocols with his intuitive understanding of wave dynamics. Whether you're booking beginner surf lessons or advanced coaching, Johan's approach ensures a secure, confidence-building experience in the beautiful waters of Dania Beach, Pompano Beach, and Sunny Isles Beach.
                 </p>
               </div>
 
@@ -101,13 +101,13 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">Klaus Schroder</h3>
                 <h4 className="text-lg font-semibold text-blue-600 mb-4">Co-Owner & Instructor</h4>
                 <p className="text-gray-700 mb-4">
-                  Klaus Schroder founded Vibe Surf School in South Africa in 2016 before bringing his surf instruction expertise to Fort Lauderdale. His coastal engineering background combined with a lifelong passion for surfing uniquely positions him to teach surf lessons that blend technical knowledge with fun. Together with Johan, his mission is creating Florida's most comprehensive surf school experience for beginners and advanced surfers alike.
+                  Klaus Schroder founded Vibe Surf School in South Africa in 2016 before bringing his surf instruction expertise to the southern Florida/Miami area. His coastal engineering background combined with a lifelong passion for surfing uniquely positions him to teach surf lessons that blend technical knowledge with fun. Together with Johan, his mission is creating Florida's most comprehensive surf school experience for beginners and advanced surfers alike.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  As a tech consultant by profession, Klaus applies analytical thinking to revolutionize surf instruction in Fort Lauderdale. His data-driven approach allows Vibe Surf School to offer personalized lessons tailored to each student's learning style and progression goals. This innovative methodology, uncommon in traditional surf schools, significantly accelerates skill development while maintaining a supportive, enjoyable learning environment.
+                  As a tech consultant by profession, Klaus applies analytical thinking to revolutionize surf instruction in Dania Beach, Pompano Beach, and Sunny Isles Beach. His data-driven approach allows Vibe Surf School to offer personalized lessons tailored to each student's learning style and progression goals. This innovative methodology, uncommon in traditional surf schools, significantly accelerates skill development while maintaining a supportive, enjoyable learning environment.
                 </p>
                 <p className="text-gray-700">
-                  Safety is fundamental at Vibe Surf School thanks to Klaus's impressive 12 years of lifeguarding experience. His extensive ocean safety knowledge ensures all surf lessons in Fort Lauderdale are conducted with proper risk assessment and emergency preparedness. Whether you're taking your first surf lesson or refining advanced techniques, Klaus's instruction combines technical precision with a genuine love for sharing the transformative experience of riding waves in South Florida.
+                  Safety is fundamental at Vibe Surf School thanks to Klaus's impressive 12 years of lifeguarding experience. His extensive ocean safety knowledge ensures all surf lessons at our locations are conducted with proper risk assessment and emergency preparedness. Whether you're taking your first surf lesson or refining advanced techniques, Klaus's instruction combines technical precision with a genuine love for sharing the transformative experience of riding waves in Dania Beach, Pompano Beach, and Sunny Isles Beach.
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function AboutPage() {
             <div className="bg-gray-50 p-8 rounded-lg shadow-sm mb-10">
               <h3 className="text-2xl font-bold mb-4 text-gray-800">Surf With Us</h3>
               <p className="text-gray-700 mb-6">
-                Vibe Surf School is a place where you become part of the thrilling spirit of the ocean. We are one of the leading surf schools in South Florida, and we are committed to ensuring that your journey in surfing is memorable.
+                Vibe Surf School is a place where you become part of the thrilling spirit of the ocean. We are one of the leading surf schools serving Dania Beach, Pompano Beach, and Sunny Isles Beach in the southern Florida/Miami area, and we are committed to ensuring that your journey in surfing is memorable.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -153,21 +153,21 @@ export default function AboutPage() {
                   <h4 className="text-xl font-bold mb-2 text-blue-600">Scuba Diving Adventures</h4>
                   <p className="text-gray-700 mb-3 font-semibold">$110 per person</p>
                   <p className="text-gray-700">
-                    Guided reef shore dive in Pompano Beach or Fort Lauderdale offers a unique opportunity to explore some of Florida's most spectacular underwater environments with the guidance of experienced dive professionals.
+                    Guided reef shore dives in Dania Beach, Pompano Beach, and Sunny Isles Beach offer a unique opportunity to explore some of Florida's most spectacular underwater environments with the guidance of experienced dive professionals.
                   </p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                   <h4 className="text-xl font-bold mb-2 text-blue-600">Snorkeling Adventures</h4>
                   <p className="text-gray-700 mb-3 font-semibold">$65 per person</p>
                   <p className="text-gray-700">
-                    Dive into adventure with our Guided Reef snorkeling tour in Pompano Beach! Embark on an extraordinary underwater journey around the vibrant reef system, with exclusive access from a private beach in Pompano Beach, FL.
+                    Dive into adventure with our Guided Reef snorkeling tours! Embark on an extraordinary underwater journey around the vibrant reef systems, with exclusive access from private beaches in Dania Beach, Pompano Beach, and Sunny Isles Beach, FL.
                   </p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                   <h4 className="text-xl font-bold mb-2 text-blue-600">Paddleboarding Adventures</h4>
                   <p className="text-gray-700 mb-3 font-semibold">$75 per person</p>
                   <p className="text-gray-700">
-                    Looking for an exciting and memorable experience? Look no further than our Stand Up Paddleboard (SUP) Tours. We do scenic tours along the stunning coastline of Pompano Beach, Fort Lauderdale, and Dania Beach's Mangroves.
+                    Looking for an exciting and memorable experience? Look no further than our Stand Up Paddleboard (SUP) Tours. We offer scenic tours along the stunning coastlines of Dania Beach, Pompano Beach, and Sunny Isles Beach's beautiful waters.
                   </p>
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6">Ready to Catch Some Waves?</h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
-            Book a surf lesson with us today and experience the thrill of surfing in beautiful Fort Lauderdale.
+            Book a surf lesson with us today and experience the thrill of surfing in beautiful Dania Beach, Pompano Beach, and Sunny Isles Beach in the southern Florida/Miami area.
           </p>
           <div className="flex justify-center space-x-4">
             <a 

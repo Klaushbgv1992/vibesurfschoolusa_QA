@@ -1,10 +1,10 @@
 export const metadata = {
-  title: 'Surf Lesson Locations - Vibe Surf School | Florida & South Africa',
-  description: 'Discover our premium surf lesson locations in Fort Lauderdale, Pompano Beach, Dania Beach, and George, South Africa. Perfect spots for beginners and advanced surfers alike.',
-  keywords: 'surf lessons Pompano Beach, Fort Lauderdale surf spots, Dania Beach surfing, South Africa surf school, George surfing, best places to surf Florida, learn to surf locations',
+  title: 'Surf Lesson Locations - Vibe Surf School | Miami Area & South Africa',
+  description: 'Discover our premium surf lesson locations in Dania Beach, Pompano Beach, Sunny Isles Beach near Miami, and George, South Africa. Perfect spots for beginners and advanced surfers alike.',
+  keywords: 'surf lessons Miami, surf lessons Pompano Beach, surf lessons Dania Beach, surf lessons Sunny Isles Beach, Miami surf spots, South Africa surf school, George surfing, best places to surf Florida, learn to surf locations, South Florida surf school',
   openGraph: {
-    title: 'Surf Lesson Locations - Vibe Surf School',
-    description: 'Find the perfect spot to learn surfing with Vibe Surf School in Florida and South Africa. Book your surf lesson at one of our beautiful beach locations.',
+    title: 'Surf Lesson Locations - Vibe Surf School | Miami Area',
+    description: 'Find the perfect spot to learn surfing with Vibe Surf School in Dania Beach, Pompano Beach, Sunny Isles Beach near Miami. Book your surf lesson at one of our beautiful beach locations.',
     url: 'https://vibesurfschool.com/locations',
     siteName: 'Vibe Surf School',
     images: [

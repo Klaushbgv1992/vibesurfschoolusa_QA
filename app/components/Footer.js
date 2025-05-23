@@ -77,7 +77,7 @@ export default function Footer() {
               </h2>
             </Link>
             <p className="text-gray-300 mb-6 max-w-md">
-              Professional surf instruction in Fort Lauderdale, Florida.
+              Professional surf instruction in Dania Beach, Pompano Beach, and Sunny Isles Beach, Florida.
               Learn to surf with experienced instructors in a fun, safe environment.
               Stoked is our Vibe!
             </p>
@@ -141,11 +141,14 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-6 text-gray-100">Locations</h3>
             <address className="not-italic text-gray-400">
-              <p className="mb-4 font-semibold">Pompano Beach Location:</p>
-              <p className="mb-6">Fort Lauderdale, FL</p>
+              <p className="mb-2 font-semibold">Pompano Beach:</p>
+              <p className="mb-4">50 N Ocean Blvd, Pompano Beach, FL 33062</p>
               
-              <p className="mb-4 font-semibold">Dania Beach Location:</p>
-              <p className="mb-4">Fort Lauderdale, FL</p>
+              <p className="mb-2 font-semibold">Dania Beach:</p>
+              <p className="mb-4">300 N Beach Rd, Dania Beach, FL 33004</p>
+              
+              <p className="mb-2 font-semibold">Sunny Isles Beach:</p>
+              <p className="mb-4">New Port Pier, 16501 Collins Ave, Sunny Isles Beach, FL 33160</p>
             </address>
             <a
               href="/booking"

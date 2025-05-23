@@ -94,8 +94,8 @@ export default function ContactPage() {
                     <h3 className="text-xl font-semibold mb-2 text-gray-800">Location</h3>
                     <address className="not-italic text-gray-600">
                       <p>Vibe Surf School Florida</p>
-                      <p>Pompano Beach & Dania Beach</p>
-                      <p>Fort Lauderdale, FL</p>
+                      <p>Dania Beach, Pompano Beach & Sunny Isles Beach</p>
+                      <p>South Florida</p>
                       <p>United States</p>
                     </address>
                   </div>

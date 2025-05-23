@@ -4,11 +4,11 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Surf Lesson Locations - Vibe Surf School | Florida & South Africa',
-  description: 'Discover our premium surf lesson locations in Fort Lauderdale, Pompano Beach, Dania Beach, and George, South Africa. Perfect spots for beginners and advanced surfers alike.',
-  keywords: 'surf lessons Pompano Beach, Fort Lauderdale surf spots, Dania Beach surfing, South Africa surf school, George surfing, best places to surf Florida, learn to surf locations',
+  description: 'Discover our premium surf lesson locations in Dania Beach, Pompano Beach, Sunny Isles Beach, and George, South Africa. Perfect spots for beginners and advanced surfers alike.',
+  keywords: 'surf lessons Pompano Beach, Sunny Isles Beach surf spots, Dania Beach surfing, South Africa surf school, George surfing, best places to surf Florida, learn to surf locations, Miami area surf school',
   openGraph: {
     title: 'Surf Lesson Locations - Vibe Surf School',
-    description: 'Find the perfect spot to learn surfing with Vibe Surf School in Florida and South Africa. Book your surf lesson at one of our beautiful beach locations.',
+    description: 'Find the perfect spot to learn surfing with Vibe Surf School in Dania Beach, Pompano Beach, Sunny Isles Beach, and South Africa. Book your surf lesson at one of our beautiful beach locations.',
     url: 'https://vibesurfschool.com/locations',
     siteName: 'Vibe Surf School',
     images: [
@@ -59,6 +59,22 @@ const locations = [
   },
   {
     id: 3,
+    name: "Sunny Isles Beach",
+    address: "New Port Pier, 16501 Collins Ave, Sunny Isles Beach, FL 33160",
+    description: "Our Sunny Isles Beach location at New Port Pier offers a fantastic surfing experience with stunning ocean views and excellent conditions for surfers of all levels. This vibrant beach area provides the perfect setting for surf lessons with its clear waters and beautiful surroundings.",
+    features: [
+      "Located at the scenic New Port Pier",
+      "Perfect for all skill levels",
+      "Beautiful ocean views",
+      "Convenient beach access",
+      "Ideal wave conditions",
+      "Private and group lessons available"
+    ],
+    image: "/images/locations/sunny-isles.jpg",
+    mapUrl: "https://maps.app.goo.gl/QUF9bsr1rbzw3Vtt6"
+  },
+  {
+    id: 4,
     name: "George, South Africa",
     address: "",
     description: "Our international location in George, South Africa offers a unique surfing experience with beautiful beaches and excellent waves for all skill levels.",
@@ -92,7 +108,7 @@ export default function LocationsPage() {
         <div className="relative z-10 container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">Our Locations</h1>
           <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
-            Experience the best surfing spots in Fort Lauderdale with our premium surf school locations.
+            Experience the best surfing spots in Dania Beach, Pompano Beach, and Sunny Isles Beach with our premium surf school locations.
           </p>
         </div>
       </section>
@@ -103,7 +119,7 @@ export default function LocationsPage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Where We Teach</h2>
             <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              Vibe Surf School operates at two prime locations along the Florida coast and an international location in South Africa, each offering unique experiences for surfers of all levels.
+              Vibe Surf School operates at three prime locations along the Florida coast and an international location in South Africa, each offering unique experiences for surfers of all levels.
             </p>
           </div>
 
@@ -117,7 +133,7 @@ export default function LocationsPage() {
               />
             </div>
             <div className="text-center mt-4">
-              <p className="text-gray-700">Our two premium surf school locations in South Florida</p>
+              <p className="text-gray-700">Our three premium surf school locations in South Florida</p>
             </div>
           </div>
 
@@ -126,42 +142,71 @@ export default function LocationsPage() {
             <div className="p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Surf Locations</h3>
               <p className="text-gray-700 mb-8 text-lg leading-relaxed">
-                Vibe Surf School offers lessons at two excellent South Florida locations: Pompano Beach and Dania Beach, as well as our international location in George, South Africa. Our Pompano spot is more private, with dedicated parking and beach access, making it perfect for a peaceful, focused surf experience. Dania Beach, located by the historic pier, offers a more public setting with easy access to restrooms, nearby restaurants, and a lively beach atmosphere. Both Florida locations feature sandy bottoms and are ideal for learning, especially during low tides, with consistent waves and conditions suitable for all levels. Our George, South Africa location offers a unique surfing experience with beautiful beaches and excellent waves for all skill levels.
+                Vibe Surf School offers lessons at three excellent South Florida locations: Pompano Beach, Dania Beach, and Sunny Isles Beach, as well as our international location in George, South Africa. Our Pompano spot is more private, with dedicated parking and beach access, making it perfect for a peaceful, focused surf experience. Dania Beach, located by the historic pier, offers a more public setting with easy access to restrooms, nearby restaurants, and a lively beach atmosphere. Our latest location at New Port Pier in Sunny Isles Beach provides stunning ocean views and excellent conditions for surfers of all levels. All three Florida locations feature sandy bottoms and are ideal for learning, especially during low tides, with consistent waves and conditions suitable for all levels. Our George, South Africa location offers a unique surfing experience with beautiful beaches and excellent waves for all skill levels.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
                 {/* Pompano Beach Map Button */}
-                <div className="bg-gray-50 p-6 rounded-lg text-center">
-                  <h4 className="text-xl font-bold text-gray-900 mb-3">Pompano Beach</h4>
-                  <p className="text-gray-600 mb-4">50 N Ocean Blvd, Pompano Beach, FL 33062</p>
-                  <a 
-                    href="https://maps.app.goo.gl/aLn7G2p4BaqkgBoQ6" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                    </svg>
-                    View Pompano on Map
-                  </a>
+                <div className="bg-gray-50 p-6 rounded-lg text-center flex flex-col h-full justify-between">
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-3">Pompano Beach</h4>
+                    <p className="text-gray-600 mb-4">50 N Ocean Blvd, Pompano Beach, FL 33062</p>
+                  </div>
+                  <div className="mt-auto">
+                    <a 
+                      href="https://maps.app.goo.gl/aLn7G2p4BaqkgBoQ6" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                      </svg>
+                      View Pompano on Map
+                    </a>
+                  </div>
                 </div>
                 
                 {/* Dania Beach Map Button */}
-                <div className="bg-gray-50 p-6 rounded-lg text-center">
-                  <h4 className="text-xl font-bold text-gray-900 mb-3">Dania Beach</h4>
-                  <p className="text-gray-600 mb-4">300 N Beach Rd, Dania Beach, FL 33004</p>
-                  <a 
-                    href="https://maps.app.goo.gl/SZ9iKhx9Z7TXoqZa7" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                    </svg>
-                    View Dania on Map
-                  </a>
+                <div className="bg-gray-50 p-6 rounded-lg text-center flex flex-col h-full justify-between">
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-3">Dania Beach</h4>
+                    <p className="text-gray-600 mb-4">300 N Beach Rd, Dania Beach, FL 33004</p>
+                  </div>
+                  <div className="mt-auto">
+                    <a 
+                      href="https://maps.app.goo.gl/SZ9iKhx9Z7TXoqZa7" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                      </svg>
+                      View Dania on Map
+                    </a>
+                  </div>
+                </div>
+
+                {/* Sunny Isles Beach Map Button */}
+                <div className="bg-gray-50 p-6 rounded-lg text-center flex flex-col h-full justify-between">
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-3">Sunny Isles Beach</h4>
+                    <p className="text-gray-600 mb-4">New Port Pier, 16501 Collins Ave, Sunny Isles Beach, FL 33160</p>
+                  </div>
+                  <div className="mt-auto">
+                    <a 
+                      href="https://maps.app.goo.gl/QUF9bsr1rbzw3Vtt6" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                      </svg>
+                      View Sunny Isles on Map
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

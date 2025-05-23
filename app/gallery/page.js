@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export const metadata = {
   title: 'Gallery - Vibe Surf School',
-  description: 'View photos of our surf lessons, locations, and surfing experiences in Fort Lauderdale, Florida.',
+  description: 'View photos of our surf lessons, locations, and surfing experiences in Dania Beach, Pompano Beach, and Sunny Isles Beach, Florida.',
 };
 
 export default function GalleryPage() {
@@ -23,7 +23,7 @@ export default function GalleryPage() {
         <div className="relative z-10 container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">Photo Gallery</h1>
           <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
-            Explore our surf adventures, lessons, and beautiful Fort Lauderdale surfing locations
+            Explore our surf adventures, lessons, and beautiful surfing locations in Dania Beach, Pompano Beach, and Sunny Isles Beach
           </p>
         </div>
       </section>

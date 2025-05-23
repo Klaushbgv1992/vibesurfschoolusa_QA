@@ -1,10 +1,10 @@
 export const metadata = {
-  title: 'About - Vibe Surf School | Fort Lauderdale Surf Instructors',
-  description: 'Learn about Vibe Surf School in Fort Lauderdale, Florida - our experienced instructors, surf philosophy, and mission to share the stoke of surfing with beginners and advanced surfers alike.',
-  keywords: 'surf school Fort Lauderdale, surf instructors Florida, learn to surf Florida, surf lessons near me, Vibe Surf School team, Florida surf experience',
+  title: 'About - Vibe Surf School | Miami Area Surf Instructors',
+  description: 'Learn about Vibe Surf School in Dania Beach, Pompano Beach & Sunny Isles Beach near Miami - our experienced instructors, surf philosophy, and mission to share the stoke of surfing with beginners and advanced surfers alike.',
+  keywords: 'surf school Miami, surf lessons Dania Beach, surf lessons Pompano Beach, surf lessons Sunny Isles Beach, surf instructors Miami, learn to surf South Florida, surf lessons near me, Vibe Surf School team, Florida surf experience',
   openGraph: {
-    title: 'About Vibe Surf School - Fort Lauderdale Surf Instructors',
-    description: 'Meet our team of passionate surf instructors dedicated to creating an unforgettable surfing experience in Fort Lauderdale.',
+    title: 'About Vibe Surf School - Miami Area Surf Instructors',
+    description: 'Meet our team of passionate surf instructors dedicated to creating an unforgettable surfing experience in Dania Beach, Pompano Beach & Sunny Isles Beach near Miami.',
     url: 'https://vibesurfschool.com/about',
     siteName: 'Vibe Surf School',
     images: [

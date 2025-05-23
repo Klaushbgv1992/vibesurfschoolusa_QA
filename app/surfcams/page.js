@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const webcams = [
+  // Ordered from north to south along Florida's east coast
   {
     name: "Wyndham Deerfield Beach Resort",
     url: "https://www.wyndhamdeerfieldresort.com/live-webcam"
@@ -46,6 +47,10 @@ const webcams = [
   {
     name: "Hollywood Beach",
     url: "https://www.local10.com/weather/2019/07/19/hollywood-beach-camera/"
+  },
+  {
+    name: "Sunny Isles Beach - New Port Pier",
+    url: "https://sunnyislesbeachmiami.com/beach-cam/"
   }
 ];
 
@@ -66,7 +71,7 @@ export default function SurfCamsPage() {
         <div className="relative z-10 container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">Surf Cams</h1>
           <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
-            Check the current surf conditions along Fort Lauderdale and the surrounding beaches with our curated list of live webcams.
+            Check the current surf conditions along Dania Beach, Pompano Beach, Sunny Isles Beach and the surrounding areas with our curated list of live webcams.
           </p>
         </div>
       </section>
@@ -90,7 +95,7 @@ export default function SurfCamsPage() {
             <div className="w-full md:w-1/2">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Live Surf Cameras</h2>
               <p className="text-lg text-gray-700 mb-8">
-                Monitor the waves and conditions before your surf session with these live webcams positioned at key spots along Fort Lauderdale, Pompano Beach, and Dania Beach.
+                Monitor the waves and conditions before your surf session with these live webcams positioned at key spots along Dania Beach, Pompano Beach, Sunny Isles Beach, and the surrounding areas.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {webcams.map((webcam, index) => (
@@ -131,7 +136,7 @@ export default function SurfCamsPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6">Ready to Experience the Waves?</h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
-            Book a surf lesson with us and learn from experienced instructors in Fort Lauderdale.
+            Book a surf lesson with us and learn from experienced instructors in South Florida.
           </p>
           <div className="flex justify-center space-x-4">
             <a 

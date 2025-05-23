@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import clientPromise from '../../../lib/mongodb';
 import { checkAvailability, createBooking } from '../../../models/booking';
 
@@ -235,52 +236,196 @@ export async function POST(request) {
 }
 
 export async function PATCH(request) {
-  // PATCH /api/bookings - update revenue for a booking
+  // Check if this is an admin request
+  // Only admins should be able to modify bookings
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Unauthorized. Admin access required.' 
+    }, { status: 401 });
+  }
+  // PATCH /api/bookings - update booking details (revenue, date, time, etc.)
   try {
-    const { id, revenue } = await request.json();
-    if (!id || typeof revenue !== 'number') {
-      return NextResponse.json({ success: false, message: 'Booking ID and numeric revenue are required.' }, { status: 400 });
+    const data = await request.json();
+    const { id } = data;
+    if (!id) {
+      return NextResponse.json({ success: false, message: 'Booking ID is required.' }, { status: 400 });
     }
+    
     const client = await clientPromise;
     const db = client.db('vibesurfschool');
     const bookingsCollection = db.collection('bookings');
     const { ObjectId } = require('mongodb');
+    
+    // Build update object based on what fields were provided
+    const updateFields = {};
+    
+    // Check for revenue update
+    if (typeof data.revenue === 'number') {
+      updateFields.revenue = data.revenue;
+    }
+    
+    // Check for date/time updates (for rescheduling)
+    if (data.date) updateFields.date = new Date(data.date);
+    if (data.startTime) updateFields.startTime = data.startTime;
+    if (data.endTime) updateFields.endTime = data.endTime;
+    
+    // If no fields to update, return error
+    if (Object.keys(updateFields).length === 0) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'No valid fields to update were provided.' 
+      }, { status: 400 });
+    }
+    
+    // MongoDB driver v5+ uses returnDocument option but returns differently
+    // than older versions. Handle both cases.
     const result = await bookingsCollection.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: { revenue } },
+      { $set: updateFields },
       { returnDocument: 'after' }
     );
-    if (!result.value) {
+    
+    // Check for the result in either result.value (older driver) or directly in result (newer driver)
+    const updatedBooking = result.value || result;
+    
+    if (!updatedBooking) {
       return NextResponse.json({ success: false, message: 'Booking not found.' }, { status: 404 });
     }
-    return NextResponse.json({ success: true, booking: result.value });
+    
+    return NextResponse.json({ success: true, booking: updatedBooking });
   } catch (error) {
-    console.error('Error updating booking revenue:', error, error.stack);
-    return NextResponse.json({ success: false, message: 'Failed to update revenue.', error: error.message }, { status: 500 });
+    console.error('Error updating booking:', error, error.stack);
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Failed to update booking.', 
+      error: error.message 
+    }, { status: 500 });
   }
 }
 
-export async function GET(request) {
-  // Enhanced logging for debugging
-  console.log('GET /api/bookings called');
+export async function DELETE(request) {
+  // Check if this is an admin request
+  // Only admins should be able to delete bookings
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Unauthorized. Admin access required.' 
+    }, { status: 401 });
+  }
+  // DELETE /api/bookings?id=123 - delete a booking by ID
   try {
     const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Booking ID is required.' 
+      }, { status: 400 });
+    }
+    
+    const client = await clientPromise;
+    const db = client.db('vibesurfschool');
+    const bookingsCollection = db.collection('bookings');
+    const { ObjectId } = require('mongodb');
+    
+    try {
+      const result = await bookingsCollection.deleteOne({ _id: new ObjectId(id) });
+      
+      if (result.deletedCount === 0) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Booking not found or already deleted.' 
+        }, { status: 404 });
+      }
+    } catch (deleteError) {
+      console.error('MongoDB delete error:', deleteError);
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Error while deleting booking', 
+        error: deleteError.message 
+      }, { status: 500 });
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Booking successfully deleted.' 
+    });
+  } catch (error) {
+    console.error('Error deleting booking:', error, error.stack);
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Failed to delete booking.', 
+      error: error.message 
+    }, { status: 500 });
+  }
+}
+
+// Helper function to check admin authentication
+const isAdminRequest = (request) => {
+  // For client-side authentication, we should check for the auth cookie
+  // This is a simplified version - in production, use a proper token-based auth system
+  const authCookie = request.cookies.get('vibeAdminAuth');
+  
+  // We also need to check the Authorization header for API requests from the admin panel
+  const authHeader = request.headers.get('Authorization');
+  
+  // For this example, we're allowing both cookie and Authorization header
+  // This would be more secure in a real-world scenario
+  return authCookie?.value === 'true' || authHeader === 'Bearer VibeAdmin';
+};
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
     const date = searchParams.get('date');
     const start = searchParams.get('start');
     const end = searchParams.get('end');
-    console.log('GET /api/bookings?date=', date);
     
-    if (!date && !(start && end)) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Date or start/end parameters are required' 
-      }, { status: 400 });
-    }
-
+    // Import ObjectId only once
+    const { ObjectId } = require('mongodb');
+    
     // Connect to MongoDB
     const client = await clientPromise;
     const db = client.db('vibesurfschool');
     const bookingsCollection = db.collection('bookings');
+    
+    // If ID is provided, fetch a single booking
+    if (id) {
+      try {
+        const booking = await bookingsCollection.findOne({ _id: new ObjectId(id) });
+        
+        if (!booking) {
+          return NextResponse.json({ 
+            success: false, 
+            message: 'Booking not found' 
+          }, { status: 404 });
+        }
+        
+        return NextResponse.json({ 
+          success: true, 
+          booking 
+        });
+      } catch (error) {
+        console.error('Error fetching booking by ID:', error);
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Invalid booking ID format' 
+        }, { status: 400 });
+      }
+    }
+    
+    // Otherwise, fetch bookings by date or date range
+    if (!date && !(start && end)) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Date or start/end parameters are required if no ID is provided' 
+      }, { status: 400 });
+    }
+    
+    // We already have the MongoDB connection above, no need to reconnect
 
     let bookings = [];
     if (start && end) {
