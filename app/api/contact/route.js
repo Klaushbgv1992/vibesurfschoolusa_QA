@@ -1,16 +1,6 @@
 import { NextResponse } from 'next/server';
+import clientPromise from '../../../lib/mongodb';
 import nodemailer from 'nodemailer';
-
-// Simple in-memory store for rate limiting
-// In production, consider using Redis or another persistent store
-const rateLimit = {
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: it => 5, // Limit each IP to 5 requests per windowMs
-  cache: new Map(),
-};
-
-// Email validation regex
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 // Function to sanitize user input to prevent XSS
 function sanitizeInput(input) {
@@ -25,138 +15,113 @@ function sanitizeInput(input) {
 
 export async function POST(request) {
   try {
-    // Get client IP for rate limiting
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    
-    // Check rate limit
-    const now = Date.now();
-    const windowStart = now - rateLimit.windowMs;
-    
-    // Clean up expired entries
-    for (const [key, timestamps] of rateLimit.cache.entries()) {
-      const filtered = timestamps.filter(ts => ts > windowStart);
-      if (filtered.length === 0) {
-        rateLimit.cache.delete(key);
-      } else {
-        rateLimit.cache.set(key, filtered);
-      }
-    }
-    
-    // Get existing timestamps for this IP
-    const timestamps = rateLimit.cache.get(ip) || [];
-    
-    // Check if rate limit exceeded
-    if (timestamps.length >= rateLimit.maxRequests) {
-      console.warn(`Rate limit exceeded for IP: ${ip}`);
+    // Parse the request body
+    let data;
+    try {
+      data = await request.json();
+      console.log('Received contact form data:', data);
+    } catch (parseError) {
+      console.error('Error parsing request body:', parseError);
       return NextResponse.json(
-        { error: 'Too many requests, please try again later' },
-        { status: 429 }
-      );
-    }
-    
-    // Add current timestamp and update cache
-    timestamps.push(now);
-    rateLimit.cache.set(ip, timestamps);
-
-    const { name, email, message } = await request.json();
-    
-    // Enhanced validation
-    if (!name || !email || !message) {
-      return NextResponse.json(
-        { error: 'Name, email and message are required' },
+        { error: 'Invalid request format' },
         { status: 400 }
       );
     }
     
-    // Validate email format
-    if (!emailRegex.test(email)) {
+    const { name, email, message, cellphone } = data; // Added cellphone
+    
+    // Basic validation
+    if (!name || !email || !cellphone || !message) { // Added cellphone to validation
+      console.log('Missing required fields:', { name, email, cellphone, message });
       return NextResponse.json(
-        { error: 'Please provide a valid email address' },
+        { error: 'Name, email, cellphone, and message are required' }, // Updated error message
         { status: 400 }
       );
     }
     
-    // Validate message length
-    if (message.length < 10 || message.length > 1000) {
-      return NextResponse.json(
-        { error: 'Message must be between 10 and 1000 characters' },
-        { status: 400 }
-      );
-    }
-    
-    // Sanitize inputs to prevent XSS
+    // Sanitize inputs
     const sanitizedName = sanitizeInput(name);
     const sanitizedMessage = sanitizeInput(message);
+    const sanitizedCellphone = sanitizeInput(cellphone); // Cellphone is now required
 
-    // Check if email password is configured (without logging sensitive details)
-    if (!process.env.EMAIL_PASSWORD) {
-      console.error('EMAIL_PASSWORD environment variable is not configured');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    // Configure nodemailer with your email provider
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // use SSL
-      auth: {
-        user: 'vibesurfschoolftl@gmail.com',
-        pass: process.env.EMAIL_PASSWORD.replace(/\s+/g, ''),
-      },
-      debug: true, // Enable debug output
-      logger: true  // Logger for debug messages
-    });
-
-    // Verify connection configuration
-    try {
-      await transporter.verify();
-      console.log('SMTP connection verified successfully');
-    } catch (verifyError) {
-      console.error('SMTP verification failed:', verifyError);
-      return NextResponse.json(
-        { error: 'Failed to verify email server connection: ' + verifyError.message },
-        { status: 500 }
-      );
-    }
-
-    // Email content with sanitized inputs
-    const mailOptions = {
-      from: `"Vibe Surf School Website" <vibesurfschoolftl@gmail.com>`, // Use your own email as sender
-      replyTo: email, // Set reply-to as the visitor's email
-      to: 'vibesurfschoolftl@gmail.com',
-      subject: `New Surf Lesson Inquiry from ${sanitizedName}`,
-      text: `
-        Name: ${sanitizedName}
-        Email: ${email}
-        
-        Message:
-        ${sanitizedMessage}
-      `,
-      html: `
-        <h3>New Surf Lesson Inquiry</h3>
-        <p><strong>Name:</strong> ${sanitizedName}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Message:</strong></p>
-        <p>${sanitizedMessage}</p>
-      `,
+    // Connect to MongoDB
+    const client = await clientPromise;
+    const db = client.db('vibesurfschool');
+    const messagesCollection = db.collection('messages');
+    
+    // Create a unique ID for this contact person - use their name and email as a unique identifier
+    // This ensures each person has their own conversation thread
+    const namePart = sanitizedName.replace(/[^a-zA-Z0-9]/g, '_');
+    const emailPart = email.replace(/[^a-zA-Z0-9]/g, '_');
+    const uniqueContactId = `contact_${namePart}_${emailPart}`;
+    
+    // Create the message object
+    const messageData = {
+      type: 'contact',
+      author: sanitizedName,
+      content: sanitizedMessage,
+      email: email,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'unread',
+      bookingId: uniqueContactId,
+      cellphone: sanitizedCellphone, // Cellphone is now required
     };
+    
+    // Save message to database
+    const result = await messagesCollection.insertOne(messageData);
+    console.log('Contact form message saved to database:', result.insertedId);
 
-    // Send the email
-    console.log('Attempting to send email...');
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.response);
+    // Send email notification
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_EMAIL,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      });
 
+      const mailOptions = {
+        from: `"Vibe Surf School Contact" <${process.env.GMAIL_EMAIL}>`,
+        to: process.env.NOTIFICATION_EMAIL,
+        subject: 'New Contact Form Submission - Vibe Surf School',
+        html: `
+          <p>You have a new contact form submission:</p>
+          <ul>
+            <li><strong>Name:</strong> ${sanitizedName}</li>
+            <li><strong>Email:</strong> ${email}</li>
+            <li><strong>Cellphone:</strong> ${sanitizedCellphone}</li>
+            <li><strong>Message:</strong></li>
+            <p>${sanitizedMessage.replace(/\n/g, '<br>')}</p>
+          </ul>
+          <p>Please check the admin messages section for more details:</p>
+          <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/bookings?tab=messages">${process.env.NEXT_PUBLIC_APP_URL}/admin/bookings?tab=messages</a></p>
+        `,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log('Notification email sent successfully to:', process.env.NOTIFICATION_EMAIL);
+    } catch (emailError) {
+      console.error('Error sending notification email:', emailError);
+      // Do not block the user response if email fails, just log the error
+    }
+    
     return NextResponse.json(
-      { message: 'Email sent successfully', messageId: info.messageId },
+      { 
+        success: true,
+        message: 'Message received successfully. Our team will get back to you soon!',
+        messageId: result.insertedId.toString()
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error handling contact form submission:', error);
     return NextResponse.json(
-      { error: 'Failed to send email: ' + error.message },
+      { 
+        success: false,
+        error: 'Failed to process your message. Please try again later.'
+      },
       { status: 500 }
     );
   }

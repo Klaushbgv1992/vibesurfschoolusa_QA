@@ -7,6 +7,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    cellphone: '', // Added cellphone
     message: '',
   });
   
@@ -28,6 +29,19 @@ export default function ContactPage() {
     setError('');
     
     try {
+      console.log('Submitting form data:', formData);
+      
+      // Validate form data on client side first
+      if (!formData.name || !formData.email || !formData.cellphone || !formData.message) {
+        console.error('Missing required fields:', { 
+          name: !!formData.name, 
+          email: !!formData.email, 
+          cellphone: !!formData.cellphone, // Added cellphone validation
+          message: !!formData.message 
+        });
+        throw new Error('Please fill out all required fields');
+      }
+      
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -36,17 +50,39 @@ export default function ContactPage() {
         body: JSON.stringify(formData),
       });
       
-      const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
+      let data;
+      try {
+        data = await response.json();
+        console.log('API response data:', data);
+      } catch (jsonError) {
+        console.error('Failed to parse response as JSON:', jsonError);
+        throw new Error('Invalid server response');
+      }
       
       if (!response.ok) {
+        console.error('API returned error:', data.error);
         throw new Error(data.error || 'Failed to send message');
       }
       
       console.log('Form submitted successfully:', data);
       setSubmitSuccess(true);
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', email: '', cellphone: '', message: '' }); // Added cellphone to reset
+      
+      // Try to fetch messages after submission to verify it was stored
+      setTimeout(async () => {
+        try {
+          const verifyResponse = await fetch('/api/admin/messages');
+          const verifyData = await verifyResponse.json();
+          console.log('Messages after submission:', verifyData);
+        } catch (verifyError) {
+          console.error('Error verifying message was stored:', verifyError);
+        }
+      }, 1000);
     } catch (err) {
-      setError('There was an error submitting your message. Please try again.');
+      setError(err.message || 'There was an error submitting your message. Please try again.');
       console.error('Form submission error:', err);
     } finally {
       setIsSubmitting(false);
@@ -169,6 +205,22 @@ export default function ContactPage() {
                         required
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#005d8e] focus:border-[#005d8e]"
                         placeholder="Enter your email"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="cellphone" className="block text-gray-700 font-medium mb-2">
+                        Cellphone Number
+                      </label>
+                      <input
+                        type="tel"
+                        id="cellphone"
+                        name="cellphone"
+                        value={formData.cellphone}
+                        onChange={handleChange}
+                        required // Added required attribute
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#005d8e] focus:border-[#005d8e]"
+                        placeholder="Enter your cellphone number"
                       />
                     </div>
                     
