@@ -231,49 +231,62 @@ export default function DateTimeSelection({
 
   const fetchAvailability = async () => {
     if (!selectedBeach || !selectedActivity || !date) return;
-    
+
     setIsLoading(true);
     try {
       const formattedDate = date instanceof Date ? date.toISOString().split('T')[0] : date;
-    const response = await fetch(`/api/bookings?date=${formattedDate}`);
+      const response = await fetch(`/api/bookings?date=${formattedDate}`); // Fetches all bookings for the date
       const data = await response.json();
-      
+
       if (data.success) {
-        // Filter out bookings for the same beach only (not activity-specific)
-        const relevantBookings = data.bookings.filter(booking => 
-          booking.beach === selectedBeach.name
-        );
-        
+        const linkedBeaches = ["Sunny Isles Beach", "Dania Beach"];
+        let relevantBookings;
+
+        // Ensure selectedBeach and selectedBeach.name are valid before using them
+        if (selectedBeach && selectedBeach.name && linkedBeaches.includes(selectedBeach.name)) {
+          // If selected beach is one of the linked beaches,
+          // consider bookings from ANY of the linked beaches.
+          relevantBookings = data.bookings.filter(booking =>
+            booking.beach && linkedBeaches.includes(booking.beach)
+          );
+        } else {
+          // For non-linked beaches, or if selectedBeach is not properly defined,
+          // filter for the specific beach only (original logic).
+          relevantBookings = data.bookings.filter(booking =>
+            selectedBeach && selectedBeach.name && booking.beach && booking.beach === selectedBeach.name
+          );
+        }
+
         setBookedSlots(relevantBookings);
-        
-        // Find unavailable times
+
+        // Find unavailable times based on the (now correctly filtered) relevantBookings
         const unavailable = [];
-        availableTimes.forEach(time => {
+        availableTimes.forEach(time => { // availableTimes is the static list of all possible start times
           const endTime = getActivityEndTime(time, selectedActivity.duration);
-          
-          // Check if this time slot overlaps with any booked slots
+
           const isUnavailable = relevantBookings.some(booking => {
+            // Check if the current time slot (time to endTime) overlaps with this booking
             return (
-              (time >= booking.startTime && time < booking.endTime) || // Start time within booked slot
-              (endTime > booking.startTime && endTime <= booking.endTime) || // End time within booked slot
-              (time <= booking.startTime && endTime >= booking.endTime) // Completely contains booked slot
+              (time >= booking.startTime && time < booking.endTime) ||
+              (endTime > booking.startTime && endTime <= booking.endTime) ||
+              (time <= booking.startTime && endTime >= booking.endTime)
             );
           });
-          
+
           if (isUnavailable) {
             unavailable.push(time);
           }
         });
-        
+
         setUnavailableTimes(unavailable);
         setAvailableTimeSlots(availableTimes.filter(time => !unavailable.includes(time)));
       } else {
         console.error('Failed to fetch availability');
-        setAvailableTimeSlots(availableTimes);
+        setAvailableTimeSlots(availableTimes); // Reset to all times if fetch fails
       }
     } catch (error) {
       console.error('Error checking availability:', error);
-      setAvailableTimeSlots(availableTimes);
+      setAvailableTimeSlots(availableTimes); // Reset to all times on error
     } finally {
       setIsLoading(false);
     }

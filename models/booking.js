@@ -29,11 +29,27 @@ export const BookingSchema = {
 
 // Export function to check for availability
 export async function checkAvailability(collection, beach, activity, date, startTime, endTime) {
-  const existingBookings = await collection.find({
-    beach,
+  console.log('[checkAvailability] Input Params:', { beach, activity, date, startTime, endTime });
+
+  const linkedBeaches = ["Sunny Isles Beach", "Dania Beach"]; // Beaches to link
+  let beachQueryCondition;
+
+  if (linkedBeaches.includes(beach)) {
+    // If the requested beach is one of the linked beaches, check for bookings in EITHER linked beach.
+    beachQueryCondition = { $in: linkedBeaches };
+    console.log(`[checkAvailability] Beach '${beach}' is linked. Querying for beaches:`, linkedBeaches);
+  } else {
+    // Otherwise, check for bookings only in the specified beach.
+    beachQueryCondition = beach;
+    console.log(`[checkAvailability] Beach '${beach}' is not linked. Querying for this beach only.`);
+  }
+  console.log('[checkAvailability] Beach Query Condition:', JSON.stringify(beachQueryCondition));
+
+  const query = {
+    beach: beachQueryCondition, // Use the modified condition here
     activity,
     date: new Date(date),
-    status: { $in: ['Confirmed', 'Group Inquiry'] },
+    status: { $in: ['Confirmed', 'Group Inquiry'] }, // Assuming these statuses make a slot unavailable
     $or: [
       // Check if new booking starts during an existing booking
       { 
@@ -51,7 +67,11 @@ export async function checkAvailability(collection, beach, activity, date, start
         endTime: { $lte: endTime }
       }
     ]
-  }).toArray();
+  };
+  console.log('[checkAvailability] MongoDB Query:', JSON.stringify(query));
+
+  const existingBookings = await collection.find(query).toArray();
+  console.log('[checkAvailability] Found existing bookings:', existingBookings.length, existingBookings);
   
   return existingBookings.length === 0;
 }
