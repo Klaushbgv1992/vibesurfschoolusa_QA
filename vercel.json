@@ -4,18 +4,5 @@
       "path": "/api/cron",
       "schedule": "0 9 * * 1,4"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "vibesurfschool.com"
-        }
-      ],
-      "destination": "https://www.vibesurfschool.com/$1",
-      "permanent": true
-    }
   ]
 }
