@@ -4,22 +4,34 @@ import { ObjectId } from 'mongodb';
 
 // Helper function to check admin authentication
 const isAdminRequest = (request) => {
-  // For development/testing, we're allowing automatic verification from the contact form
-  // Check if the request is coming from the contact form verification
   const referer = request.headers.get('referer') || '';
+  console.log('[isAdminRequest] Referer:', referer);
+
   if (referer.includes('/contact')) {
-    console.log('Contact form verification request detected - allowing access');
+    console.log('[isAdminRequest] Contact form verification request detected - allowing access via referer.');
     return true;
   }
   
-  // For client-side authentication, check for the auth cookie
-  const authCookie = request.cookies?.get('vibeAdminAuth'); // Added optional chaining
+  const authCookie = request.cookies?.get('vibeAdminAuth');
+  console.log('[isAdminRequest] Auth Cookie (vibeAdminAuth):', authCookie);
   
-  // Also check the Authorization header for API requests from the admin panel
   const authHeader = request.headers.get('Authorization');
+  console.log('[isAdminRequest] Authorization Header:', authHeader);
   
-  // Allow both cookie and Authorization header
-  return authCookie?.value === 'true' || authHeader === 'Bearer VibeAdmin';
+  const cookieAuthValid = authCookie?.value === 'true';
+  const headerAuthValid = authHeader === 'Bearer VibeAdmin';
+
+  if (cookieAuthValid) {
+    console.log('[isAdminRequest] Access granted via cookie.');
+    return true;
+  }
+  if (headerAuthValid) {
+    console.log('[isAdminRequest] Access granted via Authorization header.');
+    return true;
+  }
+  
+  console.log('[isAdminRequest] Access denied. Cookie valid:', cookieAuthValid, 'Header valid:', headerAuthValid);
+  return false;
 };
 
 // GET messages (all or for a specific booking)

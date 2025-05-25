@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { activities } from '../../../data/booking-options';
 import BookingSettingsPanel from './BookingSettingsPanel';
@@ -41,16 +41,7 @@ const fetchBookings = async (start, end) => {
 
 export default function AdminBookingsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('calendar');
-  const [unreadMessages, setUnreadMessages] = useState(0);
-  
-  // Check authentication on client side
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('vibeAdminAuth') === 'true';
-    if (!isAuthenticated) {
-      router.push('/admin/login');
-    }
-  }, [router]);
+
   // For demonstration, use static list of sites. You can fetch dynamically if you wish.
   const sites = [
     'Pompano Beach',
@@ -59,10 +50,69 @@ export default function AdminBookingsPage() {
   ];
   // Replace single selection with multi-select object where each beach is a key with boolean value
   const [selectedBeaches, setSelectedBeaches] = useState({
-    'Pompano Beach': true,
+    'Pompano Beach': false,
     'Sunny Isles Beach': false,
     'Dania Beach': false,
   });
+  const [allBlockedDates, setAllBlockedDates] = useState([]); // New state for all blocked dates
+  const [activeTab, setActiveTab] = useState('calendar');
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const fetchedDatesRef = useRef({}); // To track fetched date ranges for bookings
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('vibeAdminAuth') === 'true';
+    if (!isAuthenticated) {
+      router.push('/admin/login');
+    }
+  }, [router]);
+
+  const fetchAndSetBlockedDates = useCallback(async (currentSelectedBeaches) => {
+    const activeBeaches = Object.entries(currentSelectedBeaches)
+      .filter(([, isSelected]) => isSelected)
+      .map(([beachName]) => beachName);
+
+    if (activeBeaches.length === 0) {
+      setAllBlockedDates([]);
+      return;
+    }
+    console.log('[AdminBookingsPage] Fetching blocked dates for:', activeBeaches.join(', '));
+    try {
+      const promises = activeBeaches.map(async (beachName) => {
+        const apiUrl = `${window.location.origin}/api/booking-settings?site=${encodeURIComponent(beachName)}`;
+        const response = await fetch(apiUrl, { cache: 'no-cache' });
+        if (!response.ok) {
+          console.error(`[AdminBookingsPage] Failed to fetch settings for ${beachName}: ${response.status}`);
+          return [];
+        }
+        const data = await response.json();
+        if (data.success && data.settings.length > 0 && data.settings[0].blockedDates) {
+          return data.settings[0].blockedDates;
+        }
+        return [];
+      });
+
+      const results = await Promise.all(promises);
+      const combinedBlockedDates = new Set();
+      results.forEach(datesArray => {
+        if (Array.isArray(datesArray)) {
+          datesArray.forEach(dateStr => combinedBlockedDates.add(dateStr));
+        }
+      });
+      const newBlockedDates = Array.from(combinedBlockedDates);
+      console.log('[AdminBookingsPage] Combined blocked dates:', newBlockedDates);
+      setAllBlockedDates(newBlockedDates);
+    } catch (error) {
+      console.error('[AdminBookingsPage] Error fetching combined blocked dates:', error);
+      setAllBlockedDates([]);
+    }
+  }, [setAllBlockedDates]);
+
+  useEffect(() => {
+    if (localStorage.getItem('vibeAdminAuth') === 'true') {
+        fetchAndSetBlockedDates(selectedBeaches);
+    }
+  }, [selectedBeaches, fetchAndSetBlockedDates]);
+  
   const [events, setEvents] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [calendarViewDates, setCalendarViewDates] = useState({ start: '', end: '' });
@@ -96,6 +146,14 @@ export default function AdminBookingsPage() {
     if (!act) return 0;
     return act.price * (parseInt(booking.participants) || 1);
   };
+
+  const getDayCellClassNames = useCallback((arg) => {
+    const dateStr = arg.date.toISOString().split('T')[0];
+    if (allBlockedDates.includes(dateStr)) {
+      return ['blocked-date-cell'];
+    }
+    return [];
+  }, [allBlockedDates]);
 
   // Function to fetch unread messages count
   const fetchUnreadMessagesCount = useCallback(async () => {
@@ -137,73 +195,51 @@ export default function AdminBookingsPage() {
   const refreshBookings = useCallback(async () => {
     if (!calendarViewDates.start || !calendarViewDates.end) return;
     
-    // Prevent excessive API calls by using a flag
     setIsProcessing(true);
-    
     try {
       const bookings = await fetchBookings(calendarViewDates.start, calendarViewDates.end);
       
-      // Filter bookings by selected beaches
       const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
       const filteredBookings = bookings.filter(b => {
         const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
-        // If no beaches are selected, show no bookings
         if (selectedBeachesList.length === 0) return false;
-        // Otherwise only show bookings for selected beaches
         return selectedBeachesList.includes(beachName);
       });
       
       const evts = filteredBookings.map(b => {
-        // Ensure we have a valid id (convert to string if needed)
         const id = b._id ? (typeof b._id === 'object' && b._id.toString ? b._id.toString() : b._id) : '';
-        
         return {
           id: id,
           title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
           start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
           end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
-          extendedProps: {...b, _id: id}, // Ensure extendedProps has the string ID
+          extendedProps: {...b, _id: id},
           color: b.status === 'Confirmed' ? '#198754' : '#ffc107',
         };
       });
       
       setEvents(evts);
-      
-      // Calculate revenue total using latest activity prices (except for 5+ group)
       const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
       setRevenueTotal(total);
-      // Reset processing flag
-      setIsProcessing(false);
     } catch (error) {
       console.error('Error refreshing bookings:', error);
+    } finally {
+      setIsProcessing(false); // Ensure this always runs
     }
-  }, [calendarViewDates, selectedBeaches, sites]);
-  
-  // Fetch bookings when calendar view changes or beach selection changes
-  // Use a ref to track if we've already fetched data for these dates
-  const fetchedDatesRef = useRef({});
-  
-  // Only refresh when dates or beach filters change, with protection against infinite loops
+  }, [calendarViewDates, selectedBeaches, sites, getActivityPrice]);
   useEffect(() => {
-    // Skip initial render with empty dates
-    if (!calendarViewDates.start || !calendarViewDates.end) return;
-    
-    // Create a cache key from the current state
-    const cacheKey = `${calendarViewDates.start}-${calendarViewDates.end}-${Object.entries(selectedBeaches).filter(([_, v]) => v).map(([k]) => k).join('+')}`;
-    
-    // Only fetch if we haven't fetched this exact combination before or if we're forcing a refresh
-    if (!isProcessing && !fetchedDatesRef.current[cacheKey]) {
-      // Mark this combination as fetched
-      fetchedDatesRef.current[cacheKey] = true;
-      
-      // Use setTimeout to debounce and prevent potential race conditions
-      const timeoutId = setTimeout(() => {
-        refreshBookings();
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
+    // Skip if dates are not set yet or if already processing
+    if (!calendarViewDates.start || !calendarViewDates.end || isProcessing) {
+      return;
     }
-  }, [calendarViewDates, selectedBeaches, isProcessing]);
+    
+    // Debounce the call to refreshBookings
+    const timeoutId = setTimeout(() => {
+      refreshBookings();
+    }, 100); // Adjust debounce timing if needed
+    
+    return () => clearTimeout(timeoutId); // Cleanup timeout
+  }, [calendarViewDates, selectedBeaches]);
 
   // Function to handle booking deletion
   const handleDeleteBooking = async () => {
@@ -410,6 +446,7 @@ export default function AdminBookingsPage() {
                 height="auto"
                 events={events}
                 datesSet={handleDatesSet}
+                dayCellClassNames={getDayCellClassNames}
                 eventClick={handleEventClick}
                 dateClick={handleDateClick}
                 dayMaxEvents={3}
@@ -480,7 +517,11 @@ export default function AdminBookingsPage() {
             </div>
 
             {/* Booking Settings Panel at bottom */}
-            <BookingSettingsPanel sites={sites.filter(site => selectedBeaches[site])} selectedBeaches={selectedBeaches} />
+            <BookingSettingsPanel
+            onSettingsChange={() => {
+              console.log('[AdminBookingsPage] Settings changed in panel, refetching blocked dates.');
+              fetchAndSetBlockedDates(selectedBeaches);
+            }} sites={sites.filter(site => selectedBeaches[site])} selectedBeaches={selectedBeaches} />
 
             {/* Booking Details Modal */}
             {selectedBooking && (

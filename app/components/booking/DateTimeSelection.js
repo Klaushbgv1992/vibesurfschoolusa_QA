@@ -374,6 +374,22 @@ export default function DateTimeSelection({
                 <p className="text-blue-700 font-medium text-sm">{formatDateDisplay(date)}</p>
               </div>
             )}
+            {/* Informational message for users if they don't see desired slots */}
+            {date && !isBlockedDate && (
+              <div className="mt-3 text-left">
+                <p className="text-sm text-red-600">
+                  Not seeing the dates/times your are looking for?<br/>Please try a different beach location.
+                </p>
+              </div>
+            )}
+            {/* Message for blocked/unavailable dates */}
+            {isBlockedDate && date && (
+              <div className="mt-2 p-2 bg-red-50 rounded-md border-l-4 border-red-400">
+                <p className="text-sm font-medium text-red-700">
+                  This date is unavailable or within the lead time.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Time Selection - Right Column */}
@@ -447,13 +463,14 @@ export default function DateTimeSelection({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                     <p className="text-yellow-800 font-semibold text-base">No available time slots</p>
-                    <p className="text-yellow-700 mt-0.5 text-sm">Please select another date from the calendar</p>
+                    <p className="text-yellow-700 mt-0.5 text-sm">Please select another date from the calendar.</p>
                   </div>
                 )}
               </div>
             )}
           </div>
         </div>
+
       </div>
 
       {/* Continue Button */}

@@ -29,24 +29,18 @@ export default function AdminLayout({ children }) {
   // Show loading state
   if (isLoading) {
     return (
-      <html lang="en">
-        <body className={inter.className}>
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        </body>
-      </html>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
     );
   }
 
   // If on login page or authenticated, show content with admin-specific layout
   if (pathname === '/admin/login' || isAuthenticated) {
     return (
-      <html lang="en">
-        <body className={`${inter.className} antialiased bg-gray-50`}>
-          {children}
-        </body>
-      </html>
+      <div className={`antialiased bg-gray-50`}> {/* inter.className should be handled by root layout */}
+        {children}
+      </div>
     );
   }
 

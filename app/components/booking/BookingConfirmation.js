@@ -116,19 +116,11 @@ export default function BookingConfirmation({ booking, bookingId, onBookAgain })
       {showingDirections && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 mx-auto max-w-lg">
           <h3 className="text-lg font-bold text-gray-800 mb-4 text-left">Getting There</h3>
-          <div className="relative h-64 mb-4">
-            <Image
-              src={`/images/locations/${booking.beach?.id}.jpg`}
-              alt={`Map to ${booking.beach?.name}`}
-              fill
-              className="object-cover rounded-md"
-            />
-          </div>
           <div className="text-left">
             <h4 className="font-medium text-gray-800 mb-2">{booking.beach?.name}</h4>
             <p className="text-gray-600 mb-4">{booking.beach?.address}</p>
             <a 
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.beach?.name)}`}
+              href={booking.beach?.googleMapsLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.beach?.address || booking.beach?.name)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#005d8e] font-medium flex items-center"

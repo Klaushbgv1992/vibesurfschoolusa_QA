@@ -28,7 +28,7 @@ const locations = [
   {
     id: 1,
     name: "Pompano Beach",
-    address: "50 N Ocean Blvd, Pompano Beach, FL 33062",
+    address: "1354-1348 S Ocean Blvd, Pompano Beach, FL 33062",
     description: "Our flagship location at Pompano Beach offers perfect beginner-friendly waves with a sandy bottom. The beach features ample parking, restrooms, and shower facilities. Our certified instructors provide lessons for all skill levels with stunning views of the Hillsboro Lighthouse in the background.",
     features: [
       "Sandy bottom beach ideal for beginners",
@@ -39,12 +39,12 @@ const locations = [
       "Group and private lessons available daily"
     ],
     image: "/images/locations/pompano.jpg",
-    mapUrl: "https://maps.app.goo.gl/aLn7G2p4BaqkgBoQ6"
+    mapUrl: "https://maps.app.goo.gl/sVWfpGFN5fT4X86k6"
   },
   {
     id: 2,
     name: "Dania Beach",
-    address: "300 N Beach Rd, Dania Beach, FL 33004",
+    address: "N Beach Rd, Dania Beach, FL 33004",
     description: "Our Dania Beach location provides a more secluded surf experience with consistent waves perfect for intermediate surfers looking to improve their skills. Located next to the historic Dania Beach Pier, this spot offers beautiful views and a more challenging surf environment for those ready to take their skills to the next level.",
     features: [
       "Great for intermediate surfers",
@@ -55,12 +55,12 @@ const locations = [
       "Beautiful natural surroundings"
     ],
     image: "/images/locations/dania.jpg",
-    mapUrl: "https://maps.app.goo.gl/SZ9iKhx9Z7TXoqZa7"
+    mapUrl: "https://maps.app.goo.gl/eC8a6GDv9qwSe1hK6"
   },
   {
     id: 3,
     name: "Sunny Isles Beach",
-    address: "New Port Pier, 16501 Collins Ave, Sunny Isles Beach, FL 33160",
+    address: "16501 Collins Ave, Sunny Isles Beach, FL 33160",
     description: "Our Sunny Isles Beach location at New Port Pier offers a fantastic surfing experience with stunning ocean views and excellent conditions for surfers of all levels. This vibrant beach area provides the perfect setting for surf lessons with its clear waters and beautiful surroundings.",
     features: [
       "Located at the scenic New Port Pier",
@@ -71,7 +71,7 @@ const locations = [
       "Private and group lessons available"
     ],
     image: "/images/locations/sunny-isles.jpg",
-    mapUrl: "https://maps.app.goo.gl/QUF9bsr1rbzw3Vtt6"
+    mapUrl: "https://maps.app.goo.gl/tkxYR6UMQHXFbXf26"
   },
   {
     id: 4,
@@ -150,11 +150,11 @@ export default function LocationsPage() {
                 <div className="bg-gray-50 p-6 rounded-lg text-center flex flex-col h-full justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-gray-900 mb-3">Pompano Beach</h4>
-                    <p className="text-gray-600 mb-4">50 N Ocean Blvd, Pompano Beach, FL 33062</p>
+                    <p className="text-gray-600 mb-4">1354-1348 S Ocean Blvd, Pompano Beach, FL 33062</p>
                   </div>
                   <div className="mt-auto">
                     <a 
-                      href="https://maps.app.goo.gl/aLn7G2p4BaqkgBoQ6" 
+                      href="https://maps.app.goo.gl/sVWfpGFN5fT4X86k6" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"
@@ -171,11 +171,11 @@ export default function LocationsPage() {
                 <div className="bg-gray-50 p-6 rounded-lg text-center flex flex-col h-full justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-gray-900 mb-3">Dania Beach</h4>
-                    <p className="text-gray-600 mb-4">300 N Beach Rd, Dania Beach, FL 33004</p>
+                    <p className="text-gray-600 mb-4">N Beach Rd, Dania Beach, FL 33004</p>
                   </div>
                   <div className="mt-auto">
                     <a 
-                      href="https://maps.app.goo.gl/SZ9iKhx9Z7TXoqZa7" 
+                      href="https://maps.app.goo.gl/eC8a6GDv9qwSe1hK6" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"
@@ -192,11 +192,11 @@ export default function LocationsPage() {
                 <div className="bg-gray-50 p-6 rounded-lg text-center flex flex-col h-full justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-gray-900 mb-3">Sunny Isles Beach</h4>
-                    <p className="text-gray-600 mb-4">New Port Pier, 16501 Collins Ave, Sunny Isles Beach, FL 33160</p>
+                    <p className="text-gray-600 mb-4">16501 Collins Ave, Sunny Isles Beach, FL 33160</p>
                   </div>
                   <div className="mt-auto">
                     <a 
-                      href="https://maps.app.goo.gl/QUF9bsr1rbzw3Vtt6" 
+                      href="https://maps.app.goo.gl/tkxYR6UMQHXFbXf26" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"

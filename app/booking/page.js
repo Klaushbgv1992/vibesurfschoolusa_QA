@@ -58,6 +58,8 @@ export default function BookingPage() {
     setIsSubmitting(true);
     setError(null);
     const bookingPayload = { ...formData, ...customerInfo };
+    setFormData(bookingPayload); // Update main formData with customerInfo immediately
+
     try {
       // If group booking, send directly to backend
       if (isGroupBooking) {
@@ -65,12 +67,13 @@ export default function BookingPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            ...bookingPayload,
+            ...bookingPayload, // bookingPayload already has everything
             isGroupInquiry: true,
           })
         });
         const data = await res.json();
         if (res.ok && data.success) {
+          setPendingBooking(null); // Clear pendingBooking if it was a group inquiry from the start
           setBookingComplete(true);
           setBookingId(data.bookingId);
           setCurrentStep(6);
@@ -79,8 +82,7 @@ export default function BookingPage() {
         }
       } else {
         // For regular bookings, go to paywall step
-        setFormData(prev => ({ ...prev, ...customerInfo }));
-        setPendingBooking({ ...formData, ...customerInfo });
+        setPendingBooking(bookingPayload); // pendingBooking now has the complete data
         setCurrentStep(5);
       }
     } catch (err) {

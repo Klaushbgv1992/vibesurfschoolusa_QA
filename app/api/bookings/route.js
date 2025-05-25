@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import clientPromise from '../../../lib/mongodb';
 import { checkAvailability, createBooking } from '../../../models/booking';
+import { sendAdminNotificationEmail } from '../../../lib/sendAdminNotificationEmail';
 
 // Simple in-memory rate limiter (for production, use Redis or similar)
 const rateLimit = {
@@ -112,12 +113,42 @@ export async function POST(request) {
           activity,
           date,
           startTime,
-          endTime
+          endTime,
+          isGroupInquiry: true,
+          participants: participants || 5 // Ensure participants is passed
         });
         console.log('Group booking confirmation email sent to', clientEmail);
       } catch (emailErr) {
         console.error('Failed to send group booking confirmation email:', emailErr);
         // Do not fail the booking if email fails
+      }
+
+      // Send admin notification email for group inquiry
+      try {
+        const bookingDetailsForAdmin = {
+          _id: result.insertedId,
+          clientName,
+          clientEmail,
+          clientPhone,
+          beach, // Pass the original beach object/string
+          activity, // Pass the original activity object/string
+          date,
+          startTime,
+          endTime,
+          participants: participants || 5,
+          groupAges,
+          notes: notes || '',
+          status: 'Group Inquiry'
+        };
+        await sendAdminNotificationEmail({
+          action: 'New Group Inquiry',
+          bookingDetails: bookingDetailsForAdmin,
+          adminEmail: process.env.ADMIN_EMAIL
+        });
+        console.log('Admin notification email sent for group inquiry ID:', result.insertedId);
+      } catch (adminEmailErr) {
+        console.error('Failed to send admin notification email for group inquiry:', adminEmailErr);
+        // Do not fail the booking if admin email fails
       }
       return NextResponse.json({ 
         success: true, 
@@ -211,12 +242,31 @@ export async function POST(request) {
         activity,
         date,
         startTime,
-        endTime
+        endTime,
+        isGroupInquiry: false,
+        participants: numParticipants // Pass numParticipants for regular bookings
       });
       console.log('Booking confirmation email sent to', clientEmail);
     } catch (emailErr) {
       console.error('Failed to send booking confirmation email:', emailErr);
       // Do not fail the booking if email fails
+    }
+
+    // Send admin notification email for confirmed booking
+    try {
+      const bookingDetailsForAdmin = {
+        ...bookingData,
+        _id: result.insertedId
+      };
+      await sendAdminNotificationEmail({
+        action: 'New Booking Confirmed',
+        bookingDetails: bookingDetailsForAdmin,
+        adminEmail: process.env.ADMIN_EMAIL
+      });
+      console.log('Admin notification email sent for booking ID:', result.insertedId);
+    } catch (adminEmailErr) {
+      console.error('Failed to send admin notification email for booking:', adminEmailErr);
+      // Do not fail the booking if admin email fails
     }
 
     return NextResponse.json({ 
@@ -237,14 +287,13 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   // Check if this is an admin request
-  // Only admins should be able to modify bookings
   if (!isAdminRequest(request)) {
     return NextResponse.json({ 
       success: false, 
       message: 'Unauthorized. Admin access required.' 
     }, { status: 401 });
   }
-  // PATCH /api/bookings - update booking details (revenue, date, time, etc.)
+
   try {
     const data = await request.json();
     const { id } = data;
@@ -257,20 +306,21 @@ export async function PATCH(request) {
     const bookingsCollection = db.collection('bookings');
     const { ObjectId } = require('mongodb');
     
-    // Build update object based on what fields were provided
     const updateFields = {};
-    
-    // Check for revenue update
-    if (typeof data.revenue === 'number') {
-      updateFields.revenue = data.revenue;
-    }
-    
-    // Check for date/time updates (for rescheduling)
+    if (typeof data.revenue === 'number') updateFields.revenue = data.revenue;
     if (data.date) updateFields.date = new Date(data.date);
     if (data.startTime) updateFields.startTime = data.startTime;
     if (data.endTime) updateFields.endTime = data.endTime;
-    
-    // If no fields to update, return error
+    if (data.status) updateFields.status = data.status; // Allow status updates
+    if (data.notes) updateFields.notes = data.notes; // Allow notes updates
+    // Add other fields as necessary, e.g., clientName, clientEmail, etc.
+    if (data.clientName) updateFields.clientName = data.clientName;
+    if (data.clientEmail) updateFields.clientEmail = data.clientEmail;
+    if (data.clientPhone) updateFields.clientPhone = data.clientPhone;
+    if (data.participants) updateFields.participants = data.participants;
+    if (data.activity) updateFields.activity = typeof data.activity === 'string' ? data.activity : data.activity.name;
+    if (data.beach) updateFields.beach = typeof data.beach === 'string' ? data.beach : data.beach.name;
+
     if (Object.keys(updateFields).length === 0) {
       return NextResponse.json({ 
         success: false, 
@@ -278,19 +328,34 @@ export async function PATCH(request) {
       }, { status: 400 });
     }
     
-    // MongoDB driver v5+ uses returnDocument option but returns differently
-    // than older versions. Handle both cases.
     const result = await bookingsCollection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: updateFields },
       { returnDocument: 'after' }
     );
     
-    // Check for the result in either result.value (older driver) or directly in result (newer driver)
     const updatedBooking = result.value || result;
     
     if (!updatedBooking) {
       return NextResponse.json({ success: false, message: 'Booking not found.' }, { status: 404 });
+    }
+
+    // Send admin notification email
+    if (process.env.ADMIN_EMAIL) {
+      let action = 'Modified';
+      if (data.date || data.startTime || data.endTime) {
+        action = 'Rescheduled';
+      }
+      try {
+        await sendAdminNotificationEmail({
+          action: action,
+          bookingDetails: updatedBooking,
+          adminEmail: process.env.ADMIN_EMAIL
+        });
+      } catch (emailError) {
+        console.error(`Failed to send admin notification email for ${action} booking:`, emailError);
+        // Do not let email failure break the main API response
+      }
     }
     
     return NextResponse.json({ success: true, booking: updatedBooking });
@@ -306,14 +371,13 @@ export async function PATCH(request) {
 
 export async function DELETE(request) {
   // Check if this is an admin request
-  // Only admins should be able to delete bookings
   if (!isAdminRequest(request)) {
     return NextResponse.json({ 
       success: false, 
       message: 'Unauthorized. Admin access required.' 
     }, { status: 401 });
   }
-  // DELETE /api/bookings?id=123 - delete a booking by ID
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -329,31 +393,55 @@ export async function DELETE(request) {
     const db = client.db('vibesurfschool');
     const bookingsCollection = db.collection('bookings');
     const { ObjectId } = require('mongodb');
-    
-    try {
-      const result = await bookingsCollection.deleteOne({ _id: new ObjectId(id) });
-      
-      if (result.deletedCount === 0) {
-        return NextResponse.json({ 
-          success: false, 
-          message: 'Booking not found or already deleted.' 
-        }, { status: 404 });
-      }
-    } catch (deleteError) {
-      console.error('MongoDB delete error:', deleteError);
+
+    // Fetch booking details before deleting for email notification
+    const bookingToDelete = await bookingsCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!bookingToDelete) {
       return NextResponse.json({ 
         success: false, 
-        message: 'Error while deleting booking', 
-        error: deleteError.message 
-      }, { status: 500 });
+        message: 'Booking not found.' 
+      }, { status: 404 });
     }
     
+    const result = await bookingsCollection.deleteOne({ _id: new ObjectId(id) });
+      
+    if (result.deletedCount === 0) {
+      // This case should ideally be caught by the findOne above, but as a fallback:
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Booking not found or already deleted (delete operation failed).'
+      }, { status: 404 });
+    }
+
+    // Send admin notification email
+    if (process.env.ADMIN_EMAIL) {
+      try {
+        await sendAdminNotificationEmail({
+          action: 'Deleted',
+          bookingDetails: bookingToDelete, // Use the fetched booking details
+          adminEmail: process.env.ADMIN_EMAIL
+        });
+      } catch (emailError) {
+        console.error('Failed to send admin notification email for deleted booking:', emailError);
+        // Do not let email failure break the main API response
+      }
+    }
+        
     return NextResponse.json({ 
       success: true, 
       message: 'Booking successfully deleted.' 
     });
   } catch (error) {
     console.error('Error deleting booking:', error, error.stack);
+    // Check if it's an ObjectId format error
+    if (error.message && error.message.includes('Argument passed in must be a single String of 12 bytes or a string of 24 hex characters')) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Invalid Booking ID format.',
+        error: error.message
+      }, { status: 400 });
+    }
     return NextResponse.json({ 
       success: false, 
       message: 'Failed to delete booking.', 

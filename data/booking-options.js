@@ -3,21 +3,24 @@ export const beaches = [
     id: 'dania-beach',
     name: 'Dania Beach',
     description: 'Dania Beach provides a more secluded experience with great surf conditions.',
-    address: 'Dania Beach, FL',
+    address: 'N Beach Rd, Dania Beach, FL 33004',
+    googleMapsLink: 'https://maps.app.goo.gl/eC8a6GDv9qwSe1hK6',
     image: '/images/location/Dania Beach.jpg'
   },
   {
     id: 'hollywood-beach',
     name: 'Sunny Isles Beach',
     description: 'Sunny Isles Beach features a beautiful boardwalk and consistent waves perfect for surfing lessons.',
-    address: 'Sunny Isles Beach, FL',
+    address: '16501 Collins Ave, Sunny Isles Beach, FL 33160',
+    googleMapsLink: 'https://maps.app.goo.gl/tkxYR6UMQHXFbXf26',
     image: '/images/location/Sunny Isles Beach.jpg'
   },
   {
     id: 'pompano-beach',
     name: 'Pompano Beach',
     description: 'Pompano Beach offers excellent conditions for beginners with gentle waves and shallow waters.',
-    address: 'Pompano Beach, FL',
+    address: '1354-1348 S Ocean Blvd, Pompano Beach, FL 33062',
+    googleMapsLink: 'https://maps.app.goo.gl/sVWfpGFN5fT4X86k6',
     image: '/images/location/Pompano Beach.jpg'
   }
 ];
