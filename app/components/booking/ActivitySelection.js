@@ -58,7 +58,7 @@ export default function ActivitySelection({ activities, onSelect, selectedActivi
           </div>
           
           <div className="flex-grow">
-            <h3 className="font-medium">{activity.name}</h3>
+            <h3 className="font-medium text-gray-800">{activity.name}</h3>
             <div className="flex items-center text-gray-500 text-sm">
               <span>{activity.duration} min</span>
               <span className="mx-2">•</span>
