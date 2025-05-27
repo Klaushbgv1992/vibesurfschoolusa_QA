@@ -49,7 +49,7 @@ export async function POST(request) {
   try {
     const data = await request.json();
     console.log('POST /api/bookings payload:', data);
-    const { clientName, clientEmail, clientPhone, beach, activity, date, startTime, endTime, participants, notes, paymentDetails, isGroupInquiry, groupAges } = data;
+    const { clientName, clientEmail, clientPhone, beach, activity, date, startTime, endTime, participants, notes, paymentDetails, isGroupInquiry, groupAges, paymentMethod, revenue, status, activityId } = data; // Added paymentMethod, revenue, status, activityId
 
     // Rate limiting by IP
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
@@ -79,6 +79,59 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
+    // Check if this is an admin manual entry first
+    if (paymentDetails && paymentDetails.source === 'AdminManualEntry') {
+      console.log('[DEBUG] Processing Admin Manual Entry booking');
+      // For admin entries, payment is handled manually (e.g., Cash, Zelle)
+      // We trust the details and revenue passed from the admin form.
+      const client = await clientPromise;
+      const db = client.db('vibesurfschool');
+      const bookingsCollection = db.collection('bookings');
+
+      const newBookingData = {
+        clientName,
+        clientEmail,
+        clientPhone,
+        beach,
+        activity: activity, // Directly use the activity name string from the payload
+        activityId: activityId, // Use the scalar activityId from the payload
+        date,
+        startTime,
+        endTime,
+        participants,
+        notes,
+        status: status || 'Confirmed', // Use status from admin form, default to Confirmed
+        paymentMethod: paymentMethod, // Store the manually selected payment method
+        paymentDetails: paymentDetails, // Store the full paymentDetails object from admin
+        revenue: revenue !== undefined ? revenue : 0, // Use revenue from admin form, default to 0
+        created: new Date(),
+      };
+
+      console.log('[DEBUG] Saving Admin Manual Entry booking with data:', newBookingData);
+      const result = await createBooking(bookingsCollection, newBookingData);
+
+      // Send admin notification for admin-created bookings as well
+      const bookingDetailsForEmail = {
+        ...newBookingData, // Spread all properties from newBookingData
+        _id: result.insertedId.toString(), // Add the string version of the ID
+        // Ensure date is in the format expected by the email template if it's transformed in newBookingData
+        // Or rely on the email template to format it from the string/Date object in newBookingData.date
+      };
+
+      try {
+        await sendAdminNotificationEmail({
+          action: 'New Booking (Admin)', // Specify the action
+          bookingDetails: bookingDetailsForEmail, // Pass the structured booking details
+          adminEmail: process.env.ADMIN_EMAIL
+        });
+      } catch (emailError) {
+        console.error('Error sending admin notification email for admin booking:', emailError);
+        // Do not fail the booking creation if email fails
+      }
+
+      return NextResponse.json({ success: true, bookingId: result.insertedId, message: 'Admin booking created successfully' });
+    }
+
     // If this is a group inquiry, skip payment validation and set revenue to 0
     if (isGroupInquiry) {
       // Connect to MongoDB (ensure bookingsCollection is defined)
@@ -101,7 +154,12 @@ export async function POST(request) {
         participants: participants || 5,
         groupAges,
         notes: notes || '',
-        status: 'Group Inquiry'
+        status: 'Group Inquiry',
+        revenue: 0, // Group inquiries have no initial revenue
+        paymentMethod: 'Inquiry', // Mark payment method for inquiries
+        paymentDetails: { status: 'PENDING', source: 'GroupInquiry' },
+        activityId: typeof activity === 'object' ? activity.id : activityId, // Ensure activityId is stored
+        created: new Date(),
       });
       // Send confirmation email to client
       try {
@@ -213,6 +271,8 @@ export async function POST(request) {
     calculatedRevenue = price * numParticipants;
 
     // Save the booking (confirmed or group inquiry)
+    const activityIdToStore = typeof activity === 'object' && activity !== null ? activity.id : (data.activityId || null); // Get activityId from incoming data if activity is just a string
+
     const bookingData = {
       clientName,
       clientEmail,
@@ -226,7 +286,15 @@ export async function POST(request) {
       notes: notes || '',
       status: 'Confirmed',
       created: new Date(),
-      revenue: calculatedRevenue
+      revenue: calculatedRevenue,
+      paymentMethod: 'PayPal', // Mark as PayPal for standard flow
+      paymentDetails: {
+        id: paymentDetails.id, // PayPal Order ID
+        status: 'COMPLETED',   // Already verified
+        source: 'paypal',
+        method: 'PayPal'       // Explicitly state PayPal method
+      },
+      activityId: activityIdToStore // Store activity ID
     };
 
     // Create the booking

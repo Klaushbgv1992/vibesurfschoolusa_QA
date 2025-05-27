@@ -16,6 +16,7 @@ export async function POST(request) {
       // Set a secure cookie for the admin authentication
       // This will be used by the API routes to validate admin requests
       cookies().set('vibeAdminAuth', 'true', {
+        path: '/', // Make cookie available for all paths
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
