@@ -71,7 +71,7 @@ const locations = [
       "Private and group lessons available"
     ],
     image: "/images/locations/sunny-isles.jpg",
-    mapUrl: "https://maps.app.goo.gl/tkxYR6UMQHXFbXf26"
+    mapUrl: "https://maps.app.goo.gl/NAva9NyD9hkWXYvX8"
   },
   {
     id: 4,
@@ -196,7 +196,7 @@ export default function LocationsPage() {
                   </div>
                   <div className="mt-auto">
                     <a 
-                      href="https://maps.app.goo.gl/tkxYR6UMQHXFbXf26" 
+                      href="https://maps.app.goo.gl/NAva9NyD9hkWXYvX8" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-colors w-full md:w-auto"

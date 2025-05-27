@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Make FullCalendar toolbar title black for better readability */
+.fc-toolbar-title {
+  color: black !important; /* Using !important to ensure override if necessary */
+}
+
 .blocked-date-cell {
   background-color: #fee2e2 !important; /* Light red background */
 }

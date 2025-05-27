@@ -12,7 +12,7 @@ export const beaches = [
     name: 'Sunny Isles Beach',
     description: 'Sunny Isles Beach features a beautiful boardwalk and consistent waves perfect for surfing lessons.',
     address: '16501 Collins Ave, Sunny Isles Beach, FL 33160',
-    googleMapsLink: 'https://maps.app.goo.gl/tkxYR6UMQHXFbXf26',
+    googleMapsLink: 'https://maps.app.goo.gl/NAva9NyD9hkWXYvX8',
     image: '/images/location/Sunny Isles Beach.jpg'
   },
   {
