@@ -290,7 +290,9 @@ export default function AdminBookingsPage() {
       
       if (data.success) {
         // Refresh the calendar to reflect the deleted booking
-        await refreshBookings();
+        if (calendarRef.current) {
+          calendarRef.current.getApi().refetchEvents();
+        }
         // Close the modal
         setSelectedBooking(null);
         setIsDeleting(false);
