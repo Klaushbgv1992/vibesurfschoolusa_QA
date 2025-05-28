@@ -342,7 +342,9 @@ export default function AdminBookingsPage() {
       
       if (data.success) {
         // Refresh the calendar to reflect the rescheduled booking
-        await refreshBookings();
+        if (calendarRef.current) {
+          calendarRef.current.getApi().refetchEvents();
+        }
         
         // Close the modal and reset rescheduling state
         setSelectedBooking(null);
