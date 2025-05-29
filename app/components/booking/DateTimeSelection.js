@@ -82,9 +82,9 @@ export default function DateTimeSelection({
           setBookingSettings(data.settings[0]);
           setBlockedDates(data.settings[0].blockedDates || []);
           setLeadTimeHours(data.settings[0].leadTimeHours || 0);
-          // Force re-render of the date picker when lead time changes
-          setDate(null);
-          setDate(new Date());
+          // Force re-render of the date picker when lead time changes (Commented out to prevent date reset on beach change)
+          // setDate(null);
+          // setDate(new Date());
         } else {
           setBookingSettings(null);
           setBlockedDates([]);
@@ -96,14 +96,15 @@ export default function DateTimeSelection({
   // Fetch bookings only when necessary components change
   useEffect(() => {
     // On component mount or when key booking params change, refresh availability
-    setAvailableTimeSlots(availableTimes);
-    setUnavailableTimes([]);
-    
-    // Only fetch if we have the required data
-    if (selectedBeach && date) {
-      fetchAllBookings();
+    setAvailableTimeSlots(availableTimes); // Reset to all possible times
+    setUnavailableTimes([]); // Reset unavailable times
+
+    // Only fetch if we have all required data, including bookingSettings and selectedActivity
+    if (selectedBeach && selectedActivity && date && bookingSettings) {
+      fetchAvailability(); // Assuming fetchAllBookings was renamed to fetchAvailability
     }
-  }, [selectedBeach?.name, selectedActivity?.id, date ? getFormattedDateString(date) : null]);
+    // Ensure date object changes trigger this, and bookingSettings being loaded is critical.
+  }, [selectedBeach, selectedActivity, date, bookingSettings]);
   
   // Don't need a separate effect for date changes as it's included above
 
@@ -231,62 +232,87 @@ export default function DateTimeSelection({
 
   const fetchAvailability = async () => {
     if (!selectedBeach || !selectedActivity || !date) return;
-
+    
     setIsLoading(true);
     try {
       const formattedDate = date instanceof Date ? date.toISOString().split('T')[0] : date;
-      const response = await fetch(`/api/bookings?date=${formattedDate}`); // Fetches all bookings for the date
+    const response = await fetch(`/api/bookings?date=${formattedDate}`);
       const data = await response.json();
-
+      
       if (data.success) {
-        const linkedBeaches = ["Sunny Isles Beach", "Dania Beach"];
-        let relevantBookings;
-
-        // Ensure selectedBeach and selectedBeach.name are valid before using them
-        if (selectedBeach && selectedBeach.name && linkedBeaches.includes(selectedBeach.name)) {
-          // If selected beach is one of the linked beaches,
-          // consider bookings from ANY of the linked beaches.
-          relevantBookings = data.bookings.filter(booking =>
-            booking.beach && linkedBeaches.includes(booking.beach)
-          );
-        } else {
-          // For non-linked beaches, or if selectedBeach is not properly defined,
-          // filter for the specific beach only (original logic).
-          relevantBookings = data.bookings.filter(booking =>
-            selectedBeach && selectedBeach.name && booking.beach && booking.beach === selectedBeach.name
-          );
-        }
-
+        // Filter out bookings for the same beach only (not activity-specific)
+        const relevantBookings = data.bookings.filter(booking => 
+          booking.beach === selectedBeach.name
+        );
+        
         setBookedSlots(relevantBookings);
-
-        // Find unavailable times based on the (now correctly filtered) relevantBookings
+        
+        // Find unavailable times
         const unavailable = [];
-        availableTimes.forEach(time => { // availableTimes is the static list of all possible start times
+        availableTimes.forEach(time => {
           const endTime = getActivityEndTime(time, selectedActivity.duration);
-
+          
+          // Check if this time slot overlaps with any booked slots
           const isUnavailable = relevantBookings.some(booking => {
-            // Check if the current time slot (time to endTime) overlaps with this booking
             return (
-              (time >= booking.startTime && time < booking.endTime) ||
-              (endTime > booking.startTime && endTime <= booking.endTime) ||
-              (time <= booking.startTime && endTime >= booking.endTime)
+              (time >= booking.startTime && time < booking.endTime) || // Start time within booked slot
+              (endTime > booking.startTime && endTime <= booking.endTime) || // End time within booked slot
+              (time <= booking.startTime && endTime >= booking.endTime) // Completely contains booked slot
             );
           });
-
+          
           if (isUnavailable) {
             unavailable.push(time);
           }
         });
+        
+        // Add logic to check against current time and lead time for the selected date
+        const now = new Date();
+        const currentLeadTimeHoursValue = leadTimeHours || 0; // leadTimeHours is from state
+        const leadTimeCutoff = new Date(now.getTime() + currentLeadTimeHoursValue * 60 * 60 * 1000);
+        
+        // 'date' is the selectedDate from state (which should be a JS Date object)
+        const selectedDateObject = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Normalize to start of day for comparison
+
+        const todayDateObject = new Date();
+        todayDateObject.setHours(0,0,0,0); // Normalize to start of day
+
+        // Iterate over all potentially available system times, not just those filtered by bookings
+        availableTimes.forEach(slot => {
+          const [slotHours, slotMinutes] = slot.split(':').map(Number);
+          const slotDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), slotHours, slotMinutes, 0, 0);
+
+          let shouldBeUnavailableDueToTime = false;
+
+          if (selectedDateObject.getTime() < todayDateObject.getTime()) {
+            // Selected date is in the past (DatePicker should prevent this, but good to be robust)
+            shouldBeUnavailableDueToTime = true;
+          } else if (selectedDateObject.getTime() === todayDateObject.getTime()) {
+            // Selected date is today, check against now and leadTimeCutoff
+            if (slotDateTime < now || slotDateTime < leadTimeCutoff) {
+              shouldBeUnavailableDueToTime = true;
+            }
+          }
+          // For future dates, DatePicker's lead time filter for full days handles broad lead times.
+          // This logic ensures slot-level precision, especially for lead times < 24h affecting today.
+
+          if (shouldBeUnavailableDueToTime) {
+            if (!unavailable.includes(slot)) { // Add to unavailable list if not already there
+              unavailable.push(slot);
+            }
+          }
+        });
 
         setUnavailableTimes(unavailable);
+        // Filter the master list of 'availableTimes' by the now-updated 'unavailable' list
         setAvailableTimeSlots(availableTimes.filter(time => !unavailable.includes(time)));
       } else {
         console.error('Failed to fetch availability');
-        setAvailableTimeSlots(availableTimes); // Reset to all times if fetch fails
+        setAvailableTimeSlots(availableTimes);
       }
     } catch (error) {
       console.error('Error checking availability:', error);
-      setAvailableTimeSlots(availableTimes); // Reset to all times on error
+      setAvailableTimeSlots(availableTimes);
     } finally {
       setIsLoading(false);
     }
@@ -387,22 +413,6 @@ export default function DateTimeSelection({
                 <p className="text-blue-700 font-medium text-sm">{formatDateDisplay(date)}</p>
               </div>
             )}
-            {/* Informational message for users if they don't see desired slots */}
-            {date && !isBlockedDate && (
-              <div className="mt-3 text-left">
-                <p className="text-sm text-red-600">
-                  Not seeing the dates/times your are looking for?<br/>Please try a different beach location.
-                </p>
-              </div>
-            )}
-            {/* Message for blocked/unavailable dates */}
-            {isBlockedDate && date && (
-              <div className="mt-2 p-2 bg-red-50 rounded-md border-l-4 border-red-400">
-                <p className="text-sm font-medium text-red-700">
-                  This date is unavailable or within the lead time.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Time Selection - Right Column */}
@@ -476,14 +486,13 @@ export default function DateTimeSelection({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                     <p className="text-yellow-800 font-semibold text-base">No available time slots</p>
-                    <p className="text-yellow-700 mt-0.5 text-sm">Please select another date from the calendar.</p>
+                    <p className="text-yellow-700 mt-0.5 text-sm">Please select another date from the calendar</p>
                   </div>
                 )}
               </div>
             )}
           </div>
         </div>
-
       </div>
 
       {/* Continue Button */}
