@@ -123,7 +123,7 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
           </div>
           <div>
             <p className="text-sm text-gray-500">Total Price</p>
-            <p className="font-medium">${formData.activity?.price * formData.participants}</p>
+            <p className="font-medium">${formData.activity?.minParticipants > 1 ? formData.activity?.price : formData.activity?.price * formData.participants}</p>
           </div>
         </div>
       </div>

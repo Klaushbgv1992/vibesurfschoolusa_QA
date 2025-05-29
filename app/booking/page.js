@@ -190,7 +190,7 @@ export default function BookingPage() {
                   </div>
                   {step < 5 && (
                     <div 
-                      className={`w-24 h-1 ${
+                      className={`w-10 md:w-16 lg:w-24 h-1 ${
                         currentStep > step ? 'bg-[#005d8e]' : 'bg-gray-300'
                       }`}
                     />
