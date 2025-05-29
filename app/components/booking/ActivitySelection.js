@@ -44,7 +44,15 @@ export default function ActivitySelection({ activities, onSelect, selectedActivi
           ${selectedActivity?.id === activity.id ? 'ring-2 ring-[#005d8e]' : ''}`}
         onMouseEnter={() => setHoveredActivity(activity.id)}
         onMouseLeave={() => setHoveredActivity(null)}
-        onClick={() => onSelect(activity, activity.minParticipants)}
+        onClick={() => {
+          const originalActivityData = activities.find(a => a.id === activity.id);
+          if (originalActivityData) {
+            onSelect({ ...originalActivityData }, originalActivityData.minParticipants);
+          } else {
+            console.error(`ActivitySelection: Could not find original data for activity ID ${activity.id} in main div click`);
+            onSelect(activity, activity.minParticipants); // Fallback
+          }
+        }}
       >
         <div className="flex items-center p-4">
           <div className="h-16 w-16 rounded-md overflow-hidden flex-shrink-0 mr-4">
@@ -81,7 +89,13 @@ export default function ActivitySelection({ activities, onSelect, selectedActivi
               className="block ml-auto mt-2 w-16 bg-[#005d8e] text-white py-1 px-2 rounded-md hover:bg-[#00486e] transition-all text-sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onSelect(activity, activity.minParticipants);
+                const originalActivityData = activities.find(a => a.id === activity.id);
+                if (originalActivityData) {
+                  onSelect({ ...originalActivityData }, originalActivityData.minParticipants);
+                } else {
+                  console.error(`ActivitySelection: Could not find original data for activity ID ${activity.id} in button click`);
+                  onSelect(activity, activity.minParticipants); // Fallback
+                }
               }}
             >
               Select
