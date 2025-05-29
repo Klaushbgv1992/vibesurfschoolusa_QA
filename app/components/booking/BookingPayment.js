@@ -28,11 +28,12 @@ export default function BookingPayment({ amount, onSuccess }) {
             body: JSON.stringify({ orderID: data.orderID })
           });
           const capture = await res.json();
-          if (capture.success) {
-            onSuccess(capture.details);
+          if (res.ok && capture.status === 'COMPLETED') {
+            console.log('PayPal capture successful on client, calling onSuccess:', capture);
+            onSuccess(capture); // Pass the full capture details
           } else {
-            alert('Payment not completed!');
-            console.error('PayPal capture failed', capture);
+            alert('Payment capture failed or was not completed. Please check console for details.');
+            console.error('PayPal capture failed on client:', capture);
           }
         }}
       onError={(err) => {

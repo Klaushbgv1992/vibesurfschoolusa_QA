@@ -1,27 +1,13 @@
-// Secure backend API route for PayPal order creation (Next.js API Route)
+// app/api/paypal/route.js (Order Creation)
 import { NextResponse } from 'next/server';
+import { getPayPalAccessTokenAndBase } from '../../lib/paypal-utils'; // Adjusted path
 
-console.log('PayPal Client ID:', process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '[MISSING]');
-console.log('PayPal Secret:', process.env.PAYPAL_CLIENT_SECRET ? '[SET]' : '[MISSING]');
-console.log('PayPal ENV:', process.env.PAYPAL_ENV || '[MISSING]');
-
-// Extra logging for debugging
-if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
-  console.error('[PayPal Debug] Missing NEXT_PUBLIC_PAYPAL_CLIENT_ID in env!');
-}
-if (!process.env.PAYPAL_CLIENT_SECRET) {
-  console.error('[PayPal Debug] Missing PAYPAL_CLIENT_SECRET in env!');
-}
-if (!process.env.PAYPAL_ENV) {
-  console.error('[PayPal Debug] Missing PAYPAL_ENV in env!');
-}
+// Helper function (can be moved to utils if used elsewhere or kept here if specific)
 async function getJsonResponseOrText(response) {
   const text = await response.text();
   try {
     return JSON.parse(text);
   } catch (e) {
-    // Not JSON, return the text for logging or specific error handling
-    // Return as an object to allow checking for error_text property
     return { error_text: text }; 
   }
 }
@@ -31,44 +17,18 @@ export async function POST(req) {
     const body = await req.json();
     const { amount, currency = 'USD' } = body;
 
-    // Determine PayPal environment
-    const isLive = process.env.PAYPAL_ENV === 'live';
-    const base = isLive
-      ? 'https://api-m.paypal.com'
-      : 'https://api-m.sandbox.paypal.com';
-
-    // Use secret credentials from env (never expose to client)
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-    if (!clientId || !clientSecret) {
-      console.error('PayPal credentials missing:', { clientId: !!clientId, clientSecret: !!clientSecret });
-      return NextResponse.json({ error: 'PayPal credentials missing. Please check your .env.local and restart the server.' }, { status: 500 });
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      return NextResponse.json({ error: 'Invalid amount specified.' }, { status: 400 });
     }
-    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
-    // Get OAuth access token
-    const tokenRes = await fetch(`${base}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
-    });
-    const tokenData = await getJsonResponseOrText(tokenRes);
-
-    if (!tokenRes.ok || tokenData.error_text || !tokenData.access_token) {
-      console.error('PayPal Auth Error:', tokenData.error_text || tokenData);
-      const details = tokenData.error_text ? { message: "PayPal returned non-JSON response during auth", raw: tokenData.error_text.substring(0, 500) } : tokenData;
-      return NextResponse.json({ error: 'Failed to authenticate with PayPal', details }, { status: tokenRes.status || 400 });
-    }
+    const { accessToken, base } = await getPayPalAccessTokenAndBase();
 
     // Create PayPal order
     const orderRes = await fetch(`${base}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${tokenData.access_token}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         intent: 'CAPTURE',
@@ -76,7 +36,7 @@ export async function POST(req) {
           {
             amount: {
               currency_code: currency,
-              value: amount,
+              value: String(parseFloat(amount).toFixed(2)), // Ensure amount is a string with 2 decimal places
             },
           },
         ],
@@ -85,18 +45,22 @@ export async function POST(req) {
     const orderData = await getJsonResponseOrText(orderRes);
 
     if (!orderRes.ok || orderData.error_text || !orderData.id) {
-      console.error('PayPal Order Error:', orderData.error_text || orderData);
-      const details = orderData.error_text ? { message: "PayPal returned non-JSON response during order creation", raw: orderData.error_text.substring(0,500) } : orderData;
+      console.error('PayPal Order Creation Error:', orderData.error_text || orderData);
+      const details = orderData.error_text 
+        ? { message: "PayPal returned non-JSON response during order creation", raw: orderData.error_text.substring(0,500) } 
+        : orderData;
       return NextResponse.json({ error: 'Failed to create PayPal order', details }, { status: orderRes.status || 400 });
     }
 
     return NextResponse.json(orderData);
   } catch (err) {
-    console.error('PayPal API Route Server Error:', err); // Log the actual error object
-    // Check if the error is due to req.json() failing (e.g. client sent malformed JSON)
-    if (err instanceof SyntaxError && err.message.includes("JSON at position") && req.headers.get('content-type')?.includes('application/json')) {
+    console.error('PayPal Order Creation API Route Server Error:', err.message, err.details ? err.details : '', err.status ? `Status: ${err.status}`: '');
+    if (err instanceof SyntaxError && err.message.includes("JSON at position") && req?.headers?.get('content-type')?.includes('application/json')) {
         return NextResponse.json({ error: 'Invalid request body: not valid JSON.', details: err.message }, { status: 400 });
     }
-    return NextResponse.json({ error: 'Server error processing PayPal request', details: err.message }, { status: 500 });
+    // If the error came from getPayPalAccessTokenAndBase, it might have a status and details
+    const status = err.status || 500;
+    const details = err.details || err.message || 'An unexpected error occurred.';
+    return NextResponse.json({ error: 'Server error processing PayPal order request', details }, { status });
   }
 }
