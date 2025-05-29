@@ -28,33 +28,18 @@ export default function DateTimeSelection({
   const [fullyBookedDates, setFullyBookedDates] = useState([]); // array of YYYY-MM-DD strings
   // Helper to convert array of YYYY-MM-DD to JS Date objects
   const getDisabledDates = () => {
-    // Convert blocked dates to Date objects
-    const blockedDateObjs = fullyBookedDates.map(d => {
-      const [y, m, day] = d.split('-');
-      return new Date(Number(y), Number(m)-1, Number(day));
+    // This function provides dates to the `excludeDates` prop of DatePicker.
+    // `fullyBookedDates` are 'YYYY-MM-DD' strings. They need to be converted to JS Date objects.
+    // Admin-blocked dates and other filtering are handled by the `filterDate` prop using `isDateBlocked`.
+    // The `minDate` prop handles dates before today.
+    // Lead time for the current day's *time slots* is handled by `fetchAvailability`.
+    // This function should therefore primarily convert `fullyBookedDates` for `excludeDates`.
+    const fullyBookedDateObjs = fullyBookedDates.map(dStr => {
+      const [year, month, day] = dStr.split('-').map(Number);
+      return new Date(year, month - 1, day);
     });
-    
-    // Add dates that fall within lead time
-    if (leadTimeHours > 0) {
-      const leadTimeEnd = new Date();
-      leadTimeEnd.setHours(leadTimeEnd.getHours() + leadTimeHours);
-      
-      // Calculate how many days we need to block due to lead time
-      const leadTimeDays = Math.ceil(leadTimeHours / 24);
-      const leadTimeDatesArray = [];
-      
-      // Add each day within the lead time period
-      for (let i = 0; i < leadTimeDays; i++) {
-        const currDate = new Date();
-        currDate.setDate(currDate.getDate() + i);
-        currDate.setHours(0, 0, 0, 0);
-        leadTimeDatesArray.push(currDate);
-      }
-      
-      return [...blockedDateObjs, ...leadTimeDatesArray];
-    }
-    
-    return blockedDateObjs;
+
+    return fullyBookedDateObjs;
   };
   const [allBookings, setAllBookings] = useState({});
 

@@ -39,7 +39,7 @@ export default function BookingPaywall({ bookingData, onBookAgain, onError }) {
 
   return (
     <div>
-      <h3 className="text-xl font-bold mb-4">Pay to Confirm Your Booking</h3>
+      <h3 className="text-xl font-bold mb-4 text-gray-900">Pay to Confirm Your Booking</h3>
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
       <BookingPayment amount={bookingData.activity?.price} onSuccess={handlePaymentSuccess} />
       {isSubmitting && <div className="mt-4 text-blue-600">Finalizing your booking...</div>}
