@@ -39,6 +39,13 @@ const fetchBookings = async (start, end) => {
   }
 };
 
+// Define sites outside the component for a stable reference
+const sites = [
+  'Pompano Beach',
+  'Sunny Isles Beach',
+  'Dania Beach',
+];
+
 export default function AdminBookingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('calendar');
@@ -55,12 +62,6 @@ export default function AdminBookingsPage() {
     }
   }, [router]);
 
-  // For demonstration, use static list of sites. You can fetch dynamically if you wish.
-  const sites = [
-    'Pompano Beach',
-    'Sunny Isles Beach',
-    'Dania Beach',
-  ];
   // Replace single selection with multi-select object where each beach is a key with boolean value
   const [selectedBeaches, setSelectedBeaches] = useState({
     'Pompano Beach': true,
@@ -189,25 +190,65 @@ export default function AdminBookingsPage() {
   
   // Only refresh when dates or beach filters change, with protection against infinite loops
   useEffect(() => {
-    // Skip initial render with empty dates
-    if (!calendarViewDates.start || !calendarViewDates.end) return;
-    
-    // Create a cache key from the current state
-    const cacheKey = `${calendarViewDates.start}-${calendarViewDates.end}-${Object.entries(selectedBeaches).filter(([_, v]) => v).map(([k]) => k).join('+')}`;
-    
-    // Only fetch if we haven't fetched this exact combination before or if we're forcing a refresh
-    if (!isProcessing && !fetchedDatesRef.current[cacheKey]) {
-      // Mark this combination as fetched
-      fetchedDatesRef.current[cacheKey] = true;
-      
-      // Use setTimeout to debounce and prevent potential race conditions
-      const timeoutId = setTimeout(() => {
-        refreshBookings();
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [calendarViewDates, selectedBeaches, isProcessing]);
+    console.log('[Effect Triggered] selectedBeaches changed to:', JSON.parse(JSON.stringify(selectedBeaches)));
+    console.log('[Effect Triggered] calendarViewDates:', calendarViewDates.start, calendarViewDates.end);
+
+    if (calendarViewDates.start && calendarViewDates.end) {
+      setIsProcessing(true); // Show loading state
+      console.log('[Effect Run] Deps valid. Fetching bookings. Dates:', calendarViewDates, 'Selected Beaches:', JSON.parse(JSON.stringify(selectedBeaches)));
+      fetchBookings(calendarViewDates.start, calendarViewDates.end)
+        .then(allBookingsData => {
+          console.log('[Effect - Fetch Success] Raw bookings data received (length):', allBookingsData?.length, allBookingsData);
+          
+          const currentSelectedBeaches = selectedBeaches; // Capture current state for this run
+          const selectedBeachesList = Object.keys(currentSelectedBeaches).filter(
+            (beach) => currentSelectedBeaches[beach]
+          );
+          console.log('[Effect - Filtering] selectedBeachesList (from currentSelectedBeaches):', selectedBeachesList);
+
+          const filteredBookings = allBookingsData.filter(b => {
+            const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
+            if (!beachName) return false; 
+            
+            // If no beaches are selected in the filter, show no bookings.
+            if (selectedBeachesList.length === 0) return false;
+            // Otherwise, only include bookings for the selected beaches.
+            return selectedBeachesList.includes(beachName);
+          });
+          console.log('[Effect - Filtering] filteredBookings (length):', filteredBookings?.length, filteredBookings);
+
+          const evts = filteredBookings.map(b => ({
+            id: b._id,
+            title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
+            start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
+            end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
+            extendedProps: b,
+            color: b.status === 'Confirmed' ? '#198754' : (b.status === 'Group Inquiry' ? '#0dcaf0' : '#ffc107'),
+            borderColor: b.status === 'Confirmed' ? '#198754' : (b.status === 'Group Inquiry' ? '#0dcaf0' : '#ffc107'),
+          }));
+          console.log('[Effect - Setting Events] evts to be set (length):', evts?.length, evts);
+          setEvents(evts);
+          
+          const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
+          setRevenueTotal(total);
+          console.log('[Effect - Revenue] Calculated revenue:', total);
+        })
+        .catch(error => {
+          console.error("[Effect - Fetch Error] Error processing bookings:", error);
+          setEvents([]); 
+          setRevenueTotal(0);
+        })
+        .finally(() => {
+          setIsProcessing(false); 
+          console.log('[Effect - Finally] Processing finished.');
+        });
+  } else {
+    console.log('[Effect Run] Skipped: calendarViewDates not fully set yet or invalid.', calendarViewDates);
+    // Optionally, clear events if dates are invalid to prevent showing stale data
+    // setEvents([]);
+    // setRevenueTotal(0);
+  }
+}, [calendarViewDates.start, calendarViewDates.end, selectedBeaches, sites]);
 
   // Function to handle booking deletion
   const handleDeleteBooking = async () => {

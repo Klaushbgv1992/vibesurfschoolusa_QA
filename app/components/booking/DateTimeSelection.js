@@ -13,7 +13,9 @@ export default function DateTimeSelection({
   selectedTime
 }) {
   // Use JS Date for react-datepicker - ensure proper date handling
-  const [date, setDate] = useState(selectedDate ? new Date(selectedDate) : null);
+  // Initialize with a function to avoid re-creating Date on every render unnecessarily.
+  // Default to today if selectedDate prop is not provided.
+  const [date, setDate] = useState(() => selectedDate ? new Date(selectedDate) : new Date());
   
   // Fix timezone issues by normalizing the date display
   const getFormattedDateString = (dateObj) => {
@@ -42,6 +44,16 @@ export default function DateTimeSelection({
     return fullyBookedDateObjs;
   };
   const [allBookings, setAllBookings] = useState({});
+
+  // Effect to synchronize the internal 'date' state with the 'selectedDate' prop from the parent.
+  // This is crucial if the parent component changes the desired selected date after initial mount.
+  useEffect(() => {
+    const newDateFromProp = selectedDate ? new Date(selectedDate) : new Date(); // Default to today if prop becomes null/undefined
+    // Only update if the date string is different to avoid potential loops with date objects.
+    if (date.toDateString() !== newDateFromProp.toDateString()) {
+      setDate(newDateFromProp);
+    }
+  }, [selectedDate]); // Deliberately not including 'date' in deps to avoid loops; selectedDate is the source of truth.
 
   // Calculate minimum date (today)
   const today = new Date();
@@ -79,10 +91,18 @@ export default function DateTimeSelection({
   }, [selectedBeach]);
 
   // Fetch bookings only when necessary components change
+  // Effect to reset startTime when primary context (date, activity, beach) changes
   useEffect(() => {
-    // On component mount or when key booking params change, refresh availability
-    setAvailableTimeSlots(availableTimes); // Reset to all possible times
-    setUnavailableTimes([]); // Reset unavailable times
+    setStartTime('');
+  }, [date, selectedActivity, selectedBeach]);
+
+  // Main effect for fetching/calculating availability
+  useEffect(() => {
+    // Resetting these are fine as they are recalculated based on the current context
+    setAvailableTimeSlots(availableTimes); // Or derive from activity if it can change
+    setUnavailableTimes([]);
+    setBookedSlots([]);
+    // DO NOT reset startTime here unconditionally, it's handled by the effect above
 
     // Only fetch if we have all required data, including bookingSettings and selectedActivity
     if (selectedBeach && selectedActivity && date && bookingSettings) {
