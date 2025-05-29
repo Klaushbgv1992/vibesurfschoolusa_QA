@@ -43,14 +43,18 @@ export default function AdminBookingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('calendar');
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [authChecked, setAuthChecked] = useState(false);
   
   // Check authentication on client side
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('vibeAdminAuth') === 'true';
     if (!isAuthenticated) {
       router.push('/admin/login');
+    } else {
+      setAuthChecked(true);
     }
   }, [router]);
+
   // For demonstration, use static list of sites. You can fetch dynamically if you wish.
   const sites = [
     'Pompano Beach',
@@ -340,6 +344,10 @@ export default function AdminBookingsPage() {
   const handleDateClick = (info) => {
     alert(`Block/unblock logic for ${info.dateStr} (not implemented)`);
   };
+
+  if (!authChecked) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
