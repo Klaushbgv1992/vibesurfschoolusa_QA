@@ -38,9 +38,9 @@ export default function AdminLayout({ children }) {
   // If on login page or authenticated, show content with admin-specific layout
   if (pathname === '/admin/login' || isAuthenticated) {
     return (
-      <div className={`antialiased bg-gray-50`}> {/* inter.className should be handled by root layout */}
+      <main className={`${inter.className} antialiased bg-gray-50`}>
         {children}
-      </div>
+      </main>
     );
   }
 

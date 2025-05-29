@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from 'next/navigation';
 import { activities } from '../../../data/booking-options';
 import BookingSettingsPanel from './BookingSettingsPanel';
@@ -41,6 +41,19 @@ const fetchBookings = async (start, end) => {
 
 export default function AdminBookingsPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState('calendar');
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [authChecked, setAuthChecked] = useState(false);
+  
+  // Check authentication on client side
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('vibeAdminAuth') === 'true';
+    if (!isAuthenticated) {
+      router.push('/admin/login');
+    } else {
+      setAuthChecked(true);
+    }
+  }, [router]);
 
   // For demonstration, use static list of sites. You can fetch dynamically if you wish.
   const sites = [
@@ -49,89 +62,12 @@ export default function AdminBookingsPage() {
     'Dania Beach',
   ];
   // Replace single selection with multi-select object where each beach is a key with boolean value
-  const [selectedBeaches, setSelectedBeaches] = useState(
-    sites.reduce((acc, site) => {
-      acc[site] = true; // Set all sites to true (selected) by default
-      return acc;
-    }, {})
-  );
-  const [allBlockedDates, setAllBlockedDates] = useState([]); // New state for all blocked dates
-  const [activeTab, setActiveTab] = useState('calendar');
-  const [unreadMessages, setUnreadMessages] = useState(0);
-  const fetchedDatesRef = useRef({}); // To track fetched date ranges for bookings
-  const calendarRef = useRef(null); // Define calendarRef for FullCalendar
-
-  // State for the new booking modal
-  const [isNewBookingModalOpen, setIsNewBookingModalOpen] = useState(false);
-  const [selectedDateForNewBooking, setSelectedDateForNewBooking] = useState(null);
-  const [newBookingClientName, setNewBookingClientName] = useState('');
-  const [newBookingClientEmail, setNewBookingClientEmail] = useState('');
-  const [newBookingClientPhone, setNewBookingClientPhone] = useState('');
-  const [newBookingBeach, setNewBookingBeach] = useState(sites[0] || '');
-  const [newBookingActivityId, setNewBookingActivityId] = useState(activities[0]?.id || '');
-  const [newBookingStartTime, setNewBookingStartTime] = useState('09:00');
-  const [newBookingEndTime, setNewBookingEndTime] = useState('10:00');
-  const [newBookingParticipants, setNewBookingParticipants] = useState(1);
-  const [newBookingNotes, setNewBookingNotes] = useState('');
-  const [newBookingStatus, setNewBookingStatus] = useState('Confirmed'); // Default for admin
-  const paymentMethodOptions = ['Pending', 'Cash', 'Zelle', 'Venmo', 'PayPal (Manual)', 'Card (Manual)'];
-  const [newBookingPaymentMethod, setNewBookingPaymentMethod] = useState(paymentMethodOptions[0]);
-  const [newBookingRevenue, setNewBookingRevenue] = useState(''); // State for new booking revenue
-
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('vibeAdminAuth') === 'true';
-    if (!isAuthenticated) {
-      router.push('/admin/login');
-    }
-  }, [router]);
-
-  const fetchAndSetBlockedDates = useCallback(async (currentSelectedBeaches) => {
-    const activeBeaches = Object.entries(currentSelectedBeaches)
-      .filter(([, isSelected]) => isSelected)
-      .map(([beachName]) => beachName);
-
-    if (activeBeaches.length === 0) {
-      setAllBlockedDates([]);
-      return;
-    }
-    console.log('[AdminBookingsPage] Fetching blocked dates for:', activeBeaches.join(', '));
-    try {
-      const promises = activeBeaches.map(async (beachName) => {
-        const apiUrl = `${window.location.origin}/api/booking-settings?site=${encodeURIComponent(beachName)}`;
-        const response = await fetch(apiUrl, { cache: 'no-cache' });
-        if (!response.ok) {
-          console.error(`[AdminBookingsPage] Failed to fetch settings for ${beachName}: ${response.status}`);
-          return [];
-        }
-        const data = await response.json();
-        if (data.success && data.settings.length > 0 && data.settings[0].blockedDates) {
-          return data.settings[0].blockedDates;
-        }
-        return [];
-      });
-
-      const results = await Promise.all(promises);
-      const combinedBlockedDates = new Set();
-      results.forEach(datesArray => {
-        if (Array.isArray(datesArray)) {
-          datesArray.forEach(dateStr => combinedBlockedDates.add(dateStr));
-        }
-      });
-      const newBlockedDates = Array.from(combinedBlockedDates);
-      console.log('[AdminBookingsPage] Combined blocked dates:', newBlockedDates);
-      setAllBlockedDates(newBlockedDates);
-    } catch (error) {
-      console.error('[AdminBookingsPage] Error fetching combined blocked dates:', error);
-      setAllBlockedDates([]);
-    }
-  }, [setAllBlockedDates]);
-
-  useEffect(() => {
-    if (localStorage.getItem('vibeAdminAuth') === 'true') {
-        fetchAndSetBlockedDates(selectedBeaches);
-    }
-  }, [selectedBeaches, fetchAndSetBlockedDates]);
-  
+  const [selectedBeaches, setSelectedBeaches] = useState({
+    'Pompano Beach': true,
+    'Sunny Isles Beach': false,
+    'Dania Beach': false,
+  });
+  const [events, setEvents] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [calendarViewDates, setCalendarViewDates] = useState({ start: '', end: '' });
   const [revenueTotal, setRevenueTotal] = useState(0);
@@ -164,14 +100,6 @@ export default function AdminBookingsPage() {
     if (!act) return 0;
     return act.price * (parseInt(booking.participants) || 1);
   };
-
-  const getDayCellClassNames = useCallback((arg) => {
-    const dateStr = arg.date.toISOString().split('T')[0];
-    if (allBlockedDates.includes(dateStr)) {
-      return ['blocked-date-cell'];
-    }
-    return [];
-  }, [allBlockedDates]);
 
   // Function to fetch unread messages count
   const fetchUnreadMessagesCount = useCallback(async () => {
@@ -208,62 +136,78 @@ export default function AdminBookingsPage() {
     return () => clearInterval(interval);
   }, [fetchUnreadMessagesCount]);
   
-  // useEffect to refetch calendar events when date range or beach selection changes
-  useEffect(() => {
-    if (calendarRef.current) {
-        console.log('[useEffect for date/beach change] Triggering refetchEvents. ViewDates:', calendarViewDates, 'SelectedBeaches:', selectedBeaches);
-        calendarRef.current.getApi().refetchEvents();
-    }
-  }, [calendarViewDates, selectedBeaches]);
-
-  const fetchCalendarEvents = useCallback(async (fetchInfo, successCallback, failureCallback) => {
-    console.log('[fetchCalendarEvents] Fetching for range:', fetchInfo.startStr, fetchInfo.endStr);
-    console.log('[fetchCalendarEvents] Current selectedBeaches:', selectedBeaches);
+  // Function to refresh bookings data
+  // Create a stable refreshBookings function with proper dependencies
+  const refreshBookings = useCallback(async () => {
+    if (!calendarViewDates.start || !calendarViewDates.end) return;
+    
+    // Prevent excessive API calls by using a flag
+    setIsProcessing(true);
+    
     try {
-      const rawBookings = await fetchBookings(fetchInfo.startStr, fetchInfo.endStr);
-
-      const currentSelectedBeaches = selectedBeaches; // Use the state directly
-      const activeBeachesList = sites.filter(site => currentSelectedBeaches[site]);
+      const bookings = await fetchBookings(calendarViewDates.start, calendarViewDates.end);
       
-      console.log('[fetchCalendarEvents] Active beaches for filtering:', activeBeachesList);
-
-      const filteredBookings = rawBookings.filter(b => {
+      // Filter bookings by selected beaches
+      const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
+      const filteredBookings = bookings.filter(b => {
         const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
-        if (activeBeachesList.length === 0 && sites.length > 0) {
-            return false;
-        }
-        if (sites.length === 0) {
-            return true;
-        }
-        return activeBeachesList.includes(beachName);
+        // If no beaches are selected, show no bookings
+        if (selectedBeachesList.length === 0) return false;
+        // Otherwise only show bookings for selected beaches
+        return selectedBeachesList.includes(beachName);
       });
       
-      console.log('[fetchCalendarEvents] Raw bookings:', rawBookings.length, 'Filtered bookings:', filteredBookings.length);
-
       const evts = filteredBookings.map(b => {
-        const id = b._id ? (typeof b._id === 'object' && b._id.toString ? b._id.toString() : String(b._id)) : String(Math.random());
+        // Ensure we have a valid id (convert to string if needed)
+        const id = b._id ? (typeof b._id === 'object' && b._id.toString ? b._id.toString() : b._id) : '';
+        
         return {
           id: id,
           title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
           start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
           end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
-          extendedProps: {...b, _id: id},
-          color: b.status === 'Confirmed' ? '#198754' : (b.status === 'Pending' ? '#ffc107' : '#6c757d'),
+          extendedProps: {...b, _id: id}, // Ensure extendedProps has the string ID
+          color: b.status === 'Confirmed' ? '#198754' : '#ffc107',
         };
       });
-      successCallback(evts);
-
+      
+      setEvents(evts);
+      
+      // Calculate revenue total using latest activity prices (except for 5+ group)
       const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
       setRevenueTotal(total);
-      console.log('[fetchCalendarEvents] Events processed:', evts.length, 'New revenue total:', total);
-
+      // Reset processing flag
+      setIsProcessing(false);
     } catch (error) {
-      console.error('Error in fetchCalendarEvents:', error);
-      failureCallback(error);
-      setRevenueTotal(0);
-      successCallback([]);
+      console.error('Error refreshing bookings:', error);
     }
-  }, [selectedBeaches, sites, getActivityPrice, setRevenueTotal, calendarViewDates]); // Added calendarViewDates as it's used in console log indirectly via useEffect trigger
+  }, [calendarViewDates, selectedBeaches, sites]);
+  
+  // Fetch bookings when calendar view changes or beach selection changes
+  // Use a ref to track if we've already fetched data for these dates
+  const fetchedDatesRef = useRef({});
+  
+  // Only refresh when dates or beach filters change, with protection against infinite loops
+  useEffect(() => {
+    // Skip initial render with empty dates
+    if (!calendarViewDates.start || !calendarViewDates.end) return;
+    
+    // Create a cache key from the current state
+    const cacheKey = `${calendarViewDates.start}-${calendarViewDates.end}-${Object.entries(selectedBeaches).filter(([_, v]) => v).map(([k]) => k).join('+')}`;
+    
+    // Only fetch if we haven't fetched this exact combination before or if we're forcing a refresh
+    if (!isProcessing && !fetchedDatesRef.current[cacheKey]) {
+      // Mark this combination as fetched
+      fetchedDatesRef.current[cacheKey] = true;
+      
+      // Use setTimeout to debounce and prevent potential race conditions
+      const timeoutId = setTimeout(() => {
+        refreshBookings();
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [calendarViewDates, selectedBeaches, isProcessing]);
 
   // Function to handle booking deletion
   const handleDeleteBooking = async () => {
@@ -290,9 +234,7 @@ export default function AdminBookingsPage() {
       
       if (data.success) {
         // Refresh the calendar to reflect the deleted booking
-        if (calendarRef.current) {
-          calendarRef.current.getApi().refetchEvents();
-        }
+        await refreshBookings();
         // Close the modal
         setSelectedBooking(null);
         setIsDeleting(false);
@@ -342,9 +284,7 @@ export default function AdminBookingsPage() {
       
       if (data.success) {
         // Refresh the calendar to reflect the rescheduled booking
-        if (calendarRef.current) {
-          calendarRef.current.getApi().refetchEvents();
-        }
+        await refreshBookings();
         
         // Close the modal and reset rescheduling state
         setSelectedBooking(null);
@@ -389,12 +329,9 @@ export default function AdminBookingsPage() {
       if (data.success && data.booking) {
         // Use the freshly fetched booking data
         setSelectedBooking(data.booking);
-        setEditRevenue(data.booking.revenue !== undefined ? String(data.booking.revenue) : null); // Initialize editRevenue
       } else {
         // Fallback to the data we have in the event props
-        const bookingProps = clickInfo.event.extendedProps;
-        setSelectedBooking(bookingProps);
-        setEditRevenue(bookingProps.revenue !== undefined ? String(bookingProps.revenue) : null); // Initialize editRevenue from props
+        setSelectedBooking(clickInfo.event.extendedProps);
         console.warn('Using cached booking data, could not fetch latest');
       }
     } catch (error) {
@@ -405,87 +342,12 @@ export default function AdminBookingsPage() {
   };
 
   const handleDateClick = (info) => {
-    setSelectedDateForNewBooking(info.dateStr);
-    // Reset form fields when opening modal for a new booking
-    setNewBookingClientName('');
-    setNewBookingClientEmail('');
-    setNewBookingClientPhone('');
-    setNewBookingBeach(sites[0] || '');
-    setNewBookingActivityId(activities[0]?.id || '');
-    setNewBookingStartTime('09:00');
-    setNewBookingEndTime('10:00');
-    setNewBookingParticipants(1);
-    setNewBookingNotes('');
-    setNewBookingStatus('Confirmed');
-    setNewBookingRevenue(''); // Reset revenue field
-    setIsNewBookingModalOpen(true);
+    alert(`Block/unblock logic for ${info.dateStr} (not implemented)`);
   };
 
-  const handleSaveNewBooking = async () => {
-  console.log('[handleSaveNewBooking] Function start. typeof calendarRef:', typeof calendarRef, 'calendarRef itself:', calendarRef);
-    if (!selectedDateForNewBooking || !newBookingActivityId || !newBookingBeach) {
-      alert('Please ensure date, activity, and beach are selected.');
-      return;
-    }
-
-    const activityDetails = activities.find(act => act.id === newBookingActivityId);
-    if (!activityDetails) {
-        alert('Selected activity not found.');
-        return;
-    }
-
-    const bookingData = {
-      clientName: newBookingClientName,
-      clientEmail: newBookingClientEmail,
-      clientPhone: newBookingClientPhone,
-      beach: newBookingBeach,
-      activity: activityDetails.name, // Send activity name as per current API expectation
-      activityId: newBookingActivityId, // Send activity ID for consistency
-      date: selectedDateForNewBooking,
-      startTime: newBookingStartTime,
-      endTime: newBookingEndTime,
-      participants: parseInt(newBookingParticipants, 10),
-      notes: newBookingNotes,
-      revenue: newBookingRevenue !== '' ? parseFloat(newBookingRevenue) : undefined, // Add revenue to booking details
-      status: newBookingStatus,
-      paymentMethod: newBookingPaymentMethod,
-      paymentDetails: {
-        status: newBookingPaymentMethod === 'Pending' ? 'PENDING' : 'COMPLETED',
-        source: 'AdminManualEntry',
-        method: newBookingPaymentMethod // Store the explicitly chosen method
-      }
-    };
-
-    try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        alert('Booking created successfully!');
-        setIsNewBookingModalOpen(false);
-        // Refresh calendar events
-        console.log('[handleSaveNewBooking] Debugging calendarRef:', typeof calendarRef, calendarRef);
-        if (calendarRef && calendarRef.current) {
-          calendarRef.current.getApi().refetchEvents();
-        } else {
-          console.warn('calendarRef.current is not available to refetch events. Forcing a page reload to show new booking.');
-          window.location.reload(); // Fallback: reload the page if ref is not available
-        }
-      } else {
-        alert(`Failed to create booking: ${result.message || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      alert(`Error creating booking: ${error.message}`);
-    }
-  };
+  if (!authChecked) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -547,7 +409,6 @@ export default function AdminBookingsPage() {
             <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                ref={calendarRef} // Add ref for calendar operations
                 initialView="dayGridMonth"
                 headerToolbar={{
                   left: 'prev,next today',
@@ -555,9 +416,8 @@ export default function AdminBookingsPage() {
                   right: 'dayGridMonth,timeGridWeek,timeGridDay',
                 }}
                 height="auto"
-                events={fetchCalendarEvents}
+                events={events}
                 datesSet={handleDatesSet}
-                dayCellClassNames={getDayCellClassNames}
                 eventClick={handleEventClick}
                 dateClick={handleDateClick}
                 dayMaxEvents={3}
@@ -628,11 +488,7 @@ export default function AdminBookingsPage() {
             </div>
 
             {/* Booking Settings Panel at bottom */}
-            <BookingSettingsPanel
-            onSettingsChange={() => {
-              console.log('[AdminBookingsPage] Settings changed in panel, refetching blocked dates.');
-              fetchAndSetBlockedDates(selectedBeaches);
-            }} sites={sites.filter(site => selectedBeaches[site])} selectedBeaches={selectedBeaches} />
+            <BookingSettingsPanel sites={sites.filter(site => selectedBeaches[site])} selectedBeaches={selectedBeaches} />
 
             {/* Booking Details Modal */}
             {selectedBooking && (
@@ -764,65 +620,66 @@ export default function AdminBookingsPage() {
                         </div>
                       )}
 
-                      {/* Revenue Field: Always Editable */}
+                      {/* Revenue Field: Editable for 5+ group lessons */}
                       <div className="mb-2">
-                        <b>Revenue:</b>
-                        <input
-                          type="number"
-                          className="border px-2 py-1 rounded w-24 ml-2 mr-2"
-                          value={editRevenue !== null ? editRevenue : (selectedBooking.revenue !== undefined ? String(selectedBooking.revenue) : '0')}
-                          min="0"
-                          step="0.01"
-                          onChange={(e) => setEditRevenue(e.target.value)} // Store as string
-                          placeholder="0.00"
-                        />
-                        <button
-                          className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
-                          disabled={isSavingRevenue || (editRevenue === null || parseFloat(editRevenue) === (selectedBooking.revenue !== undefined ? selectedBooking.revenue : 0))}
-                          onClick={async () => {
-                            setIsSavingRevenue(true);
-                            const revenueToSave = editRevenue !== null && editRevenue.trim() !== '' ? parseFloat(editRevenue) : 0;
-                            await fetch('/api/bookings', {
-                              method: 'PATCH',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ id: selectedBooking._id, revenue: revenueToSave }),
-                            });
-                            setIsSavingRevenue(false);
-                            // Update the selectedBooking in state with the new revenue to reflect change immediately
-                            // and prevent modal from closing if we want to make further edits.
-                            // However, for simplicity and to ensure data consistency, we'll refetch.
-                            setSelectedBooking(null); // This will close the modal
-                            setEditRevenue(null); // Reset edit revenue state
-                            // Refresh events and revenue total
-                            // Use refreshBookings directly if it's stable and available
-                            if (typeof refreshBookings === 'function') {
-                              await refreshBookings();
-                            } else {
-                              // Fallback to original fetch logic if refreshBookings isn't suitable here
-                              fetchBookings(calendarViewDates.start, calendarViewDates.end).then(bookings => {
-                                const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
-                                const filteredBookings = bookings.filter(b => {
-                                  const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
-                                  if (selectedBeachesList.length === 0) return false;
-                                  return selectedBeachesList.includes(beachName);
+                        <b>Revenue:</b>{' '}
+                        {isGroupLesson(selectedBooking) ? (
+                          <>
+                            <input
+                              type="number"
+                              className="border px-2 py-1 rounded w-24 mr-2"
+                              value={editRevenue !== null ? editRevenue : (selectedBooking.revenue || 0)}
+                              min={0}
+                              onChange={(e) => setEditRevenue(Number(e.target.value))}
+                            />
+                            <button
+                              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+                              disabled={isSavingRevenue || (editRevenue === (selectedBooking.revenue || 0))}
+                              onClick={async () => {
+                                setIsSavingRevenue(true);
+                                await fetch('/api/bookings', {
+                                  method: 'PATCH',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ id: selectedBooking._id, revenue: editRevenue }),
                                 });
-                                const evts = filteredBookings.map(b => ({
-                                  id: b._id,
-                                  title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
-                                  start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
-                                  end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
-                                  extendedProps: b,
-                                  color: b.status === 'Confirmed' ? '#198754' : '#ffc107',
-                                }));
-                                setEvents(evts);
-                                const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
-                                setRevenueTotal(total);
-                              });
-                            }
-                          }}
-                        >
-                          {isSavingRevenue ? 'Saving...' : 'Save Revenue'}
-                        </button>
+                                setIsSavingRevenue(false);
+                                setSelectedBooking(null);
+                                setEditRevenue(null);
+                                // Refresh events and revenue total
+                                fetchBookings(calendarViewDates.start, calendarViewDates.end).then(bookings => {
+                                  // Filter bookings by selected beaches
+                                  const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
+                                  const filteredBookings = bookings.filter(b => {
+                                    const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
+                                    // If no beaches are selected, show no bookings
+                                    if (selectedBeachesList.length === 0) return false;
+                                    // Otherwise only show bookings for selected beaches
+                                    return selectedBeachesList.includes(beachName);
+                                  });
+
+                                  const evts = filteredBookings.map(b => ({
+                                    id: b._id,
+                                    title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
+                                    start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
+                                    end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
+                                    extendedProps: b,
+                                    color: b.status === 'Confirmed' ? '#198754' : '#ffc107',
+                                  }));
+                                  setEvents(evts);
+                                  // Calculate revenue total using latest activity prices (except for 5+ group)
+                                  const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
+                                  setRevenueTotal(total);
+                                });
+                              }}
+                            >
+                              {isSavingRevenue ? 'Saving...' : 'Save'}
+                            </button>
+                          </>
+                        ) : (
+                          <span className="ml-2">
+                            {getActivityPrice(selectedBooking).toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
+                          </span>
+                        )}
                       </div>
 
                       {/* Messages Panel */}
@@ -870,106 +727,6 @@ export default function AdminBookingsPage() {
           </>
         )}
         
-        {/* New Booking Modal */}
-        {isNewBookingModalOpen && selectedDateForNewBooking && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center p-4 overflow-y-auto">
-            <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] overflow-y-auto">
-              <h3 className="text-2xl font-semibold mb-6 text-white">Create New Booking for {new Date(selectedDateForNewBooking + 'T00:00:00').toLocaleDateString()}</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="clientName" className="block text-sm font-medium text-gray-300 mb-1">Client Name</label>
-                  <input type="text" id="clientName" value={newBookingClientName} onChange={(e) => setNewBookingClientName(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-300 mb-1">Client Email</label>
-                  <input type="email" id="clientEmail" value={newBookingClientEmail} onChange={(e) => setNewBookingClientEmail(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="clientPhone" className="block text-sm font-medium text-gray-300 mb-1">Client Phone</label>
-                  <input type="tel" id="clientPhone" value={newBookingClientPhone} onChange={(e) => setNewBookingClientPhone(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="beach" className="block text-sm font-medium text-gray-300 mb-1">Beach</label>
-                  <select id="beach" value={newBookingBeach} onChange={(e) => setNewBookingBeach(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
-                    {sites.map(site => <option key={site} value={site}>{site}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="activity" className="block text-sm font-medium text-gray-300 mb-1">Activity</label>
-                  <select id="activity" value={newBookingActivityId} onChange={(e) => setNewBookingActivityId(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
-                    {activities.map(act => <option key={act.id} value={act.id}>{act.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="participants" className="block text-sm font-medium text-gray-300 mb-1">Participants</label>
-                  <input type="number" id="participants" value={newBookingParticipants} onChange={(e) => setNewBookingParticipants(Math.max(1, parseInt(e.target.value,10) || 1))} min="1" className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="startTime" className="block text-sm font-medium text-gray-300 mb-1">Start Time</label>
-                  <input type="time" id="startTime" value={newBookingStartTime} onChange={(e) => setNewBookingStartTime(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="endTime" className="block text-sm font-medium text-gray-300 mb-1">End Time</label>
-                  <input type="time" id="endTime" value={newBookingEndTime} onChange={(e) => setNewBookingEndTime(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                 <div className="md:col-span-2">
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-1">Status</label>
-                  <select id="status" value={newBookingStatus} onChange={(e) => setNewBookingStatus(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Group Inquiry">Group Inquiry</option>
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-300 mb-1">Payment Method</label>
-                  <select id="paymentMethod" value={newBookingPaymentMethod} onChange={(e) => setNewBookingPaymentMethod(e.target.value)} className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
-                    {paymentMethodOptions.map(method => <option key={method} value={method}>{method}</option>)}
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="notes" className="block text-sm font-medium text-gray-300 mb-1">Notes</label>
-                  <textarea id="notes" value={newBookingNotes} onChange={(e) => setNewBookingNotes(e.target.value)} rows="3" className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                </div>
-                {/* Revenue Field for New Booking */}
-                <div className="md:col-span-2">
-                      {/* Log newBookingRevenue state for debugging */}
-                      {console.log('[NewBookingModal] newBookingRevenue state:', newBookingRevenue)}
-                      <label htmlFor="newBookingRevenue" className="block text-sm font-medium text-gray-700 mt-2">Revenue (USD):</label>
-                      <input 
-                    type="number" 
-                    id="newBookingRevenue" 
-                    value={newBookingRevenue} 
-                    onChange={(e) => setNewBookingRevenue(e.target.value)} 
-                    placeholder="e.g., 100.00" 
-                    min="0" 
-                    step="0.01" 
-                    className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="mt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                <button
-                  type="button"
-                  className="px-6 py-2.5 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors w-full sm:w-auto"
-                  onClick={() => setIsNewBookingModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto"
-                  onClick={handleSaveNewBooking}
-                >
-                  Save Booking
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {activeTab === 'messages' && (
           <MessagesInbox />
         )}
