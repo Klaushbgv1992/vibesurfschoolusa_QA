@@ -15,6 +15,17 @@ if (!process.env.PAYPAL_CLIENT_SECRET) {
 if (!process.env.PAYPAL_ENV) {
   console.error('[PayPal Debug] Missing PAYPAL_ENV in env!');
 }
+async function getJsonResponseOrText(response) {
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    // Not JSON, return the text for logging or specific error handling
+    // Return as an object to allow checking for error_text property
+    return { error_text: text }; 
+  }
+}
+
 export async function POST(req) {
   try {
     const body = await req.json();
@@ -44,10 +55,12 @@ export async function POST(req) {
       },
       body: 'grant_type=client_credentials',
     });
-    const tokenData = await tokenRes.json();
-    if (!tokenRes.ok) {
-      console.error('PayPal Auth Error:', tokenData); // Log full error to console
-      return NextResponse.json({ error: 'Failed to authenticate with PayPal', details: tokenData }, { status: 400 });
+    const tokenData = await getJsonResponseOrText(tokenRes);
+
+    if (!tokenRes.ok || tokenData.error_text || !tokenData.access_token) {
+      console.error('PayPal Auth Error:', tokenData.error_text || tokenData);
+      const details = tokenData.error_text ? { message: "PayPal returned non-JSON response during auth", raw: tokenData.error_text.substring(0, 500) } : tokenData;
+      return NextResponse.json({ error: 'Failed to authenticate with PayPal', details }, { status: tokenRes.status || 400 });
     }
 
     // Create PayPal order
@@ -69,14 +82,21 @@ export async function POST(req) {
         ],
       }),
     });
-    const orderData = await orderRes.json();
-    if (!orderRes.ok) {
-      console.error('PayPal Order Error:', orderData); // Log full error to console
-      return NextResponse.json({ error: 'Failed to create PayPal order', details: orderData }, { status: 400 });
+    const orderData = await getJsonResponseOrText(orderRes);
+
+    if (!orderRes.ok || orderData.error_text || !orderData.id) {
+      console.error('PayPal Order Error:', orderData.error_text || orderData);
+      const details = orderData.error_text ? { message: "PayPal returned non-JSON response during order creation", raw: orderData.error_text.substring(0,500) } : orderData;
+      return NextResponse.json({ error: 'Failed to create PayPal order', details }, { status: orderRes.status || 400 });
     }
 
     return NextResponse.json(orderData);
   } catch (err) {
-    return NextResponse.json({ error: 'Server error', details: err.message }, { status: 500 });
+    console.error('PayPal API Route Server Error:', err); // Log the actual error object
+    // Check if the error is due to req.json() failing (e.g. client sent malformed JSON)
+    if (err instanceof SyntaxError && err.message.includes("JSON at position") && req.headers.get('content-type')?.includes('application/json')) {
+        return NextResponse.json({ error: 'Invalid request body: not valid JSON.', details: err.message }, { status: 400 });
+    }
+    return NextResponse.json({ error: 'Server error processing PayPal request', details: err.message }, { status: 500 });
   }
 }

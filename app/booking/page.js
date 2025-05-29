@@ -39,7 +39,8 @@ export default function BookingPage() {
   };
 
   const handleActivitySelect = (activity, participants = 1) => {
-    setFormData(prev => ({ ...prev, activity, participants }));
+    const activityCopy = { ...activity }; // Create a shallow copy
+    setFormData(prev => ({ ...prev, activity: activityCopy, participants }));
     // Detect if this is a group booking (5+)
     if (activity.minParticipants >= 5) {
       setIsGroupBooking(true);
