@@ -82,9 +82,9 @@ export default function DateTimeSelection({
           setBookingSettings(data.settings[0]);
           setBlockedDates(data.settings[0].blockedDates || []);
           setLeadTimeHours(data.settings[0].leadTimeHours || 0);
-          // Force re-render of the date picker when lead time changes
-          setDate(null);
-          setDate(new Date());
+          // Force re-render of the date picker when lead time changes (Commented out to prevent date reset on beach change)
+          // setDate(null);
+          // setDate(new Date());
         } else {
           setBookingSettings(null);
           setBlockedDates([]);
@@ -96,14 +96,15 @@ export default function DateTimeSelection({
   // Fetch bookings only when necessary components change
   useEffect(() => {
     // On component mount or when key booking params change, refresh availability
-    setAvailableTimeSlots(availableTimes);
-    setUnavailableTimes([]);
-    
-    // Only fetch if we have the required data
-    if (selectedBeach && date) {
-      fetchAllBookings();
+    setAvailableTimeSlots(availableTimes); // Reset to all possible times
+    setUnavailableTimes([]); // Reset unavailable times
+
+    // Only fetch if we have all required data, including bookingSettings and selectedActivity
+    if (selectedBeach && selectedActivity && date && bookingSettings) {
+      fetchAvailability(); // Assuming fetchAllBookings was renamed to fetchAvailability
     }
-  }, [selectedBeach?.name, selectedActivity?.id, date ? getFormattedDateString(date) : null]);
+    // Ensure date object changes trigger this, and bookingSettings being loaded is critical.
+  }, [selectedBeach, selectedActivity, date, bookingSettings]);
   
   // Don't need a separate effect for date changes as it's included above
 
@@ -265,7 +266,45 @@ export default function DateTimeSelection({
           }
         });
         
+        // Add logic to check against current time and lead time for the selected date
+        const now = new Date();
+        const currentLeadTimeHoursValue = leadTimeHours || 0; // leadTimeHours is from state
+        const leadTimeCutoff = new Date(now.getTime() + currentLeadTimeHoursValue * 60 * 60 * 1000);
+        
+        // 'date' is the selectedDate from state (which should be a JS Date object)
+        const selectedDateObject = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Normalize to start of day for comparison
+
+        const todayDateObject = new Date();
+        todayDateObject.setHours(0,0,0,0); // Normalize to start of day
+
+        // Iterate over all potentially available system times, not just those filtered by bookings
+        availableTimes.forEach(slot => {
+          const [slotHours, slotMinutes] = slot.split(':').map(Number);
+          const slotDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), slotHours, slotMinutes, 0, 0);
+
+          let shouldBeUnavailableDueToTime = false;
+
+          if (selectedDateObject.getTime() < todayDateObject.getTime()) {
+            // Selected date is in the past (DatePicker should prevent this, but good to be robust)
+            shouldBeUnavailableDueToTime = true;
+          } else if (selectedDateObject.getTime() === todayDateObject.getTime()) {
+            // Selected date is today, check against now and leadTimeCutoff
+            if (slotDateTime < now || slotDateTime < leadTimeCutoff) {
+              shouldBeUnavailableDueToTime = true;
+            }
+          }
+          // For future dates, DatePicker's lead time filter for full days handles broad lead times.
+          // This logic ensures slot-level precision, especially for lead times < 24h affecting today.
+
+          if (shouldBeUnavailableDueToTime) {
+            if (!unavailable.includes(slot)) { // Add to unavailable list if not already there
+              unavailable.push(slot);
+            }
+          }
+        });
+
         setUnavailableTimes(unavailable);
+        // Filter the master list of 'availableTimes' by the now-updated 'unavailable' list
         setAvailableTimeSlots(availableTimes.filter(time => !unavailable.includes(time)));
       } else {
         console.error('Failed to fetch availability');
