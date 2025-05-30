@@ -584,6 +584,12 @@ export async function GET(request) {
     // We already have the MongoDB connection above, no need to reconnect
 
     let bookings = [];
+    // Determine status filter based on admin request
+    let statusFilter = { $in: ['Confirmed', 'Group Inquiry'] };
+    if (isAdminRequest(request)) {
+      statusFilter = { $in: ['Confirmed', 'Group Inquiry', 'Pending', 'Cancelled'] };
+    }
+
     if (start && end) {
       // Find bookings in date range (inclusive)
       const startDate = new Date(start);
@@ -592,7 +598,7 @@ export async function GET(request) {
       endDate.setDate(endDate.getDate() + 1);
       bookings = await bookingsCollection.find({
         date: { $gte: startDate, $lt: endDate },
-        status: { $in: ['Confirmed', 'Group Inquiry'] }
+        status: statusFilter
       }).toArray();
     } else if (date) {
       // Find bookings for the given date
@@ -605,7 +611,7 @@ export async function GET(request) {
           $gte: startOfDay,
           $lte: endOfDay
         },
-        status: { $in: ['Confirmed', 'Group Inquiry'] }
+        status: statusFilter // Apply admin-aware status filter
       }).toArray();
     }
 

@@ -81,6 +81,29 @@ export default function AdminBookingsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // State for editing an existing booking in the modal
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingBookingData, setEditingBookingData] = useState(null);
+
+  // State for the "Create New Booking" modal
+  const [isNewBookingModalOpen, setIsNewBookingModalOpen] = useState(false);
+  const [newBookingData, setNewBookingData] = useState({
+    date: '',
+    activityId: '', // Will be selected in the modal
+    participants: 1,
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    paymentMethod: 'Pending', // Default payment method
+    paymentStatus: 'Pending', // Default payment status
+    totalPrice: 0, // Will be calculated or entered
+    notes: '',
+    beachId: sites[0], // Default to the first beach in the sites array
+    startTime: '09:00', // Default start time
+    endTime: '10:00',   // Default end time
+    revenue: 0, // For admin manual entry, if applicable
+  });
+
   // Helper to check if a booking is a 5+ group lesson that has special revenue handling
   const isGroupLesson = (booking) => {
     const activity = booking.activity?.name || booking.activity || '';
@@ -383,7 +406,217 @@ export default function AdminBookingsPage() {
   };
 
   const handleDateClick = (info) => {
-    alert(`Block/unblock logic for ${info.dateStr} (not implemented)`);
+    // Pre-fill the clicked date for the new booking
+    setNewBookingData(prev => ({ 
+      ...prev, 
+      date: info.dateStr,
+      // Optionally reset other fields to defaults if needed, or carry them over
+      // For example, to reset activityId and participants:
+      // activityId: '', 
+      // participants: 1,
+    }));
+    // Open the new booking modal
+    setIsNewBookingModalOpen(true);
+  };
+
+  const handleNewBookingInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    // For activityId and participants, parse to number if applicable
+    let processedValue = value;
+    if (name === 'activityId') { // Assuming activityId is just the ID string, price is looked up elsewhere
+      // If activityId implies a price change, you might want to update revenue/totalPrice here or in an effect
+    } else if (name === 'participants' || name === 'revenue') {
+      processedValue = value === '' ? '' : parseFloat(value);
+    }
+
+    setNewBookingData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : processedValue,
+    }));
+  };
+
+  const handleSaveNewBooking = async () => {
+    setIsProcessing(true);
+    try {
+      const selectedActivityObject = activities.find(act => act.id === newBookingData.activityId);
+
+      if (!selectedActivityObject) {
+        console.error('Selected activity not found for ID:', newBookingData.activityId);
+        alert('Error: Selected activity is invalid. Please re-select the activity.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const bookingPayload = {
+        clientName: newBookingData.clientName,
+        clientEmail: newBookingData.clientEmail,
+        clientPhone: newBookingData.clientPhone,
+        beach: newBookingData.beachId, // The backend expects 'beach' with the location name
+        activity: selectedActivityObject, // Send the full activity object
+        activityId: newBookingData.activityId, // Also send activityId as backend uses it
+        date: newBookingData.date,
+        startTime: newBookingData.startTime,
+        endTime: newBookingData.endTime,
+        participants: newBookingData.participants,
+        notes: newBookingData.notes,
+        paymentMethod: newBookingData.paymentMethod,
+        revenue: newBookingData.revenue,
+        status: newBookingData.paymentStatus || (newBookingData.paymentMethod === 'Pending' ? 'Pending' : 'Confirmed'), // Backend expects 'status'
+        paymentDetails: {
+          source: 'AdminManualEntry',
+          method: newBookingData.paymentMethod, // This might be redundant if backend uses top-level paymentMethod
+        },
+        // isGroupInquiry and groupAges are not part of this admin form, so they won't be sent unless added to newBookingData
+      };
+
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingPayload),
+      });
+
+      if (response.ok) {
+        setIsNewBookingModalOpen(false);
+        // Reset newBookingData to defaults after successful save
+        setNewBookingData({
+          date: '',
+          activityId: '',
+          participants: 1,
+          clientName: '',
+          clientEmail: '',
+          clientPhone: '',
+          paymentMethod: 'Pending',
+          paymentStatus: 'Pending',
+          totalPrice: 0,
+          notes: '',
+          beachId: sites[0],
+          startTime: '09:00',
+          endTime: '10:00',
+          revenue: 0,
+        });
+        // Refresh calendar events
+        if (calendarViewDates.start && calendarViewDates.end) {
+          fetchBookings(calendarViewDates.start, calendarViewDates.end).then(fetchedEvents => {
+            // Assuming fetchBookings returns the raw booking data and needs mapping
+            const evts = fetchedEvents.map(b => ({
+              id: b._id,
+              title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
+              start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
+              end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
+              extendedProps: b,
+              color: b.status === 'Confirmed' ? '#198754' : (b.status === 'Cancelled' ? '#dc3545' : '#ffc107'), // Added cancelled color
+            }));
+            setEvents(evts);
+            // Recalculate revenue total
+            const total = fetchedEvents.reduce((sum, b) => sum + getActivityPrice(b), 0);
+            setRevenueTotal(total);
+          });
+        }
+        alert('Booking created successfully!');
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to save booking:', errorData);
+        alert(`Failed to save booking: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error saving booking:', error);
+      alert(`Error saving booking: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handler for input changes in the edit booking form
+  const handleEditBookingInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    // For numeric fields that can be empty, handle parsing carefully
+    let processedValue = value;
+    if (['participants', 'revenue'].includes(name)) {
+      processedValue = value === '' ? '' : parseFloat(value);
+      if (isNaN(processedValue)) processedValue = ''; // Keep as empty string if not a valid number
+    } else if (type === 'checkbox') {
+      processedValue = checked;
+    }
+
+    setEditingBookingData(prev => ({
+      ...prev,
+      [name]: processedValue,
+    }));
+  };
+
+  // Handler for saving updated booking details
+  const handleUpdateBooking = async () => {
+    if (!editingBookingData || !editingBookingData._id) {
+      alert('No booking selected or booking ID is missing.');
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      const payload = { ...editingBookingData };
+
+      // Ensure activity is the full object if activityId was changed
+      if (payload.activityId && typeof payload.activityId === 'string' && (!payload.activity || payload.activity.id !== payload.activityId)) {
+        const selectedActivityObject = activities.find(act => act.id === payload.activityId);
+        if (selectedActivityObject) {
+          payload.activity = selectedActivityObject;
+        } else {
+          console.warn('Activity ID selected in edit mode does not match any known activity.');
+          // Potentially alert user or handle as an error
+        }
+      }
+
+      // Ensure beach is the string name if beachId was used for a dropdown and is different
+      if (payload.beachId && typeof payload.beachId === 'string' && payload.beach !== payload.beachId) {
+        payload.beach = payload.beachId;
+      }
+      
+      // Clean up helper IDs if your backend doesn't expect them or expects specific structures
+      // delete payload.beachId; 
+      // delete payload.activityId; // Only if backend solely relies on the 'activity' object and not 'activityId' for updates
+
+      const response = await fetch(`/api/bookings`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingBookingData._id, ...payload }),
+      });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        alert('Booking updated successfully!');
+        setIsEditMode(false);
+        setSelectedBooking(null); 
+        setEditingBookingData(null); 
+        if (calendarViewDates.start && calendarViewDates.end) {
+          fetchBookings(calendarViewDates.start, calendarViewDates.end).then(fetchedEvents => {
+            const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
+            const filteredBookingsResult = fetchedEvents.filter(b => {
+              const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
+              if (selectedBeachesList.length === 0) return false;
+              return selectedBeachesList.includes(beachName);
+            });
+            const evts = filteredBookingsResult.map(b => ({
+              id: b._id,
+              title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
+              start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
+              end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
+              extendedProps: b,
+              color: b.status === 'Confirmed' ? '#198754' : (b.status === 'Cancelled' ? '#dc3545' : '#ffc107'),
+            }));
+            setEvents(evts);
+            const total = filteredBookingsResult.reduce((sum, b) => sum + getActivityPrice(b), 0);
+            setRevenueTotal(total);
+          });
+        }
+      } else {
+        alert(`Failed to update booking: ${result.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      alert(`Error updating booking: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (!authChecked) {
@@ -616,145 +849,166 @@ export default function AdminBookingsPage() {
                         </button>
                       </div>
                     </div>
-                  ) : (
+                  ) : isEditMode && editingBookingData ? (
+                    /* Edit Mode */
+                    <>
+                      <h2 className="text-lg font-bold mb-4">Edit Booking</h2>
+                      {/* Client Name */}
+                      <div className="mb-3">
+                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+                        <input type="text" name="clientName" id="clientName" value={editingBookingData.clientName || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Client Email */}
+                      <div className="mb-3">
+                        <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700">Client Email</label>
+                        <input type="email" name="clientEmail" id="clientEmail" value={editingBookingData.clientEmail || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Client Phone */}
+                      <div className="mb-3">
+                        <label htmlFor="clientPhone" className="block text-sm font-medium text-gray-700">Client Phone</label>
+                        <input type="tel" name="clientPhone" id="clientPhone" value={editingBookingData.clientPhone || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Date */}
+                      <div className="mb-3">
+                        <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" name="date" id="date" value={editingBookingData.date || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Start Time */}
+                      <div className="mb-3">
+                        <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">Start Time</label>
+                        <input type="time" name="startTime" id="startTime" value={editingBookingData.startTime || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* End Time */}
+                      <div className="mb-3">
+                        <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">End Time</label>
+                        <input type="time" name="endTime" id="endTime" value={editingBookingData.endTime || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Activity */}
+                      <div className="mb-3">
+                        <label htmlFor="activityId" className="block text-sm font-medium text-gray-700">Activity</label>
+                        <select name="activityId" id="activityId" value={editingBookingData.activityId || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                          <option value="">Select Activity</option>
+                          {activities.map(act => <option key={act.id} value={act.id}>{act.name}</option>)}
+                        </select>
+                      </div>
+                      {/* Beach */}
+                      <div className="mb-3">
+                        <label htmlFor="beachId" className="block text-sm font-medium text-gray-700">Beach</label>
+                        <select name="beachId" id="beachId" value={editingBookingData.beachId || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                           {sites.map(site => <option key={site} value={site}>{site}</option>)}
+                        </select>
+                      </div>
+                      {/* Participants */}
+                      <div className="mb-3">
+                        <label htmlFor="participants" className="block text-sm font-medium text-gray-700">Participants</label>
+                        <input type="number" name="participants" id="participants" value={editingBookingData.participants || 1} onChange={handleEditBookingInputChange} min="1" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Status */}
+                      <div className="mb-3">
+                        <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                        <select name="status" id="status" value={editingBookingData.status || 'Pending'} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Cancelled">Cancelled</option>
+                          {/* Add other statuses if applicable */}
+                        </select>
+                      </div>
+                      {/* Revenue */}
+                      <div className="mb-3">
+                        <label htmlFor="revenue" className="block text-sm font-medium text-gray-700">Revenue ($)</label>
+                        <input type="number" name="revenue" id="revenue" value={editingBookingData.revenue === null || editingBookingData.revenue === undefined ? '' : editingBookingData.revenue} onChange={handleEditBookingInputChange} min="0" step="0.01" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
+                      {/* Notes */}
+                      <div className="mb-3">
+                        <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
+                        <textarea name="notes" id="notes" value={editingBookingData.notes || ''} onChange={handleEditBookingInputChange} rows="3" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                      </div>
+                      {/* Action Buttons */}
+                      <div className="flex justify-end space-x-3 mt-6">
+                        <button type="button" onClick={() => setIsEditMode(false)} className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" disabled={isProcessing}>
+                          Cancel Edit
+                        </button>
+                        <button type="button" onClick={handleUpdateBooking} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50" disabled={isProcessing}>
+                          {isProcessing ? 'Saving...' : 'Save Changes'}
+                        </button>
+                      </div>
+                    </>
+                  ) : ( 
                     /* Default View Mode */
                     <>
                       <h2 className="text-lg font-bold mb-2">Booking Details</h2>
-                      <div className="mb-2">
-                        <b>Client:</b> {selectedBooking.clientName}
-                      </div>
-                      <div className="mb-2">
-                        <b>Email:</b> {selectedBooking.clientEmail}
-                      </div>
-                      <div className="mb-2">
-                        <b>Phone:</b> {selectedBooking.clientPhone}
-                      </div>
-                      <div className="mb-2">
-                        <b>Activity:</b> {selectedBooking.activity?.name || selectedBooking.activity}
-                      </div>
-                      <div className="mb-2">
-                        <b>Beach:</b>{' '}
-                        {typeof selectedBooking.beach === 'object'
-                          ? selectedBooking.beach?.name
-                          : selectedBooking.beach || 'Not specified'}
-                      </div>
-                      <div className="mb-2">
-                        <b>Date:</b> {new Date(selectedBooking.date).toLocaleDateString()}
-                      </div>
-                      <div className="mb-2">
-                        <b>Time:</b> {selectedBooking.startTime} - {selectedBooking.endTime}
-                      </div>
-                      <div className="mb-2">
-                        <b>Status:</b> {selectedBooking.status}
-                      </div>
-                      <div className="mb-2">
-                        <b>Participants:</b> {selectedBooking.participants}
-                      </div>
-                      {selectedBooking.groupAges && (
-                        <div className="mb-2">
-                          <b>Group Ages:</b> {selectedBooking.groupAges}
-                        </div>
-                      )}
-                      {selectedBooking.notes && (
-                        <div className="mb-2">
-                          <b>Notes:</b> {selectedBooking.notes}
-                        </div>
-                      )}
-
-                      {/* Revenue Field: Editable for 5+ group lessons */}
-                      <div className="mb-2">
-                        <b>Revenue:</b>{' '}
-                        {isGroupLesson(selectedBooking) ? (
-                          <>
-                            <input
-                              type="number"
-                              className="border px-2 py-1 rounded w-24 mr-2"
-                              value={editRevenue !== null ? editRevenue : (selectedBooking.revenue || 0)}
-                              min={0}
-                              onChange={(e) => setEditRevenue(Number(e.target.value))}
-                            />
-                            <button
-                              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
-                              disabled={isSavingRevenue || (editRevenue === (selectedBooking.revenue || 0))}
-                              onClick={async () => {
-                                setIsSavingRevenue(true);
-                                await fetch('/api/bookings', {
-                                  method: 'PATCH',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ id: selectedBooking._id, revenue: editRevenue }),
-                                });
-                                setIsSavingRevenue(false);
-                                setSelectedBooking(null);
-                                setEditRevenue(null);
-                                // Refresh events and revenue total
-                                fetchBookings(calendarViewDates.start, calendarViewDates.end).then(bookings => {
-                                  // Filter bookings by selected beaches
-                                  const selectedBeachesList = sites.filter(site => selectedBeaches[site]);
-                                  const filteredBookings = bookings.filter(b => {
-                                    const beachName = typeof b.beach === 'object' ? b.beach?.name : b.beach;
-                                    // If no beaches are selected, show no bookings
-                                    if (selectedBeachesList.length === 0) return false;
-                                    // Otherwise only show bookings for selected beaches
-                                    return selectedBeachesList.includes(beachName);
-                                  });
-
-                                  const evts = filteredBookings.map(b => ({
-                                    id: b._id,
-                                    title: `${b.activity?.name || b.activity} - ${typeof b.beach === 'object' ? b.beach?.name : b.beach || 'No Beach'} (${b.clientName})`,
-                                    start: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.startTime || '09:00') : undefined,
-                                    end: b.date ? new Date(b.date).toISOString().split('T')[0] + 'T' + (b.endTime || '10:00') : undefined,
-                                    extendedProps: b,
-                                    color: b.status === 'Confirmed' ? '#198754' : '#ffc107',
-                                  }));
-                                  setEvents(evts);
-                                  // Calculate revenue total using latest activity prices (except for 5+ group)
-                                  const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
-                                  setRevenueTotal(total);
-                                });
-                              }}
-                            >
-                              {isSavingRevenue ? 'Saving...' : 'Save'}
-                            </button>
-                          </>
-                        ) : (
-                          <span className="ml-2">
-                            {getActivityPrice(selectedBooking).toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
-                          </span>
-                        )}
-                      </div>
-
+                      <div className="mb-2"><b>Client:</b> {selectedBooking.clientName}</div>
+                      <div className="mb-2"><b>Email:</b> {selectedBooking.clientEmail}</div>
+                      <div className="mb-2"><b>Phone:</b> {selectedBooking.clientPhone}</div>
+                      <div className="mb-2"><b>Activity:</b> {selectedBooking.activity?.name || selectedBooking.activity}</div>
+                      <div className="mb-2"><b>Beach:</b> {typeof selectedBooking.beach === 'object' ? selectedBooking.beach?.name : selectedBooking.beach || 'Not specified'}</div>
+                      <div className="mb-2"><b>Date:</b> {selectedBooking.date ? (() => { const d = new Date(selectedBooking.date); return `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${d.getUTCFullYear()}`; })() : 'N/A'}</div>
+                      <div className="mb-2"><b>Time:</b> {selectedBooking.startTime} - {selectedBooking.endTime}</div>
+                      <div className="mb-2"><b>Status:</b> {selectedBooking.status}</div>
+                      <div className="mb-2"><b>Participants:</b> {selectedBooking.participants}</div>
+                      {selectedBooking.groupAges && <div className="mb-2"><b>Group Ages:</b> {selectedBooking.groupAges}</div>}
+                      {selectedBooking.notes && <div className="mb-2"><b>Notes:</b> {selectedBooking.notes}</div>}
+                      <div className="mb-2"><b>Revenue:</b> {(selectedBooking.revenue || 0).toLocaleString(undefined, { style: 'currency', currency: 'USD' })}</div>
+                      
                       {/* Messages Panel */}
                       <MessagesPanel selectedBooking={selectedBooking} />
 
                       <div className="flex justify-between mt-4">
                         <div className="space-x-2">
                           <button
-                            className="px-4 py-2 bg-yellow-500 text-white rounded"
+                            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
                             onClick={() => {
-                              // Initialize reschedule form with current booking values
+                              // Prepare data for edit mode
+                              const bookingToEdit = {
+                                ...selectedBooking,
+                                date: selectedBooking.date ? new Date(selectedBooking.date).toISOString().split('T')[0] : '',
+                                activityId: selectedBooking.activity?.id || selectedBooking.activityId || '',
+                                beachId: typeof selectedBooking.beach === 'object' ? selectedBooking.beach?.name : selectedBooking.beach || sites[0],
+                                // Ensure revenue is a number, default to 0 if not set
+                                revenue: typeof selectedBooking.revenue === 'number' ? selectedBooking.revenue : 0,
+                              };
+                              setEditingBookingData(bookingToEdit);
+                              setIsEditMode(true);
+                              setIsRescheduling(false); // Ensure other modes are off
+                              setIsDeleting(false);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                            onClick={() => {
                               const currentDate = new Date(selectedBooking.date);
                               setRescheduleDate(currentDate.toISOString().split('T')[0]);
                               setRescheduleStartTime(selectedBooking.startTime);
                               setRescheduleEndTime(selectedBooking.endTime);
                               setIsRescheduling(true);
+                              setIsEditMode(false); // Ensure other modes are off
+                              setIsDeleting(false);
                             }}
                           >
                             Reschedule
                           </button>
                           <button
-                            className="px-4 py-2 bg-red-600 text-white rounded"
-                            onClick={() => setIsDeleting(true)}
+                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            onClick={() => {
+                              setIsDeleting(true);
+                              setIsEditMode(false); // Ensure other modes are off
+                              setIsRescheduling(false);
+                            }}
                           >
                             Delete
                           </button>
                         </div>
                         <button
-                          className="px-4 py-2 bg-blue-600 text-white rounded"
+                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                           onClick={() => {
                             setSelectedBooking(null);
-                            setEditRevenue(null);
+                            setEditingBookingData(null);
+                            setIsEditMode(false);
                             setIsRescheduling(false);
                             setIsDeleting(false);
+                            // setEditRevenue(null); // If you were using a separate editRevenue state
                           }}
                         >
                           Close
@@ -767,7 +1021,205 @@ export default function AdminBookingsPage() {
             )}
           </>
         )}
-        
+
+        {/* Create New Booking Modal */}
+        {isNewBookingModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">Create New Booking</h2>
+              <form onSubmit={(e) => { e.preventDefault(); handleSaveNewBooking(); }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input
+                      type="date"
+                      name="date"
+                      id="date"
+                      value={newBookingData.date}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="activityId" className="block text-sm font-medium text-gray-700 mb-1">Activity</label>
+                    <select
+                      name="activityId"
+                      id="activityId"
+                      value={newBookingData.activityId}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    >
+                      <option value="">Select Activity</option>
+                      {activities.map(activity => (
+                        <option key={activity.id} value={activity.id}>
+                          {activity.name} - ${activity.price}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                    <input
+                      type="time"
+                      name="startTime"
+                      id="startTime"
+                      value={newBookingData.startTime}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                    <input
+                      type="time"
+                      name="endTime"
+                      id="endTime"
+                      value={newBookingData.endTime}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="participants" className="block text-sm font-medium text-gray-700 mb-1">Participants</label>
+                  <input
+                    type="number"
+                    name="participants"
+                    id="participants"
+                    value={newBookingData.participants}
+                    onChange={handleNewBookingInputChange}
+                    min="1"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label htmlFor="clientName" className="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
+                    <input
+                      type="text"
+                      name="clientName"
+                      id="clientName"
+                      value={newBookingData.clientName}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700 mb-1">Client Email</label>
+                    <input
+                      type="email"
+                      name="clientEmail"
+                      id="clientEmail"
+                      value={newBookingData.clientEmail}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label htmlFor="clientPhone" className="block text-sm font-medium text-gray-700 mb-1">Client Phone</label>
+                    <input
+                      type="tel"
+                      name="clientPhone"
+                      id="clientPhone"
+                      value={newBookingData.clientPhone}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="beachId" className="block text-sm font-medium text-gray-700 mb-1">Beach</label>
+                    <select
+                      name="beachId"
+                      id="beachId"
+                      value={newBookingData.beachId}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    >
+                      {sites.map(site => (
+                        <option key={site} value={site}>{site}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                    <select
+                      name="paymentMethod"
+                      id="paymentMethod"
+                      value={newBookingData.paymentMethod}
+                      onChange={handleNewBookingInputChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                      {['Cash', 'Zelle', 'Venmo', 'PayPal (Manual)', 'Card (Manual)', 'Pending'].map(method => (
+                        <option key={method} value={method}>{method}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="revenue" className="block text-sm font-medium text-gray-700 mb-1">Revenue ($)</label>
+                    <input
+                      type="number"
+                      name="revenue"
+                      id="revenue"
+                      value={newBookingData.revenue}
+                      onChange={handleNewBookingInputChange}
+                      min="0"
+                      step="0.01"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                  <textarea
+                    name="notes"
+                    id="notes"
+                    value={newBookingData.notes}
+                    onChange={handleNewBookingInputChange}
+                    rows="3"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  ></textarea>
+                </div>
+
+                <div className="flex items-center justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsNewBookingModalOpen(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                    disabled={isProcessing} // Assuming isProcessing state is used for save operations
+                  >
+                    {isProcessing ? 'Saving...' : 'Save Booking'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'messages' && (
           <MessagesInbox />
         )}
