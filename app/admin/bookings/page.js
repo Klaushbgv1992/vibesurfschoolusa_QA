@@ -508,6 +508,7 @@ export default function AdminBookingsPage() {
               extendedProps: b,
               color: b.status === 'Confirmed' ? '#198754' : (b.status === 'Cancelled' ? '#dc3545' : '#ffc107'), // Added cancelled color
             }));
+            console.log('Calendar Events (refreshBookings):', evts.map(e => ({ id: e.id, title: e.title }))); // DEBUG: Log event IDs and titles
             setEvents(evts);
             // Recalculate revenue total
             const total = fetchedEvents.reduce((sum, b) => sum + getActivityPrice(b), 0);

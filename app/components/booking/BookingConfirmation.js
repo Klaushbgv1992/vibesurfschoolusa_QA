@@ -68,7 +68,7 @@ export default function BookingConfirmation({ booking, bookingId, onBookAgain })
           <div>
             <p className="text-sm text-gray-500">Total Price</p>
             <p className="font-medium">
-              {booking.activity?.price === 0 ? 'Inquire' : `$${booking.activity?.price * booking.participants}`}
+              {booking.activity?.price === 0 ? 'Inquire' : booking.activity?.isFixedPrice ? `$${booking.activity.price}` : `$${booking.activity?.price * booking.participants}`}
             </p>
           </div>
         </div>

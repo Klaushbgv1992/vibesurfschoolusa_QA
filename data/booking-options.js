@@ -44,6 +44,7 @@ export const activities = [
     description: 'Learn to surf with a friend or partner. Perfect for beginners.',
     duration: 60, // minutes
     price: 160,
+    isFixedPrice: true,
     image: '/images/activityIcons/2 Person Group Surf Lessons.jpg',
     minParticipants: 2,
     maxParticipants: 2,
@@ -55,6 +56,7 @@ export const activities = [
     description: 'Small group surf lessons with personalized attention.',
     duration: 60, // minutes
     price: 225,
+    isFixedPrice: true,
     image: '/images/activityIcons/3 Person Group Surf Lessons.jpg',
     minParticipants: 3,
     maxParticipants: 3,
@@ -66,6 +68,7 @@ export const activities = [
     description: 'Group surf lessons for friends and family.',
     duration: 60, // minutes
     price: 300,
+    isFixedPrice: true,
     image: '/images/activityIcons/4 Person Group Surf Lessons.jpg',
     minParticipants: 4,
     maxParticipants: 4,
@@ -101,6 +104,7 @@ export const activities = [
     description: 'Guided reef snorkeling adventure for two people.',
     duration: 60, // minutes
     price: 130,
+    isFixedPrice: true,
     image: '/images/activityIcons/2 Person Guided Reef Snorkeling Tour.webp',
     minParticipants: 2,
     maxParticipants: 2,
@@ -112,6 +116,7 @@ export const activities = [
     description: 'Small group guided reef snorkeling experience.',
     duration: 60, // minutes
     price: 195,
+    isFixedPrice: true,
     image: '/images/activityIcons/3 Person Guided Reef Snorkeling Tour.webp',
     minParticipants: 3,
     maxParticipants: 3,
@@ -123,6 +128,7 @@ export const activities = [
     description: 'Group guided reef snorkeling adventure.',
     duration: 60, // minutes
     price: 260,
+    isFixedPrice: true,
     image: '/images/activityIcons/4 Person Guided Reef Snorkeling Tour.webp',
     minParticipants: 4,
     maxParticipants: 4,
@@ -158,6 +164,7 @@ export const activities = [
     description: 'Guided reef shore diving for two certified divers.',
     duration: 90, // minutes
     price: 220,
+    isFixedPrice: true,
     image: '/images/activityIcons/2 Person Guided Reef Shore Scuba Dive.webp',
     minParticipants: 2,
     maxParticipants: 2,
@@ -169,6 +176,7 @@ export const activities = [
     description: 'Small group guided reef shore diving experience.',
     duration: 90, // minutes
     price: 330,
+    isFixedPrice: true,
     image: '/images/activityIcons/3 Person Guided Reef Shore Scuba Dive.webp',
     minParticipants: 3,
     maxParticipants: 3,
@@ -180,6 +188,7 @@ export const activities = [
     description: 'Group guided reef shore diving adventure.',
     duration: 90, // minutes
     price: 440,
+    isFixedPrice: true,
     image: '/images/activityIcons/4 Person Guided Reef Shore Scuba Dive.jpg',
     minParticipants: 4,
     maxParticipants: 4,
@@ -215,6 +224,7 @@ export const activities = [
     description: 'Guided stand up paddleboarding for two people.',
     duration: 60, // minutes
     price: 150,
+    isFixedPrice: true,
     image: '/images/activityIcons/2 Person Stand Up Paddleboard Tour.webp',
     minParticipants: 2,
     maxParticipants: 2,
@@ -226,6 +236,7 @@ export const activities = [
     description: 'Small group guided stand up paddleboarding experience.',
     duration: 60, // minutes
     price: 225,
+    isFixedPrice: true,
     image: '/images/activityIcons/3 Person Stand Up Paddleboard Tour.jpg',
     minParticipants: 3,
     maxParticipants: 3,
@@ -237,6 +248,7 @@ export const activities = [
     description: 'Group guided stand up paddleboarding adventure.',
     duration: 60, // minutes
     price: 300,
+    isFixedPrice: true,
     image: '/images/activityIcons/4 Person Stand Up Paddleboard Tour.jpg',
     minParticipants: 4,
     maxParticipants: 4,

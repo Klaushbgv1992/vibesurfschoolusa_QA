@@ -260,41 +260,50 @@ export async function POST(request) {
     }
 
     // Calculate revenue for non-group bookings
-    let calculatedRevenue = 0;
-    let price = 0;
-    if (typeof activity === 'object' && typeof activity.price === 'number') {
-      price = activity.price;
-    } else if (!isNaN(Number(activity?.price))) {
-      price = Number(activity.price);
-    }
     const numParticipants = parseInt(participants) || 1;
-    calculatedRevenue = price * numParticipants;
+    let calculatedRevenue;
 
-    // Save the booking (confirmed or group inquiry)
-    const activityIdToStore = typeof activity === 'object' && activity !== null ? activity.id : (data.activityId || null); // Get activityId from incoming data if activity is just a string
+    // 'activity' here is the full activity object from the frontend payload
+    if (activity && typeof activity.price === 'number') {
+        if (activity.isFixedPrice) {
+            calculatedRevenue = activity.price;
+        } else {
+            calculatedRevenue = activity.price * numParticipants;
+        }
+        console.log('[DEBUG] Calculated revenue for PayPal booking:', calculatedRevenue, 'Activity:', activity.name, 'Participants:', numParticipants, 'IsFixedPrice:', activity.isFixedPrice);
+    } else {
+        console.error('API:POST:BOOKING - PayPal flow: Activity object or price is missing/invalid.', { activityReceived: activity });
+        return NextResponse.json({ success: false, message: 'Internal server error: Booking information incomplete for price calculation.' }, { status: 500 });
+    }
 
-    const bookingData = {
+    // Determine activityId to store. 'activity.id' should come from the full activity object.
+    const activityIdToStore = activity && typeof activity.id !== 'undefined' ? activity.id : (data.activityId || null);
+    if (!activityIdToStore && activity && typeof activity.name !== 'undefined') {
+         console.warn('API:POST:BOOKING - activity.id missing, using data.activityId as fallback or null.', { activityName: activity.name, dataActivityId: data.activityId });
+    }
+    // The bookingData object below will use these defined variables: numParticipants, calculatedRevenue, activityIdToStore.
+const bookingData = {
       clientName,
       clientEmail,
       clientPhone,
       beach: normalizedBeach,
-      activity: normalizedActivity,
+      activity: normalizedActivity, // This is the activity NAME string after normalization
       date: new Date(date),
       startTime,
       endTime,
-      participants: numParticipants,
+      participants: numParticipants, // Uses numParticipants defined in the preceding block
       notes: notes || '',
       status: 'Confirmed',
       created: new Date(),
-      revenue: calculatedRevenue,
-      paymentMethod: 'PayPal', // Mark as PayPal for standard flow
+      revenue: calculatedRevenue, // Uses calculatedRevenue defined in the preceding block
+      paymentMethod: 'PayPal',
       paymentDetails: {
-        id: paymentDetails.id, // PayPal Order ID
-        status: 'COMPLETED',   // Already verified
+        id: paymentDetails.id,
+        status: 'COMPLETED',
         source: 'paypal',
-        method: 'PayPal'       // Explicitly state PayPal method
+        method: 'PayPal'
       },
-      activityId: activityIdToStore // Store activity ID
+      activityId: activityIdToStore // Uses activityIdToStore defined in the preceding block
     };
 
     // Create the booking
