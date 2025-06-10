@@ -768,7 +768,7 @@ export default function AdminBookingsPage() {
             {/* Booking Details Modal */}
             {selectedBooking && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg min-w-[450px] max-w-[90vw]">
+                <div className="bg-white p-6 rounded-lg shadow-lg min-w-[450px] max-w-[90vw] max-h-[90vh] flex flex-col">
                   {/* Reschedule Mode */}
                   {isRescheduling ? (
                     <div>
@@ -852,88 +852,90 @@ export default function AdminBookingsPage() {
                     </div>
                   ) : isEditMode && editingBookingData ? (
                     /* Edit Mode */
-                    <>
-                      <h2 className="text-lg font-bold mb-4">Edit Booking</h2>
-                      {/* Client Name */}
-                      <div className="mb-3">
-                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
-                        <input type="text" name="clientName" id="clientName" value={editingBookingData.clientName || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Client Email */}
-                      <div className="mb-3">
-                        <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700">Client Email</label>
-                        <input type="email" name="clientEmail" id="clientEmail" value={editingBookingData.clientEmail || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Client Phone */}
-                      <div className="mb-3">
-                        <label htmlFor="clientPhone" className="block text-sm font-medium text-gray-700">Client Phone</label>
-                        <input type="tel" name="clientPhone" id="clientPhone" value={editingBookingData.clientPhone || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Date */}
-                      <div className="mb-3">
-                        <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
-                        <input type="date" name="date" id="date" value={editingBookingData.date || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Start Time */}
-                      <div className="mb-3">
-                        <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">Start Time</label>
-                        <input type="time" name="startTime" id="startTime" value={editingBookingData.startTime || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* End Time */}
-                      <div className="mb-3">
-                        <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">End Time</label>
-                        <input type="time" name="endTime" id="endTime" value={editingBookingData.endTime || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Activity */}
-                      <div className="mb-3">
-                        <label htmlFor="activityId" className="block text-sm font-medium text-gray-700">Activity</label>
-                        <select name="activityId" id="activityId" value={editingBookingData.activityId || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                          <option value="">Select Activity</option>
-                          {activities.map(act => <option key={act.id} value={act.id}>{act.name}</option>)}
-                        </select>
-                      </div>
-                      {/* Beach */}
-                      <div className="mb-3">
-                        <label htmlFor="beachId" className="block text-sm font-medium text-gray-700">Beach</label>
-                        <select name="beachId" id="beachId" value={editingBookingData.beachId || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                           {sites.map(site => <option key={site} value={site}>{site}</option>)}
-                        </select>
-                      </div>
-                      {/* Participants */}
-                      <div className="mb-3">
-                        <label htmlFor="participants" className="block text-sm font-medium text-gray-700">Participants</label>
-                        <input type="number" name="participants" id="participants" value={editingBookingData.participants || 1} onChange={handleEditBookingInputChange} min="1" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Status */}
-                      <div className="mb-3">
-                        <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
-                        <select name="status" id="status" value={editingBookingData.status || 'Pending'} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                          <option value="Pending">Pending</option>
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Cancelled">Cancelled</option>
-                          {/* Add other statuses if applicable */}
-                        </select>
-                      </div>
-                      {/* Revenue */}
-                      <div className="mb-3">
-                        <label htmlFor="revenue" className="block text-sm font-medium text-gray-700">Revenue ($)</label>
-                        <input type="number" name="revenue" id="revenue" value={editingBookingData.revenue === null || editingBookingData.revenue === undefined ? '' : editingBookingData.revenue} onChange={handleEditBookingInputChange} min="0" step="0.01" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                      </div>
-                      {/* Notes */}
-                      <div className="mb-3">
-                        <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
-                        <textarea name="notes" id="notes" value={editingBookingData.notes || ''} onChange={handleEditBookingInputChange} rows="3" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                    <div className="flex flex-col overflow-hidden flex-grow">
+                      <h2 className="text-lg font-bold mb-4 flex-shrink-0">Edit Booking</h2>
+                      <div className="flex-grow overflow-y-auto pr-2">
+                        {/* Client Name */}
+                        <div className="mb-3">
+                          <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+                          <input type="text" name="clientName" id="clientName" value={editingBookingData.clientName || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Client Email */}
+                        <div className="mb-3">
+                          <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700">Client Email</label>
+                          <input type="email" name="clientEmail" id="clientEmail" value={editingBookingData.clientEmail || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Client Phone */}
+                        <div className="mb-3">
+                          <label htmlFor="clientPhone" className="block text-sm font-medium text-gray-700">Client Phone</label>
+                          <input type="tel" name="clientPhone" id="clientPhone" value={editingBookingData.clientPhone || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Date */}
+                        <div className="mb-3">
+                          <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
+                          <input type="date" name="date" id="date" value={editingBookingData.date || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Start Time */}
+                        <div className="mb-3">
+                          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">Start Time</label>
+                          <input type="time" name="startTime" id="startTime" value={editingBookingData.startTime || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* End Time */}
+                        <div className="mb-3">
+                          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">End Time</label>
+                          <input type="time" name="endTime" id="endTime" value={editingBookingData.endTime || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Activity */}
+                        <div className="mb-3">
+                          <label htmlFor="activityId" className="block text-sm font-medium text-gray-700">Activity</label>
+                          <select name="activityId" id="activityId" value={editingBookingData.activityId || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="">Select Activity</option>
+                            {activities.map(act => <option key={act.id} value={act.id}>{act.name}</option>)}
+                          </select>
+                        </div>
+                        {/* Beach */}
+                        <div className="mb-3">
+                          <label htmlFor="beachId" className="block text-sm font-medium text-gray-700">Beach</label>
+                          <select name="beachId" id="beachId" value={editingBookingData.beachId || ''} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                             {sites.map(site => <option key={site} value={site}>{site}</option>)}
+                          </select>
+                        </div>
+                        {/* Participants */}
+                        <div className="mb-3">
+                          <label htmlFor="participants" className="block text-sm font-medium text-gray-700">Participants</label>
+                          <input type="number" name="participants" id="participants" value={editingBookingData.participants || 1} onChange={handleEditBookingInputChange} min="1" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Status */}
+                        <div className="mb-3">
+                          <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                          <select name="status" id="status" value={editingBookingData.status || 'Pending'} onChange={handleEditBookingInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            {/* Add other statuses if applicable */}
+                          </select>
+                        </div>
+                        {/* Revenue */}
+                        <div className="mb-3">
+                          <label htmlFor="revenue" className="block text-sm font-medium text-gray-700">Revenue ($)</label>
+                          <input type="number" name="revenue" id="revenue" value={editingBookingData.revenue === null || editingBookingData.revenue === undefined ? '' : editingBookingData.revenue} onChange={handleEditBookingInputChange} min="0" step="0.01" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        </div>
+                        {/* Notes */}
+                        <div className="mb-3">
+                          <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
+                          <textarea name="notes" id="notes" value={editingBookingData.notes || ''} onChange={handleEditBookingInputChange} rows="3" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                        </div>
                       </div>
                       {/* Action Buttons */}
-                      <div className="flex justify-end space-x-3 mt-6">
+                      <div className="flex justify-end space-x-3 mt-6 flex-shrink-0">
                         <button type="button" onClick={() => setIsEditMode(false)} className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" disabled={isProcessing}>
                           Cancel Edit
                         </button>
-                        <button type="button" onClick={handleUpdateBooking} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50" disabled={isProcessing}>
+                        <button onClick={handleUpdateBooking} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" disabled={isProcessing}>
                           {isProcessing ? 'Saving...' : 'Save Changes'}
                         </button>
                       </div>
-                    </>
+                    </div>
                   ) : ( 
                     /* Default View Mode */
                     <>
