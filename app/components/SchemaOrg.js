@@ -16,7 +16,7 @@ export default function SchemaOrg() {
     description: 'Professional surf school offering lessons for all skill levels in Fort Lauderdale, Florida.',
     url: baseUrl,
     telephone: '+1-954-555-5555', // Replace with actual phone number
-    email: 'vibesurfschoolftl@gmail.com',
+    email: 'info@vibesurfschool.com',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Pompano Beach & Dania Beach', // Update with actual street address
