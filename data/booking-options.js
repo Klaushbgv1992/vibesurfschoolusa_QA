@@ -33,6 +33,7 @@ export const activities = [
     description: 'One-on-one instruction tailored to your skill level for maximum progression.',
     duration: 60, // minutes
     price: 100,
+    isFixedPrice: false,
     image: '/images/activityIcons/Individual Surf Lesson.jpg',
     minParticipants: 1,
     maxParticipants: 1,

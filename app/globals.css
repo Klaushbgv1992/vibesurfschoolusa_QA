@@ -232,3 +232,12 @@ h1, h2, h3, h4, h5, h6 {
 .blog-content a:hover {
   text-decoration: none;
 }
+
+/* Custom autofill styles to override browser defaults */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+}

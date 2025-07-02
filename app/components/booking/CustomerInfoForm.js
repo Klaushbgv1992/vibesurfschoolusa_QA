@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { activities } from '../../../data/booking-options';
 
 // Format date properly with fixed timezone handling
 const formatDate = (dateValue) => {
@@ -33,6 +34,7 @@ const formatDate = (dateValue) => {
 export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
   const isGroupActivity = formData.activity?.minParticipants >= 5;
   const [customerData, setCustomerData] = useState({
+    discountCode: '',
     clientName: formData.clientName || '',
     clientEmail: formData.clientEmail || '',
     clientPhone: formData.clientPhone || '',
@@ -41,6 +43,32 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
     groupAges: isGroupActivity ? formData.groupAges || '' : ''
   });
   const [errors, setErrors] = useState({});
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [discountMessage, setDiscountMessage] = useState('');
+  const [showDiscount, setShowDiscount] = useState(false);
+
+  // Find the authoritative activity data from the source to prevent state corruption issues.
+  const currentActivity = formData.activity ? activities.find(a => a.id === formData.activity.id) : null;
+
+  // Calculate a reliable base price from the authoritative data.
+  const basePrice = currentActivity
+    ? currentActivity.isFixedPrice
+      ? currentActivity.price
+      : currentActivity.price * formData.participants
+    : 0;
+
+  // Effect to update the total price whenever the base price or discount changes.
+  useEffect(() => {
+    setTotalPrice(basePrice - discountAmount);
+  }, [basePrice, discountAmount]);
+
+  // Effect to reset the discount when the selected activity changes.
+  useEffect(() => {
+    setDiscountAmount(0);
+    setDiscountMessage('');
+    setCustomerData(prev => ({ ...prev, discountCode: '' }));
+  }, [currentActivity]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,11 +111,30 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleApplyDiscount = () => {
+    const code = customerData.discountCode.trim().toLowerCase();
+    let discount = 0;
+    let message = '';
+
+    if (code === 'vibecrew20') {
+      discount = basePrice * 0.20;
+      message = '20% discount applied!';
+    } else if (code === 'goodvibes10') {
+      discount = basePrice * 0.10;
+      message = '10% discount applied!';
+    } else if (code) {
+      message = 'Invalid discount code.';
+    }
+
+    setDiscountAmount(discount);
+    setDiscountMessage(message);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit(customerData);
+      onSubmit({ ...customerData, totalPrice, discountAmount });
     }
   };
 
@@ -98,7 +145,7 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
         Please provide your contact information to complete your booking.
       </p>
 
-      <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+      <div className="mb-6 p-4 bg-gray-100 rounded-lg">
         <h3 className="text-lg font-medium text-gray-800 mb-2">Booking Summary</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
           <div>
@@ -122,9 +169,20 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
             <p className="font-medium">{formData.participants}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Total Price</p>
-            <p className="font-medium">${formData.activity?.minParticipants > 1 ? formData.activity?.price : formData.activity?.price * formData.participants}</p>
+            <p className="text-sm text-gray-500">{currentActivity?.isFixedPrice ? 'Price' : 'Price per person'}</p>
+            <p className="font-medium">${currentActivity?.price.toFixed(2)}</p>
           </div>
+          {discountAmount > 0 && (
+            <div>
+              <p className="text-sm text-gray-500">Discount</p>
+              <p className="font-medium text-green-600">-${discountAmount.toFixed(2)}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-sm text-gray-500">Total Price</p>
+            <p className="font-bold text-lg text-gray-900">${totalPrice.toFixed(2)}</p>
+          </div>
+
         </div>
       </div>
 
@@ -242,6 +300,46 @@ export default function CustomerInfoForm({ onSubmit, isSubmitting, formData }) {
               className="w-full border border-gray-300 p-3 rounded-md shadow-sm focus:ring-[#005d8e] focus:border-[#005d8e] focus:outline-none"
               placeholder="Let us know if you have any special requests or requirements"
             />
+          </div>
+
+          <div className="md:col-span-2 mt-4">
+            {showDiscount ? (
+              <div>
+                <label htmlFor="discountCode" className="block text-gray-700 font-medium mb-2">
+                  Discount Code
+                </label>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    id="discountCode"
+                    name="discountCode"
+                    value={customerData.discountCode}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 p-3 rounded-l-md shadow-sm focus:ring-[#005d8e] focus:border-[#005d8e] focus:outline-none"
+                    placeholder="Enter discount code"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyDiscount}
+                    className="px-4 py-3 bg-gray-200 text-gray-700 rounded-r-md hover:bg-gray-300 font-medium"
+                  >
+                    Apply
+                  </button>
+                </div>
+                {discountMessage && (
+                  <p className={`mt-1 text-sm ${discountMessage.includes('Invalid') ? 'text-red-500' : 'text-green-600'}`}>
+                    {discountMessage}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <span
+                onClick={() => setShowDiscount(true)}
+                className="text-sm text-blue-600 hover:underline cursor-pointer"
+              >
+                Have a discount code?
+              </span>
+            )}
           </div>
         </div>
 

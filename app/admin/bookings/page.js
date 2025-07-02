@@ -252,7 +252,11 @@ export default function AdminBookingsPage() {
           console.log('[Effect - Setting Events] evts to be set (length):', evts?.length, evts);
           setEvents(evts);
           
-          const total = filteredBookings.reduce((sum, b) => sum + getActivityPrice(b), 0);
+          const total = filteredBookings.reduce((acc, booking) => {
+            // Use the revenue field if it exists and is a number, otherwise calculate it
+            const revenue = typeof booking.revenue === 'number' ? booking.revenue : getActivityPrice(booking);
+            return acc + revenue;
+          }, 0);
           setRevenueTotal(total);
           console.log('[Effect - Revenue] Calculated revenue:', total);
         })
@@ -696,6 +700,7 @@ export default function AdminBookingsPage() {
                 eventClick={handleEventClick}
                 dateClick={handleDateClick}
                 dayMaxEvents={3}
+                showNonCurrentDates={false}
                 eventTimeFormat={{
                   hour: '2-digit',
                   minute: '2-digit',
@@ -961,6 +966,7 @@ export default function AdminBookingsPage() {
                           <button
                             className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
                             onClick={() => {
+
                               // Prepare data for edit mode
                               const bookingToEdit = {
                                 ...selectedBooking,

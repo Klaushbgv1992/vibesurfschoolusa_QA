@@ -39,8 +39,12 @@ export default function BookingPage() {
   };
 
   const handleActivitySelect = (activity, participants = 1) => {
-    const activityCopy = { ...activity }; // Create a shallow copy
-    setFormData(prev => ({ ...prev, activity: activityCopy, participants }));
+    const selectedActivity = { ...activity }; // Create a shallow copy
+    setFormData(prev => ({
+      ...prev,
+      activity: selectedActivity,
+      participants: selectedActivity.minParticipants || 1
+    }));
     // Detect if this is a group booking (5+)
     if (activity.minParticipants >= 5) {
       setIsGroupBooking(true);
@@ -51,7 +55,13 @@ export default function BookingPage() {
   };
 
   const handleDateTimeSelect = (date, startTime, endTime) => {
-    setFormData(prev => ({ ...prev, date, startTime, endTime }));
+    setFormData(prev => ({
+      ...prev,
+      date,
+      startTime,
+      endTime,
+      activity: prev.activity // Explicitly preserve the activity object
+    }));
     setCurrentStep(4);
   };
 
